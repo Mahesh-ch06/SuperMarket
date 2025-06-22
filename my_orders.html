@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - FreshMart</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    <style>
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+        /* Custom Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Loader styles */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38a169; /* FreshMart green */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-[#f9fbfa]">
+
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <div class="size-5">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                    </div>
+                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+                </a>
+                <a href="shop.html" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em]">
+                    <span>Continue Shopping</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 max-w-4xl mx-auto py-10 px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">My Orders</h2>
+            <div id="orders-container" class="bg-white rounded-lg shadow-md p-6">
+                <div id="loading-indicator" class="flex justify-center items-center py-10">
+                    <div class="loader"></div>
+                    <p class="ml-4 text-gray-600">Loading orders...</p>
+                </div>
+                <!-- Orders will be dynamically loaded here -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t">
+            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center">
+                <div class="flex justify-center gap-x-6 sm:gap-x-12 mb-6">
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Terms of Service</a>
+                </div>
+                <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+    // --- Firebase Configuration ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+        authDomain: "portfolio-56be7.firebaseapp.com",
+        projectId: "portfolio-56be7",
+        storageBucket: "portfolio-56be7.firebasestorage.app",
+        messagingSenderId: "888511551571",
+        appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+        measurementId: "G-X3CYL9YZR1"
+    };
+
+    // --- Initialize Firebase ---
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null; // To store the authenticated user
+
+    // --- DOM Elements ---
+    const ordersContainer = document.getElementById('orders-container');
+    const loadingIndicator = document.getElementById('loading-indicator');
+
+    // --- Toast Notification System ---
+    const toastContainer = document.getElementById('toast-container');
+    function showToast(message, type = 'info', duration = 4000) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+        }, duration);
+    }
+
+    // --- Fetch and Render Orders ---
+    async function fetchAndRenderOrders(userId) {
+        ordersContainer.innerHTML = ''; // Clear previous content
+        loadingIndicator.classList.remove('hidden'); // Show loading indicator
+
+        try {
+            // Query Firestore for orders belonging to the current user
+            // We are deliberately avoiding orderBy to prevent potential index issues,
+            // and will sort in memory.
+            const ordersQuery = query(collection(db, "orders"), where("userId", "==", userId));
+            const querySnapshot = await getDocs(ordersQuery);
+
+            let orders = [];
+            querySnapshot.forEach((doc) => {
+                orders.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Sort orders by date in descending order (most recent first)
+            orders.sort((a, b) => b.orderDate.toDate() - a.orderDate.toDate());
+
+            if (orders.length === 0) {
+                ordersContainer.innerHTML = `
+                    <div class="text-center py-10">
+                        <p class="text-gray-600 text-lg mb-4">You haven't placed any orders yet.</p>
+                        <a href="shop.html" class="inline-block rounded-xl h-12 px-8 bg-[#6ec88e] text-[#111813] text-base font-bold tracking-[0.015em] hover:bg-green-500 transition-colors">
+                            Start Shopping
+                        </a>
+                    </div>
+                `;
+            } else {
+                let ordersHtml = '';
+                orders.forEach(order => {
+                    const orderDate = order.orderDate ? new Date(order.orderDate.seconds * 1000).toLocaleString() : 'N/A';
+                    let itemsHtml = order.items.map(item => `
+                        <div class="flex items-center gap-2 py-1">
+                            <img src="${item.image || 'https://placehold.co/32x32/cccccc/000000?text=NA'}" alt="${item.name}" class="w-8 h-8 rounded object-cover">
+                            <span class="text-sm text-gray-700">${item.name} x ${item.quantity}</span>
+                            <span class="ml-auto text-sm font-medium text-gray-700">₹${(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
+                    `).join('');
+
+                    ordersHtml += `
+                        <div class="border rounded-lg p-4 mb-6 bg-white shadow-sm">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 pb-2 border-b">
+                                <h3 class="font-bold text-lg text-gray-800">Order ID: #${order.id.substring(0, 8)}</h3>
+                                <p class="text-sm text-gray-500">Date: ${orderDate}</p>
+                            </div>
+                            <div class="mb-4">
+                                ${itemsHtml}
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t">
+                                <p class="font-semibold text-gray-800">Total:</p>
+                                <p class="font-bold text-xl text-[#38a169]">₹${order.totalAmount.toFixed(2)}</p>
+                            </div>
+                            <p class="text-sm text-right text-gray-600 mt-2">Status: <span class="font-semibold">${order.status}</span></p>
+                        </div>
+                    `;
+                });
+                ordersContainer.innerHTML = ordersHtml;
+            }
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+            showToast(`Failed to load orders: ${error.message}`, 'error', 5000);
+            ordersContainer.innerHTML = `
+                <div class="text-center py-10">
+                    <p class="text-red-500 text-lg mb-4">Error loading orders. Please try again later.</p>
+                </div>
+            `;
+        } finally {
+            loadingIndicator.classList.add('hidden'); // Hide loading indicator
+        }
+    }
+
+    // --- Firebase Auth State Listener ---
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if (user) {
+            fetchAndRenderOrders(user.uid);
+        } else {
+            // User is not logged in, show a message and redirect to login
+            ordersContainer.innerHTML = `
+                <div class="text-center py-20">
+                    <p class="text-gray-600 text-xl font-semibold mb-4">Please log in to view your orders.</p>
+                    <a href="login.html" class="inline-block rounded-xl h-12 px-8 bg-[#38a169] text-white text-base font-bold tracking-[0.015em] hover:bg-[#2f855a] transition-colors">
+                        Go to Login
+                    </a>
+                </div>
+            `;
+            loadingIndicator.classList.add('hidden'); // Hide loading indicator if not logged in
+        }
+    });
+
+    // Ensure the page attempts to load orders as soon as auth state is determined
+    // onAuthStateChanged handles the initial rendering based on user presence.
+</script>
+</body>
+</html>

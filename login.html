@@ -3,186 +3,229 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CodeCafe - Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>FreshMart - Login</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
     <style>
+        /* Base Font Styles from FreshMart Design System */
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        /* Improved Autofill Styles for Webkit browsers */
+
+        /* Adjusted Autofill Styles for Webkit browsers to fit light theme */
         input:-webkit-autofill,
         input:-webkit-autofill:hover,
         input:-webkit-autofill:focus,
         input:-webkit-autofill:active {
-            -webkit-box-shadow: 0 0 0 30px #334155 inset !important; /* Tailwind slate-700 */
-            -webkit-text-fill-color: #f8fafc !important; /* Tailwind slate-50 */
-            caret-color: #f8fafc !important;
+            -webkit-box-shadow: 0 0 0 30px white inset !important; /* Forces a white background */
+            -webkit-text-fill-color: #2d3748 !important; /* Sets text color to FreshMart dark grey */
+            caret-color: #2d3748 !important; /* Sets caret color to FreshMart dark grey */
         }
+
+        /* Active tab button styling for navigation between forms */
         .tab-button.active {
-            border-color: #fb923c; /* Tailwind orange-400 */
-            color: #fb923c;
+            border-color: #38a169; /* Fresh green for active tab indicator */
+            color: #2d3748; /* Dark grey text for active tab */
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* Subtle shadow for active state */
+            transform: translateY(-2px); /* Slight lift for active state */
         }
+
+        /* Toast Notification System styles */
         #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10000;
+            position: fixed; /* Fixed position relative to the viewport */
+            bottom: 20px; /* 20px from the bottom */
+            right: 20px; /* 20px from the right */
+            z-index: 10000; /* Ensures toast is on top of other content */
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 10px; /* Space between multiple toasts */
         }
         .toast {
             padding: 12px 20px;
             border-radius: 8px;
             color: white;
             font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            transform: translateX(100%);
-            transition: opacity 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Soft shadow for toast pop-out effect */
+            opacity: 0; /* Initially hidden */
+            transform: translateX(100%); /* Start off-screen to the right */
+            transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth entry/exit animation */
+            min-width: 250px; /* Ensures toast messages are wide enough to be readable */
         }
         .toast.show {
-            opacity: 1;
-            transform: translateX(0);
+            opacity: 1; /* Fully visible */
+            transform: translateX(0); /* Slides into view */
         }
-        .toast.success { background-color: #22c55e; } /* green-500 */
-        .toast.error { background-color: #ef4444; } /* red-500 */
-        .toast.info { background-color: #3b82f6; } /* blue-500 */
+        /* Specific background colors for different toast types */
+        .toast.success { background-color: #22c55e; } /* Tailwind green-500 */
+        .toast.error { background-color: #ef4444; } /* Tailwind red-500 */
+        .toast.info { background-color: #3b82f6; } /* Tailwind blue-500 */
 
-        /* Password visibility toggle icon */
+        /* Password visibility toggle icon styles */
         .password-toggle {
             position: absolute;
-            top: 50%;
-            right: 0.75rem; /* 12px */
+            top: 50%; /* Vertically center the icon */
+            right: 0.75rem; /* 12px from the right edge of the input */
             transform: translateY(-50%);
             cursor: pointer;
-            color: #9ca3af; /* gray-400 */
+            color: #4a5568; /* Tailwind gray-600 for subtle icon */
         }
         .password-toggle:hover {
-            color: #f8fafc; /* slate-50 */
+            color: #2d3748; /* Darker on hover for better interaction feedback */
+        }
+
+        /* Reusable FreshMart Primary Button Styles */
+        .freshmart-btn-primary {
+            @apply w-full flex justify-center py-2.5 px-4 rounded-xl shadow-sm text-sm font-bold text-[#2d3748] bg-[#38a169] hover:bg-[#2f855a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#f9fbfa] focus:ring-[#38a169] transition-all duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed;
+        }
+        /* Reusable FreshMart Secondary Button Styles */
+        .freshmart-btn-secondary {
+            @apply flex-1 flex items-center justify-center py-2.5 px-4 rounded-xl shadow-sm text-sm font-bold text-[#2d3748] bg-[#eaf0ec] hover:bg-[#d8e3dc] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#f9fbfa] focus:ring-[#38a169] transition-all duration-200 ease-in-out disabled:opacity-60 disabled:cursor-not-allowed;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen flex flex-col items-center justify-center p-4 text-slate-100">
+<body class="bg-[#f9fbfa] min-h-screen flex flex-col items-center justify-center p-4 text-[#2d3748]">
 
     <div id="toast-container"></div>
 
     <div class="w-full max-w-md">
         <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-orange-400">CodeCafe</h1>
-            <p class="text-slate-400 mt-1">Your coding journey starts here.</p>
+            <!-- FreshMart Logo and Title, consistent with other pages -->
+            <a href="index.html" class="flex items-center justify-center gap-3 text-[#2d3748] mb-4">
+                <div class="size-6 flex-shrink-0">
+                    <!-- SVG logo for scalability -->
+                    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                </div>
+                <h1 class="text-[#2d3748] text-3xl font-bold tracking-[-0.015em]">FreshMart</h1>
+            </a>
+            <p class="text-gray-700 mt-1 text-lg">Your fresh food journey starts here.</p>
         </header>
 
-        <main id="auth-container" class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl">
-            <div class="mb-6 border-b border-slate-700">
+        <!-- Main authentication container (Login, Sign Up, Reset Password forms) -->
+        <main id="auth-container" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <!-- Tab Navigation for switching between forms -->
+            <div class="mb-6 border-b border-[#eaf0ec]">
                 <nav class="-mb-px flex space-x-4" aria-label="Tabs">
-                    <button data-form="loginForm" class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                    <button data-form="loginForm" class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 text-sm text-gray-700 hover:text-[#2d3748] hover:border-[#38a169] transition-colors">
                         Login
                     </button>
-                    <button data-form="signupForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                    <button data-form="signupForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 text-sm text-gray-700 hover:text-[#2d3748] hover:border-[#38a169] transition-colors">
                         Sign Up
                     </button>
-                    <button data-form="resetPasswordForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                    <button data-form="resetPasswordForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 text-sm text-gray-700 hover:text-[#2d3748] hover:border-[#38a169] transition-colors">
                         Reset Password
                     </button>
                 </nav>
             </div>
 
+            <!-- Login Form -->
             <form id="loginForm" class="space-y-6">
                 <div>
-                    <label for="loginEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <label for="loginEmail" class="block text-sm font-medium text-gray-700">Email address</label>
                     <input type="email" id="loginEmail" name="loginEmail" placeholder="you@example.com" required
-                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                           class="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                    <p id="loginEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div>
-                    <label for="loginPassword" class="block text-sm font-medium text-slate-300">Password</label>
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700">Password</label>
                     <div class="relative mt-1">
                         <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" required
-                                class="block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                               class="block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                        <!-- Password visibility toggle icon -->
                         <span class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                         </span>
                     </div>
+                    <p id="loginPasswordError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div class="text-right text-sm">
-                    <a href="#" id="showResetPasswordFromLogin" class="font-medium text-orange-400 hover:text-orange-300 transition-colors">Forgot password?</a>
+                    <a href="#" id="showResetPasswordFromLogin" class="font-medium text-[#38a169] hover:text-[#2f855a] transition-colors">Forgot password?</a>
                 </div>
-                <button type="submit"
-                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                <button type="submit" class="freshmart-btn-primary">
                     Login
                 </button>
             </form>
 
+            <!-- Sign Up Form -->
             <form id="signupForm" class="space-y-6 hidden">
                 <div>
-                    <label for="signupEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <label for="signupEmail" class="block text-sm font-medium text-gray-700">Email address</label>
                     <input type="email" id="signupEmail" name="signupEmail" placeholder="you@example.com" required
-                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                           class="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                    <p id="signupEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div>
-                    <label for="signupUsername" class="block text-sm font-medium text-slate-300">Username</label>
+                    <label for="signupUsername" class="block text-sm font-medium text-gray-700">Username</label>
                     <input type="text" id="signupUsername" name="signupUsername" placeholder="Choose a username" required
-                           class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                           class="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                    <p id="signupUsernameError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 <div>
-                    <label for="signupPassword" class="block text-sm font-medium text-slate-300">Password</label>
-                        <div class="relative mt-1">
+                    <label for="signupPassword" class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="relative mt-1">
                         <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a strong password (min. 6 chars)" required
-                                class="block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                               class="block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                        <!-- Password visibility toggle icon -->
                         <span class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 0 1.934 1.934C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
                         </span>
                     </div>
+                    <p id="signupPasswordError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
-                <button type="submit"
-                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                <button type="submit" class="freshmart-btn-primary">
                     Create Account
                 </button>
             </form>
 
+            <!-- Reset Password Form -->
             <form id="resetPasswordForm" class="space-y-6 hidden">
                 <div>
-                    <label for="resetEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <label for="resetEmail" class="block text-sm font-medium text-gray-700">Email address</label>
                     <input type="email" id="resetEmail" name="resetEmail" placeholder="Enter your registered email" required
-                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                           class="mt-1 block w-full px-3 py-2.5 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 text-[#2d3748] focus:outline-none focus:border-[#38a169] focus:ring-1 focus:ring-[#38a169]">
+                    <p id="resetEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
-                <button type="submit"
-                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                <button type="submit" class="freshmart-btn-primary">
                     Send Password Reset Link
                 </button>
             </form>
 
+            <!-- "Or continue with" separator -->
             <div class="my-6">
                 <div class="relative">
                     <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                        <div class="w-full border-t border-slate-600"></div>
+                        <div class="w-full border-t border-gray-300"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-slate-800 text-slate-400">Or continue with</span>
+                        <span class="px-2 bg-white text-gray-400">Or continue with</span>
                     </div>
                 </div>
             </div>
 
-            <div class="space-y-3">
-                <button id="googleLoginButton"
-                        class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-600 rounded-md shadow-sm bg-slate-700 text-sm font-medium text-slate-50 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
-                    <svg class="w-5 h-5 mr-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zM8.28 16.338A5.952 5.952 0 015.706 10c0-1.939.917-3.663 2.323-4.795.152-.123.3-.258.44-.396A5.92 5.92 0 0110 4.048c.454 0 .89.057 1.304.162l-.992 1.717A3.98 3.98 0 0010 5.952c-1.939 0-3.552 1.365-3.92 3.162h2.688V10.5H6.08c.048.48.144.94.288 1.366a3.94 3.94 0 001.912 2.472zm3.44-6.546L10 8.075V6.15c.939 0 2.344.465 2.344 2.344 0 .585-.152 1.113-.423 1.569l1.458.843A5.907 5.907 0 0015.952 10a5.925 5.925 0 00-1.18-3.662l-.047-.063a5.955 5.955 0 00-3.005-2.475v-.002H11.72c-.047 0-.093 0-.14 0H10c-.396 0-.78.047-1.152.14l.78.78c.12-.03.24-.06.36-.06.54 0 1.05.15 1.48.42l1.29-1.29A5.916 5.916 0 0010 4.048a5.916 5.916 0 00-4.294 1.728l-.63.63A5.92 5.92 0 004.048 10c0 .454.057.89.162 1.304l1.717-.992A3.98 3.98 0 015.952 10c0-1.939 1.365-3.552 3.162-3.92V8.72c.48-.048.94-.144 1.366-.288a3.94 3.94 0 012.472 1.912z" clip-rule="evenodd"/>
+            <!-- Social Login Buttons -->
+            <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
+                <button id="googleLoginButton" class="freshmart-btn-secondary">
+                    <!-- Correct Google SVG logo with specific fill colors -->
+                    <svg class="w-5 h-5 mr-2 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37.5 24 37.5c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.8 1.1 8 3.1l6-6C34.4 3.9 29.3 2 24 2 12.4 2 2 12.4 2 24s10.4 22 22 22c11.6 0 20.6-9.1 20.6-22 0-1.5-.1-2.9-.3-4.3z" fill="#FFC107"/>
+                        <path d="M6.3 14.5L10.5 17.5C11.5 15.3 12.9 13.6 14.7 12.3c3-2.1 6.8-2.6 10.3-1.5L31.6 7C29.3 4.8 26.6 3.1 23.3 2.5C17.7 1.2 12.7 3.5 9.1 7.2L6.3 14.5z" fill="#FF3D00"/>
+                        <path d="M24 46c-5.4 0-10.4-1.9-14-5l6.7-7.3c2.7 2.1 5.9 3.5 9.3 3.5s6.6-1.4 9.3-3.5L39.7 41C36.4 44.1 30.6 46 24 46z" fill="#4CAF50"/>
+                        <path d="M45.5 20h-4.8c-.8 0-1.5.7-1.5 1.5v6.5c0 .8.7 1.5 1.5 1.5h4.8v3.5h-5c-2.2 0-4 1.8-4 4v3c0 2.2 1.8 4 4 4h5v3.5h-5c-4.4 0-8-3.6-8-8v-3c0-4.4 3.6-8 8-8h5V20z" fill="#1976D2"/>
                     </svg>
                     Sign in with Google
                 </button>
-                <button id="phoneLoginButton"
-                        class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-600 rounded-md shadow-sm bg-slate-700 text-sm font-medium text-slate-50 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors">
-                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <button id="phoneLoginButton" class="freshmart-btn-secondary">
+                    <!-- Phone SVG icon -->
+                    <svg class="w-5 h-5 mr-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
                     </svg>
                     Sign in with Phone
                 </button>
             </div>
         </main>
-        <footer class="text-center mt-8 text-sm text-slate-500">
-            <p>&copy; <span id="currentYear"></span> CodeCafe. All rights reserved. Powered by Firebase.</p>
+        <!-- Footer consistent with other FreshMart pages -->
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>&copy; <span id="currentYear"></span> FreshMart. All rights reserved.</p>
         </footer>
     </div>
 
@@ -197,22 +240,21 @@
             signInWithPopup,
             GoogleAuthProvider,
             signOut,
-            updateProfile // Import updateProfile
+            updateProfile
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
         // --- Firebase Configuration ---
         // IMPORTANT: Replace with your actual Firebase configuration
         const firebaseConfig = {
-  apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-  authDomain: "portfolio-56be7.firebaseapp.com",
-  projectId: "portfolio-56be7",
-  storageBucket: "portfolio-56be7.firebasestorage.app",
-  messagingSenderId: "888511551571",
-  appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-  measurementId: "G-X3CYL9YZR1"
-};
+            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+            authDomain: "portfolio-56be7.firebaseapp.com",
+            projectId: "portfolio-56be7",
+            storageBucket: "portfolio-56be7.firebasestorage.app",
+            messagingSenderId: "888511551571",
+            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+            measurementId: "G-X3CYL9YZR1"
+        };
     
-
         // --- Initialize Firebase ---
         let app;
         let auth;
@@ -226,7 +268,7 @@
         } catch (error) {
             console.error("Firebase initialization error:", error);
             showToast(`Critical Error: Firebase init failed. ${error.message}`, "error", 10000);
-            // Disable all forms if Firebase fails
+            // Disable all forms and social login buttons if Firebase fails to initialize
             document.querySelectorAll('form button[type="submit"], #googleLoginButton, #phoneLoginButton').forEach(btn => btn.disabled = true);
         }
 
@@ -251,41 +293,58 @@
             toast.textContent = message;
             toastContainer.appendChild(toast);
 
+            // Animate toast entry
             setTimeout(() => toast.classList.add('show'), 10);
+            // Animate toast exit and remove from DOM
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.parentNode?.removeChild(toast), 300);
             }, duration);
         }
 
-        // --- Password Visibility Toggle ---
+        // --- Password Visibility Toggle Function ---
+        // Made global (window.togglePasswordVisibility) for direct HTML access via onclick
         window.togglePasswordVisibility = (fieldId, iconElement) => {
             const passwordField = document.getElementById(fieldId);
             const isPassword = passwordField.type === "password";
             passwordField.type = isPassword ? "text" : "password";
+            // Toggle SVG icon based on visibility state
             iconElement.innerHTML = isPassword ?
-                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : // Eye slash
-                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`; // Eye
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : // Eye slash icon (hidden)
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`; // Eye icon (visible)
         };
 
-        // --- Form Helper: Set Loading State ---
+        // --- Helper Function: Set Form/Button Loading State ---
+        // Includes a loading spinner
+        const spinnerSvg = `
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        `;
+
         function setFormLoading(formElement, isLoading, baseButtonText) {
             const button = formElement.querySelector('button[type="submit"]');
             if (button) {
                 button.disabled = isLoading;
-                button.textContent = isLoading ? 'Processing...' : baseButtonText;
+                if (isLoading) {
+                    button.innerHTML = spinnerSvg + baseButtonText; // Add spinner before text
+                } else {
+                    button.innerHTML = baseButtonText;
+                }
             }
         }
-        function setButtonLoading(buttonElement, isLoading, baseButtonText) {
+        
+        function setButtonLoading(buttonElement, isLoading, originalContent) {
             if (buttonElement) {
                 buttonElement.disabled = isLoading;
-                const svgIcon = buttonElement.querySelector('svg');
                 if (isLoading) {
-                    buttonElement.innerHTML = 'Processing...';
+                    // Extract just the text content from originalContent for better spinner integration
+                    const textContent = buttonElement.textContent.trim();
+                    buttonElement.innerHTML = spinnerSvg + textContent; 
                 } else {
-                    buttonElement.innerHTML = ''; // Clear current content
-                    if(svgIcon) buttonElement.appendChild(svgIcon); // Add icon back if it exists
-                    buttonElement.appendChild(document.createTextNode(baseButtonText));
+                    // Restore the original content (SVG and text)
+                    buttonElement.innerHTML = originalContent;
                 }
             }
         }
@@ -293,18 +352,34 @@
 
         // --- Tab Switching Logic ---
         function switchTab(targetFormId) {
+            // Hide all forms
             allForms.forEach(form => {
-                if (form) form.classList.toggle('hidden', form.id !== targetFormId);
+                if (form) form.classList.add('hidden');
             });
+            // Show the target form
+            const targetForm = document.getElementById(targetFormId);
+            if (targetForm) {
+                targetForm.classList.remove('hidden');
+            }
+
+            // Update active tab button visual
             tabButtons.forEach(button => {
                 button.classList.toggle('active', button.dataset.form === targetFormId);
             });
+            
+            // Clear all input errors when switching tabs
+            document.querySelectorAll('.text-red-500.text-xs.mt-1').forEach(errorEl => {
+                errorEl.classList.add('hidden');
+                errorEl.textContent = '';
+            });
         }
 
+        // Add event listeners to tab buttons
         tabButtons.forEach(button => {
             button.addEventListener('click', () => switchTab(button.dataset.form));
         });
         
+        // Event listener for "Forgot password?" link to switch to reset password form
         if (showResetPasswordLinkEl) {
             showResetPasswordLinkEl.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -312,131 +387,218 @@
             });
         }
 
-        // --- Redirect Function ---
+        // --- Redirect Function Placeholder ---
         function redirectToDashboard() {
             showToast("Redirecting to dashboard...", "info", 2000);
             setTimeout(() => {
-                window.location.href = "https://mahesh06.me/chatbot/"; // Example redirect URL
+                window.location.href = "index.html"; // Example redirect URL
             }, 1500);
         }
 
-        // --- Event Handlers (only if auth is initialized) ---
-        if (auth) {
-            // Login
+        // --- Input Error Handling Functions ---
+        function showInputError(inputId, message) {
+            const errorElement = document.getElementById(`${inputId}Error`);
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function clearInputError(inputId) {
+            const errorElement = document.getElementById(`${inputId}Error`);
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.classList.add('hidden');
+            }
+        }
+
+        // Clear errors when user types in an input field
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                clearInputError(e.target.id);
+            });
+        });
+
+
+        // --- Firebase Authentication Event Handlers ---
+        if (auth) { // Ensure Firebase auth is initialized before attaching listeners
+            // Login Form Submission
             loginFormEl?.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const email = loginFormEl.loginEmail.value;
                 const password = loginFormEl.loginPassword.value;
-                setFormLoading(loginFormEl, true, "Login");
+                
+                // Clear previous errors
+                clearInputError('loginEmail');
+                clearInputError('loginPassword');
+
+                setFormLoading(loginFormEl, true, "Login"); // Set loading state
                 try {
                     const userCredential = await signInWithEmailAndPassword(auth, email, password);
                     if (!userCredential.user.emailVerified) {
                         showToast("Please verify your email before logging in. Verification email resent if possible.", "info", 5000);
+                        // Attempt to resend verification email if not verified
                         await sendEmailVerification(userCredential.user).catch(err => console.warn("Error resending verification email:", err));
                         await signOut(auth); // Sign out user if email not verified
                     } else {
-                        showToast(`Login successful! Welcome back.`, "success");
+                        showToast(`Login successful! Welcome back, ${userCredential.user.displayName || userCredential.user.email}!`, "success");
                         redirectToDashboard();
                     }
                 } catch (error) {
                     console.error("Login error:", error);
-                    showToast(`Login failed: ${error.message}`, "error");
+                    let errorMessage = "An unknown error occurred.";
+                    if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                        errorMessage = "Invalid email or password.";
+                        showInputError('loginEmail', errorMessage);
+                        showInputError('loginPassword', errorMessage);
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = "Invalid email format.";
+                        showInputError('loginEmail', errorMessage);
+                    } else if (error.code === 'auth/too-many-requests') {
+                        errorMessage = "Too many failed login attempts. Please try again later.";
+                    } else {
+                        errorMessage = error.message;
+                    }
+                    showToast(`Login failed: ${errorMessage}`, "error");
                 } finally {
-                    setFormLoading(loginFormEl, false, "Login");
+                    setFormLoading(loginFormEl, false, "Login"); // Reset loading state
                 }
             });
 
-            // Signup
+            // Signup Form Submission
             signupFormEl?.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const email = signupFormEl.signupEmail.value;
-                const username = signupFormEl.signupUsername.value; // Get username
+                const username = signupFormEl.signupUsername.value.trim(); // Get and trim username
                 const password = signupFormEl.signupPassword.value;
 
-                if (!username.trim()) {
-                    showToast("Username is required.", "error");
+                // Clear previous errors
+                clearInputError('signupEmail');
+                clearInputError('signupUsername');
+                clearInputError('signupPassword');
+
+                // Basic client-side validation
+                if (!username) {
+                    showInputError("signupUsername", "Username is required.");
+                    showToast("Signup failed: Username is required.", "error");
                     return;
                 }
                 if (password.length < 6) {
-                    showToast("Password should be at least 6 characters long.", "error");
+                    showInputError("signupPassword", "Password should be at least 6 characters long.");
+                    showToast("Signup failed: Password too short.", "error");
                     return;
                 }
-                setFormLoading(signupFormEl, true, "Create Account");
+                
+                setFormLoading(signupFormEl, true, "Create Account"); // Set loading state
                 try {
                     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                     
-                    // After user is created, update their profile with the displayName
+                    // Update user profile with the chosen username (displayName)
                     await updateProfile(userCredential.user, {
                         displayName: username
                     });
                     
-                    await sendEmailVerification(userCredential.user);
+                    await sendEmailVerification(userCredential.user); // Send email verification
                     showToast("Signup successful! Please check your email to verify your account.", "success", 6000);
-                    // Optionally clear form or switch tab
                     signupFormEl.reset(); // Clear the form
-                    switchTab('loginForm'); 
+                    switchTab('loginForm'); // Switch back to login tab
                 } catch (error) {
                     console.error("Signup error:", error);
-                    showToast(`Signup failed: ${error.message}`, "error");
+                    let errorMessage = "An unknown error occurred.";
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = "Email already in use.";
+                        showInputError('signupEmail', errorMessage);
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = "Invalid email format.";
+                        showInputError('signupEmail', errorMessage);
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = "Password is too weak. Please choose a stronger one.";
+                        showInputError('signupPassword', errorMessage);
+                    } else {
+                        errorMessage = error.message;
+                    }
+                    showToast(`Signup failed: ${errorMessage}`, "error");
                 } finally {
-                    setFormLoading(signupFormEl, false, "Create Account");
+                    setFormLoading(signupFormEl, false, "Create Account"); // Reset loading state
                 }
             });
 
-            // Reset Password
+            // Reset Password Form Submission
             resetPasswordFormEl?.addEventListener("submit", async (e) => {
                 e.preventDefault();
                 const email = resetPasswordFormEl.resetEmail.value;
-                setFormLoading(resetPasswordFormEl, true, "Send Password Reset Link");
+
+                // Clear previous errors
+                clearInputError('resetEmail');
+
+                setFormLoading(resetPasswordFormEl, true, "Send Password Reset Link"); // Set loading state
                 try {
                     await sendPasswordResetEmail(auth, email);
                     showToast("Password reset email sent! Please check your inbox.", "success", 6000);
-                    switchTab('loginForm');
+                    resetPasswordFormEl.reset(); // Clear the form
+                    switchTab('loginForm'); // Switch back to login tab
                 } catch (error) {
                     console.error("Password reset error:", error);
-                    showToast(`Password reset failed: ${error.message}`, "error");
+                    let errorMessage = "An unknown error occurred.";
+                     if (error.code === 'auth/user-not-found') {
+                        errorMessage = "No user found with that email.";
+                        showInputError('resetEmail', errorMessage);
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = "Invalid email format.";
+                        showInputError('resetEmail', errorMessage);
+                    } else {
+                        errorMessage = error.message;
+                    }
+                    showToast(`Password reset failed: ${errorMessage}`, "error");
                 } finally {
-                    setFormLoading(resetPasswordFormEl, false, "Send Password Reset Link");
+                    setFormLoading(resetPasswordFormEl, false, "Send Password Reset Link"); // Reset loading state
                 }
             });
 
-            // Google Login
+            // Google Login Button Click
             googleLoginButtonEl?.addEventListener("click", async () => {
-                setButtonLoading(googleLoginButtonEl, true, "Sign in with Google");
+                // Store original button content to restore later
+                const originalContent = googleLoginButtonEl.innerHTML;
+                setButtonLoading(googleLoginButtonEl, true, originalContent); // Set loading state
                 try {
                     const result = await signInWithPopup(auth, googleProvider);
                     showToast(`Signed in with Google as ${result.user.displayName || 'User'}!`, "success");
                     redirectToDashboard();
                 } catch (error) {
                     console.error("Google sign-in error:", error);
+                    let errorMessage = "An unknown error occurred.";
                     if (error.code === 'auth/popup-closed-by-user') {
-                        showToast("Google sign-in cancelled.", "info");
+                        errorMessage = "Google sign-in cancelled.";
                     } else if (error.code === 'auth/network-request-failed') {
-                         showToast("Network error. Please check your connection and try again.", "error");
+                        errorMessage = "Network error. Please check your connection and try again.";
                     } else {
-                        showToast(`Google sign-in failed: ${error.message}`, "error");
+                        errorMessage = error.message;
                     }
+                    showToast(`Google sign-in failed: ${errorMessage}`, "error");
                 } finally {
-                    setButtonLoading(googleLoginButtonEl, false, "Sign in with Google");
+                    setButtonLoading(googleLoginButtonEl, false, originalContent); // Reset loading state
                 }
             });
         } else {
+             // Display a critical error if Firebase auth fails to initialize
              showToast("Firebase authentication is not available. Please try refreshing.", "error", 10000);
         }
 
 
-        // Phone Login Button Navigation
+        // Phone Login Button Navigation (Placeholder for actual phone auth page)
         phoneLoginButtonEl?.addEventListener("click", () => {
-            window.location.href = "phone-auth.html"; // Navigate to the phone auth page
+            showToast("Navigating to Phone authentication...", "info");
+            // In a real app, this would navigate to a separate phone authentication page
+            // window.location.href = "phone-auth.html"; 
         });
 
-        // Set current year in footer
+        // Set current year in footer dynamically
         const currentYearEl = document.getElementById('currentYear');
         if (currentYearEl) {
             currentYearEl.textContent = new Date().getFullYear();
         }
         
-        // Set initial tab (e.g. Login)
+        // Set the initial active tab to Login when the page loads
         switchTab('loginForm');
 
     </script>
