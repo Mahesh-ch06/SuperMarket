@@ -35,15 +35,17 @@
       .modal-content {
         background-color: #fefefe;
         margin: auto;
-        padding: 20px;
+        padding: 15px;
         border: 1px solid #888;
-        width: 90%; /* Responsive width */
+        width: 95%; /* Responsive width */
         max-width: 500px;
         border-radius: 10px;
         text-align: center;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transform: translateY(-20px); /* For slight slide-down transition */
         transition: transform 0.3s ease-in-out;
+        max-height: 90vh; /* Prevent modals from being taller than viewport */
+        overflow-y: auto; /* Allow scrolling within tall modals */
       }
       .modal.show {
           opacity: 1;
@@ -92,6 +94,22 @@
         .toast.success { background-color: #22c55e; }
         .toast.error { background-color: #ef4444; }
         .toast.info { background-color: #3b82f6; }
+
+      /* Mobile-friendly header styles */
+      @media (max-width: 767px) {
+        #mobileMenuBtn {
+          display: block;
+        }
+        .hidden {
+          display: none !important;
+        }
+        .md\\:flex {
+          display: none !important;
+        }
+        #mobileMenu {
+          display: flex !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -99,24 +117,31 @@
       <div class="layout-container flex h-full grow flex-col">
         <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
           <div class="flex items-center justify-between">
+            <!-- Logo remains the same -->
             <a href="index.html" class="flex items-center gap-3 text-[#111813]">
               <div class="size-4">
                 <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
-                  ></path>
+                  <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
                 </svg>
               </div>
               <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
             </a>
-            <div class="flex flex-1 justify-end gap-4 sm:gap-8">
+            
+            <!-- Mobile Menu Button -->
+            <button id="mobileMenuBtn" class="block md:hidden p-2 rounded-lg text-[#111813] hover:bg-[#eaf0ec]">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            <!-- Desktop Navigation -->
+            <div class="hidden md:flex flex-1 justify-end gap-4 sm:gap-8">
               <nav class="flex items-center gap-4 sm:gap-9">
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navShop">Shop</a>
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navDeals">Deals</a>
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navAboutUs">About Us</a>
               </nav>
-              <!-- Adjusted for mobile-friendliness with flex-wrap and gap-x-2/gap-y-1 -->
               <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
                 <span id="userEmailDisplay" class="text-[#2f855a] text-sm font-medium hidden"></span>
                 <button
@@ -145,18 +170,36 @@
                 </button>
               </div>
             </div>
-          </header>
+          </div>
+          
+          <!-- Mobile Navigation Drawer -->
+          <div id="mobileMenu" class="hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40 px-4 py-2 border-t border-[#eaf0ec] flex flex-col gap-2">
+            <nav class="flex flex-col w-full gap-2 py-2">
+              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navShopMobile">Shop</a>
+              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navDealsMobile">Deals</a>
+              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navRecipesMobile">Recipes</a>
+              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navAboutUsMobile">About Us</a>
+            </nav>
+            <div class="flex flex-col w-full gap-2 py-2 border-t border-[#eaf0ec]">
+              <span id="userEmailDisplayMobile" class="text-[#2f855a] text-sm font-medium hidden px-3 py-2"></span>
+              <button id="profileBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] hidden">Profile</button>
+              <button id="myOrdersBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] hidden">My Orders</button>
+              <button id="loginLogoutBtnMobile" class="w-full text-left py-2 px-3 rounded-lg bg-[#38a169] text-white text-sm font-bold">Login</button>
+              <button id="cartBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec]">Cart (<span id="cartCountMobile">0</span>)</button>
+            </div>
+          </div>
+        </header>
         <div class="px-4 flex flex-1 justify-center py-5 sm:px-40">
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
             <div class="@container">
-              <div class="@[480px]:p-4">
+              <div class="p-2 @[480px]:p-4">
                 <div
-                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
-                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOP3jqOqhCKiAVW8Wt-oiwgBN0jGojNIo4iIJsZ-Wmi1A30queaycpK614tuFvKsBS6Yb0g1A0WJfc5W9eQwxEj0CzE0s_f5PmIjfY0bqh6OfQ4OMcO6W4fVxVYeNU14n6d0lmqMyq6kwT9uDOwWcDBm6BqhjGuYzXpfmB1jsNmvQCF8CDLooA2nc5W_XD3_MoKDYsBVnAku1FWaY8QNVUQrlOIWYpGi5x_WpfADbWX3AO8ITbtKkG6xZXU1c1aE6BeJi82TJ564MM");'
+                  class="flex min-h-[320px] @[480px]:min-h-[480px] flex-col gap-4 @[480px]:gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-3 @[480px]:px-4 pb-6 @[480px]:pb-10 @[480px]:px-10"
+                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOP3jqOqhCKiAVW8Wt-oiwgBN0jGojNIo4iIJsZ-Wmi1A30queaycpK614tuFvKsBS6Yb0g1A0WJfc5W9eQwxEj0CzE0s_f5PmIjfY0bqh6OfQ4OMcO6W4fVxVYeNU14n6d0lmqMyq6kwT9uDOwWcDBm6BqhjGuYzXpfmB1jsNmvQCF8CDLooA2nc5W_XD3_MoKDYsBVnAku1FWaY8QNVUQrlOIWYpGi5x_WpfADbWX3AO8ITbtKkG6xZXU1c1aE6BeJi82TJ564MM");'
                 >
                   <div class="flex flex-col gap-2 text-left">
                     <h1
-                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                      class="text-white text-3xl @[480px]:text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
                     >
                       Fresh Groceries Delivered to Your Doorstep
                     </h1>
@@ -174,35 +217,69 @@
               </div>
             </div>
             <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Products</h2>
-            <div class="flex overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div class="flex items-stretch p-4 gap-3">
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+            <!-- Improved product cards for mobile -->
+            <div class="grid grid-cols-2 sm:flex sm:overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div class="grid grid-cols-2 sm:flex items-stretch p-4 gap-3">
+                <!-- Each product card gets proper sizing for both mobile and desktop -->
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8dLspY1cCnj8epLZuHgjv3FNaxZR0IjLvpUmtTgVEXIq0B8_Jemcm40cb8hqs2lCQvJYrNJOHBuO7KtJ_dfQbdcJr59MGfSBZy8AafTF0lTXbLXWqoW522KgjCi4ESBiax-o02zJZUfbj1sqQDRh6iWPDrcG9bmQj8xGNzFX3YoC96ZVkGL1MWXjeNUENBCanGDojMjX1brdH_44eQQusYk8RhDGkiIUvqJVQj8t-YqnSfsRggt0lj87DTThhOjnkJyQqwwaEYc7q");'
                   ></div>
-                  <p class="text-[#111813] text-base font-medium leading-normal">Vegetables</p>
+                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
+                    <div>
+                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Vegetables</p>
+                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Fresh and organic vegetables</p>
+                    </div>
+                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPcN3sG6A2VTHL7nynS4nruCdwIciSKtncs1KCXnKjU9b5L-oEr7QNnRIoy9dXKwPEoqtpADivAFwWGEl8qyP1ghl11NGmoLQnFoz_EsdaQUpTOBflAnqsPh7gZgMuBx9AHwexVzUEYQYxJNtBqnH1tpMjkh8veREveMyoDucuOIGUDWPguSQ0vdJ4R9AweM4jrLavd9y5V52jbkOog3uYjhjao-pz2q80aoGAPGGxE8MCGAfshGhFHgdh_HLIiyMCDbtOv73DflcD");'
                   ></div>
-                  <p class="text-[#111813] text-base font-medium leading-normal">Dairy</p>
+                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
+                    <div>
+                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Dairy</p>
+                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Organic dairy products</p>
+                    </div>
+                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDbhtun9NkJ7GoSeOabCyb0JlGEhQso--pgbiK2Nwm4sSVaCLdl5ZLIM2y6zhNE6Sdc6nsrcEaiBEO7xKqmC1M1pvUR_r1RWWJwZUUwSkZRSrBjyw3KIUYU6gc6rDHS0ZaajtAhGWUHfy4oRQXpURWdudLNj1lClUvSB4_98JXXdIfwjfVVxF8iL_OmF3uw88D94rMMbIPyl-88vthBKAaGWwlHs9UKb4PsiO4PWpdLsV5j7peILcIufo8yIE2NwvxUxrOWkb9DfLtH");'
                   ></div>
-                  <p class="text-[#111813] text-base font-medium leading-normal">Snacks</p>
+                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
+                    <div>
+                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Snacks</p>
+                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Tasty and healthy snacks</p>
+                    </div>
+                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
                   <div
                     class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
                     style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAKj0JM2qEcwYzwUbHQTIHZTwiPLC3giwXIq7QK72NBbKPR6OWFxtrPU-MywkJcKVALHb39XQEehwaIqWatRArddXyS79ougt6sbBhPAy7OXSTcdbi_QqQGe4TTAWF_EhqJFgjY8Yap8msh_vIVbyKn4pLvdf-V70DCt3lbPveq-F4Kl-QtYzO7vq-ZN4WncKr-wF8PTGUrYZaZrjOFsPvXoMaZE1p1c4eQ3gP6Nbts-dsMxqrP-7R63w1sLLrDCYyZ4C2nB_l4l3rg");'
                   ></div>
-                  <p class="text-[#111813] text-base font-medium leading-normal">Beverages</p>
+                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
+                    <div>
+                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Beverages</p>
+                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Refreshing drinks</p>
+                    </div>
+                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -640,11 +717,11 @@
           });
           document.getElementById("navDeals").addEventListener("click", function(event) {
               event.preventDefault();
-              showToast("Navigating to Deals page (placeholder)!", "info");
+              window.location.href = "deal.html";
           });
           document.getElementById("navRecipes").addEventListener("click", function(event) {
               event.preventDefault();
-              showToast("Navigating to Recipes page (placeholder)!", "info");
+              window.location.href = "recipes.html";
           });
           document.getElementById("navAboutUs").addEventListener("click", function(event) {
               event.preventDefault();
@@ -699,6 +776,69 @@
               cartItems = JSON.parse(savedCart);
           }
       });
+
+
+      // Mobile menu toggle
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', () => {
+          mobileMenu.classList.toggle('hidden');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+          if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.add('hidden');
+          }
+        });
+        
+        // Sync mobile menu with desktop menu
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+          link.addEventListener('click', () => {
+            const desktopCounterpart = document.getElementById(link.id.replace('Mobile', ''));
+            if (desktopCounterpart) {
+              desktopCounterpart.click();
+            }
+            mobileMenu.classList.add('hidden');
+          });
+        });
+        
+        // Sync authentication status between desktop and mobile
+        onAuthStateChanged(auth, (user) => {
+          // Update mobile buttons too
+          const loginLogoutBtnMobile = document.getElementById('loginLogoutBtnMobile');
+          const profileBtnMobile = document.getElementById('profileBtnMobile');
+          const myOrdersBtnMobile = document.getElementById('myOrdersBtnMobile');
+          const userEmailDisplayMobile = document.getElementById('userEmailDisplayMobile');
+          const cartCountMobile = document.getElementById('cartCountMobile');
+          
+          // Sync cart count
+          if (cartCountMobile) {
+            cartCountMobile.textContent = cartCountEl.textContent;
+          }
+          
+          if (user) {
+            // User is logged in (mobile updates)
+            if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Logout';
+            if (profileBtnMobile) profileBtnMobile.classList.remove('hidden');
+            if (myOrdersBtnMobile) myOrdersBtnMobile.classList.remove('hidden');
+            if (userEmailDisplayMobile) {
+              userEmailDisplayMobile.textContent = user.displayName || user.email || 'User';
+              userEmailDisplayMobile.classList.remove('hidden');
+            }
+          } else {
+            // User is logged out (mobile updates)
+            if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Login';
+            if (profileBtnMobile) profileBtnMobile.classList.add('hidden');
+            if (myOrdersBtnMobile) myOrdersBtnMobile.classList.add('hidden');
+            if (userEmailDisplayMobile) {
+              userEmailDisplayMobile.classList.add('hidden');
+            }
+          }
+        });
+      }
     </script>
   </body>
 </html>
