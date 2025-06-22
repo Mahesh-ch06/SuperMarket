@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+    <link
+      rel="stylesheet"
+      as="style"
+      onload="this.rel='stylesheet'"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700"
+    />
+
+    <title>FreshMart</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      /* Custom styles for the modal */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1000; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .close-button {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+      .close-button:hover,
+      .close-button:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+      <div class="layout-container flex h-full grow flex-col">
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+          <div class="flex items-center gap-4 text-[#111813]">
+            <div class="size-4">
+              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+            </div>
+            <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
+          </div>
+          <div class="flex flex-1 justify-end gap-4 sm:gap-8">
+            <nav class="flex items-center gap-4 sm:gap-9">
+              <a class="text-[#111813] text-sm font-medium leading-normal" href="#" id="navShop">Shop</a>
+              <a class="text-[#111813] text-sm font-medium leading-normal" href="#" id="navDeals">Deals</a>
+              <a class="text-[#111813] text-sm font-medium leading-normal" href="#" id="navRecipes">Recipes</a>
+              <a class="text-[#111813] text-sm font-medium leading-normal" href="#" id="navAboutUs">About Us</a>
+            </nav>
+            <div class="flex gap-2">
+              <button
+                id="loginBtn"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">Login</span>
+              </button>
+              <button
+                id="cartBtn"
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
+              </button>
+            </div>
+          </div>
+        </header>
+        <div class="px-4 flex flex-1 justify-center py-5 sm:px-40">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <div class="@container">
+              <div class="@[480px]:p-4">
+                <div
+                  class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-4 pb-10 @[480px]:px-10"
+                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOP3jqOqhCKiAVW8Wt-oiwgBN0jGojNIo4iIJsZ-Wmi1A30queaycpK614tuFvKsBS6Yb0g1A0WJfc5W9eQwxEj0CzE0s_f5PmIjfY0bqh6OfQ4OMcO6W4fVxVYeNU14n6d0lmqMyq6kwT9uDOwWcDBm6BqhjGuYzXpfmB1jsNmvQCF8CDLooA2nc5W_XD3_MoKDYsBVnAku1FWaY8QNVUQrlOIWYpGi5x_WpfADbWX3AO8ITbtKkG6xZXU1c1aE6BeJi82TJ564MM");'
+                >
+                  <div class="flex flex-col gap-2 text-left">
+                    <h1
+                      class="text-white text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
+                    >
+                      Fresh Groceries Delivered to Your Doorstep
+                    </h1>
+                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                      Get everything you need, from farm-fresh produce to daily essentials – delivered fast and fresh.
+                    </h2>
+                  </div>
+                  <button
+                    id="heroShopNowBtn"
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em]"
+                  >
+                    <span class="truncate">Shop Now</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Products</h2>
+            <div class="flex overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div class="flex items-stretch p-4 gap-3">
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8dLspY1cCnj8epLZuHgjv3FNaxZR0IjLvpUmtTgVEXIq0B8_Jemcm40cb8hqs2lCQvJYrNJOHBuO7KtJ_dfQbdcJr59MGfSBZy8AafTF0lTXbLXWqoW522KgjCi4ESBiax-o02zJZUfbj1sqQDRh6iWPDrcG9bmQj8xGNzFX3YoC96ZVkGL1MWXjeNUENBCanGDojMjX1brdH_44eQQusYk8RhDGkiIUvqJVQj8t-YqnSfsRggt0lj87DTThhOjnkJyQqwwaEYc7q");'
+                  ></div>
+                  <p class="text-[#111813] text-base font-medium leading-normal">Vegetables</p>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPcN3sG6A2VTHL7nynS4nruCdwIciSKtncs1KCXnKjU9b5L-oEr7QNnRIoy9dXKwPEoqtpADivAFwWGEl8qyP1ghl11NGmoLQnFoz_EsdaQUpTOBflAnqsPh7gZgMuBx9AHwexVzUEYQYxJNtBqnH1tpMjkh8veREveMyoDucuOIGUDWPguSQ0vdJ4R9AweM4jrLavd9y5V52jbkOog3uYjhjao-pz2q80aoGAPGGxE8MCGAfshGhFHgdh_HLIiyMCDbtOv73DflcD");'
+                  ></div>
+                  <p class="text-[#111813] text-base font-medium leading-normal">Dairy</p>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDbhtun9NkJ7GoSeOabCyb0JlGEhQso--pgbiK2Nwm4sSVaCLdl5ZLIM2y6zhNE6Sdc6nsrcEaiBEO7xKqmC1M1pvUR_r1RWWJwZUUwSkZRSrBjyw3KIUYU6gc6rDHS0ZaajtAhGWUHfy4oRQXpURWdudLNj1lClUvSB4_98JXXdIfwjfVVxF8iL_OmF3uw88D94rMMbIPyl-88vthBKAaGWwlHs9UKb4PsiO4PWpdLsV5j7peILcIufo8yIE2NwvxUxrOWkb9DfLtH");'
+                  ></div>
+                  <p class="text-[#111813] text-base font-medium leading-normal">Snacks</p>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-lg min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAKj0JM2qEcwYzwUbHQTIHZTwiPLC3giwXIq7QK72NBbKPR6OWFxtrPU-MywkJcKVALHb39XQEehwaIqWatRArddXyS79ougt6sbBhPAy7OXSTcdbi_QqQGe4TTAWF_EhqJFgjY8Yap8msh_vIVbyKn4pLvdf-V70DCt3lbPveq-F4Kl-QtYzO7vq-ZN4WncKr-wF8PTGUrYZaZrjOFsPvXoMaZE1p1c4eQ3gP6Nbts-dsMxqrP-7R63w1sLLrDCYyZ4C2nB_l4l3rg");'
+                  ></div>
+                  <p class="text-[#111813] text-base font-medium leading-normal">Beverages</p>
+                </div>
+              </div>
+            </div>
+            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Deals</h2>
+            <div class="flex overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div class="flex items-stretch p-4 gap-3">
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACR44YXWYar8eIAYkSIsxvDCiI9EQmWUi6OtNlN1sEEsm0zI5pby_yHGoT8fOdH9EExxMHOV-fKRzbV1JT8H3bd5hFc6eZPMa534g9oWS0mSVj09yxwue2C8OvPod5DF7jcY10zOF0DmFXjLZehzEnyM8VG_Fx1TwU9aIGuzib8n_yGSDOhnBWZjkymyM44XlDAVHt3LB2EBDDiLTtf3I5LPp-PRsud7g_rPxmG7dA1n7FjDqldtDyKMoCZujAdFxW17VXWJVL3GcE");'
+                  ></div>
+                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
+                    <div>
+                      <p class="text-[#111813] text-base font-medium leading-normal">Apples - 20% Off</p>
+                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Fresh Gala Apples</p>
+                    </div>
+                    <button
+                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                      data-item-name="Apples" data-item-price="1.99"
+                    >
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgp6O0riMZiO7xiHQAtTt0eq4IJ_q2nPCG9YcMobtR0zEes1nAh6tk4YMA8wtlbwZhUv_5xfRxa5h5PC2Asp3eW27TxjfhspiAI0XbBkeGdoudmz8LB6QPDDDWtcYY3Mxhhr5TxwCFG-MD4G7qaB-V6fDWTsz29HhC8rGlWW8MygnBY35oRVZOg4_-U7skhxHdH41OqAvr6motVNGlqd1nTnAmmC5Sim-lQE6pG6C6lQSxcL7sRBcCSG83gxV1teNiDbYS0qTmEDDq");'
+                  ></div>
+                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
+                    <div>
+                      <p class="text-[#111813] text-base font-medium leading-normal">Milk - 15% Off</p>
+                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Organic Whole Milk</p>
+                    </div>
+                    <button
+                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                      data-item-name="Milk" data-item-price="3.49"
+                    >
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACOynmXRk-AOtaAN6YJ1dxh3U_KzFUMQxUxkv6aYsfvZ6YJKLNotmmkTbtquzcgNK60_72uka196QaXo3Eb2PQ_z4p0BniTyVJGh5DmqHEXTzNpa7VSu2xyDdWVxc0EqXx7LjdK0me1SRdu6c9NeJHOedwtuNOfvTcYc1O41ztlxV3Am5YwwCo2ibD7wnaHdgFVZJ97g7HmRXV_3t4ZjcemMX3CFguzThVIaXYOZNPvM-YHfTEulvIM-eoxGzk-MqaM03ClZ3B1LgR");'
+                  ></div>
+                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
+                    <div>
+                      <p class="text-[#111813] text-base font-medium leading-normal">Chips - 25% Off</p>
+                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Assorted Potato Chips</p>
+                    </div>
+                    <button
+                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                      data-item-name="Chips" data-item-price="2.25"
+                    >
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
+                  <div
+                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApuak_2AVGPbGSOZz5lLC7e3J3mv3NNcqhDrAyyEIWIUr2MidOS0Jsg9pj03tCrQRTZSW-mwNgMjyIeTRQYV_Bw1A3gYgZBbo_GpaAu5D07cMMSLC8jl7GTo3EzJzvf-480P6omMIc62DSkzSrXfbkcHAxYy3XJTiQnAY7NAjr_zCsme87mIr7v_EZZ-iStt5VMQ7EIU78MqJL3pwnF16VQ0kzhwyRRqgdvNV6rJmJmcEbkVZTS34r0pINM1lXxRkwCOQ22bniSsL3");'
+                  ></div>
+                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
+                    <div>
+                      <p class="text-[#111813] text-base font-medium leading-normal">Soda - 10% Off</p>
+                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Various Soda Flavors</p>
+                    </div>
+                    <button
+                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                      data-item-name="Soda" data-item-price="1.50"
+                    >
+                      <span class="truncate">Add to Cart</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Why Choose Us</h2>
+            <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[repeat(auto-fit,minmax(158px,1fr))]">
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
+                <div class="text-[#111813]" data-icon="Truck" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M247.42,117l-14-35A15.93,15.93,0,0,0,218.58,72H184V64a8,8,0,0,0-8-8H24A16,16,0,0,0,8,72V184a16,16,0,0,0,16,16H41a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,247.42,117ZM184,88h34.58l9.6,24H184ZM24,72H168v64H24ZM72,208a16,16,0,1,1,16-16A16,16,0,0,1,72,208Zm81-24H103a32,32,0,0,0-62,0H24V152H168v12.31A32.11,32.11,0,0,0,153,184Zm31,24a16,16,0,1,1,16-16A16,16,0,0,1,184,208Zm48-24H215a32.06,32.06,0,0,0-31-24V128h48Z"
+                    ></path>
+                  </svg>
+                </div>
+                <h2 class="text-[#111813] text-base font-bold leading-tight">Fast Delivery</h2>
+              </div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
+                <div class="text-[#111813]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
+                    ></path>
+                  </svg>
+                </div>
+                <h2 class="text-[#111813] text-base font-bold leading-tight">Best Prices</h2>
+              </div>
+              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
+                <div class="text-[#111813]" data-icon="Leaf" data-size="24px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                    <path
+                      d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49c.57,15.92,5.21,32,13.79,47.85l-19.51,19.5a8,8,0,0,0,11.32,11.32l19.5-19.51C81,210.73,97.09,215.37,113,215.94q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07ZM153.75,189.5c-22.75,13.78-49.68,14-76.71.77l88.63-88.62a8,8,0,0,0-11.32-11.32L65.73,179c-13.19-27-13-54,.77-76.71,22.09-36.47,74.6-56.44,141.31-54.06C210.2,114.89,190.22,167.41,153.75,189.5Z"
+                    ></path>
+                  </svg>
+                </div>
+                <h2 class="text-[#111813] text-base font-bold leading-tight">Eco-Friendly Packaging</h2>
+              </div>
+            </div>
+            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Customer Reviews</h2>
+            <div class="flex flex-col gap-8 overflow-x-hidden bg-[#f9fbfa] p-4">
+              <div class="flex flex-col gap-3 bg-[#f9fbfa]">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCcfJ-ILVRqRq2Spg6I5ygRNKVNMz4BR3xeeTARmdd8ZoQO__ZNPBJNAhQUiOVx8b2MuZ8sATIBiStSFXflji3oKfzGrBmruvrGXd-vH4SEQxkVs4hhhMSvIduCoiOieRwxpzuOGpeexmPZPl6wll5PaparSRxuSdWTmj-7DaEDL14DQY4i8qR0JEY9bJd1QrhWhVjUS7a8bz0OhLNxP-QSa5jSaTOoiZ8MJOQMNZoZ-wfSh1RHJsXP1igXGA0-KSPWzqIKLx7iMIW7");'
+                  ></div>
+                  <div class="flex-1">
+                    <p class="text-[#111813] text-base font-medium leading-normal">Olivia Carter</p>
+                    <p class="text-[#5e876d] text-sm font-normal leading-normal">2023-09-15</p>
+                  </div>
+                </div>
+                <div class="flex gap-0.5">
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-[#111813] text-base font-normal leading-normal">
+                  "I love the quality and freshness of the produce from FreshMart. The delivery is always on time, and the customer service is excellent!"
+                </p>
+              </div>
+              <div class="flex flex-col gap-3 bg-[#f9fbfa]">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBuPq60IIfmvgCmug0cJH9MdpxlZzZcX4WQKfMdfYKJapgALCgaetfPeV4R0FH0TqdmCikpT_Zk_zl2zKFh6LtjjUsMjEzNZu6lnn_DtmZptYo7ChTms-wg9rJvixAD6qjKDh4xViZhD9V7g2oVJV8bAenIXq14F9m7wEpGWjyJkvsx6hYXdN24cTkmx_DR9f57EJGG9M0iT7AbMCbmtOdX120WK25VrA8a4ALwt5OMUAwYCGM9ZlJsJwPOHeplG2rubuyzHr7e5hWZ");'
+                  ></div>
+                  <div class="flex-1">
+                    <p class="text-[#111813] text-base font-medium leading-normal">Liam Harper</p>
+                    <p class="text-[#5e876d] text-sm font-normal leading-normal">2023-08-22</p>
+                  </div>
+                </div>
+                <div class="flex gap-0.5">
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-[#111813] text-base font-normal leading-normal">
+                  "Great selection of products and competitive prices. The eco-friendly packaging is a big plus. Highly recommend!"
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <footer class="flex justify-center">
+          <div class="flex max-w-[960px] flex-1 flex-col">
+            <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40" href="#" id="footerContactUs">Contact Us</a>
+                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
+                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40" href="#" id="footerTermsOfService">Terms of Service</a>
+              </div>
+              <div class="flex flex-wrap justify-center gap-4">
+                <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                  <div class="text-[#5e876d]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+                <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                  <div class="text-[#5e876d]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+                <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                  <div class="text-[#5e876d]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                      <path
+                        d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"
+                      ></path>
+                    </svg>
+                  </div>
+                </a>
+              </div>
+              <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
+            </footer>
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Modal HTML -->
+    <div id="myModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <p id="modalMessage" class="text-lg font-medium text-[#111813]"></p>
+        <button id="modalOkBtn" class="mt-4 flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] mx-auto">
+          <span class="truncate">OK</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Global variable for cart count
+      let cartItems = [];
+
+      // Function to show custom modal
+      function showModal(message) {
+        const modal = document.getElementById('myModal');
+        const modalMessage = document.getElementById('modalMessage');
+        modalMessage.textContent = message;
+        modal.style.display = 'flex'; // Show the modal
+      }
+
+      // Function to close custom modal
+      function closeModal() {
+        const modal = document.getElementById('myModal');
+        modal.style.display = 'none'; // Hide the modal
+      }
+
+      // Add event listener to close button
+      document.querySelector('.close-button').addEventListener('click', closeModal);
+      document.getElementById('modalOkBtn').addEventListener('click', closeModal);
+
+      // Event listener for Login button (already present and functional)
+      document.getElementById("loginBtn").addEventListener("click", function() {
+        window.location.href = "login.html";
+      });
+
+      // Event listeners for navigation links
+      document.getElementById("navShop").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default anchor behavior
+        showModal("Navigating to Shop page!");
+        
+        // Add a slight delay so users can see the modal before redirecting
+        setTimeout(function() {
+          window.location.href = "shop.html";
+        }, 1500); // 1.5 second delay
+      });
+
+      document.getElementById("navDeals").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to Deals page!");
+        // window.location.href = "deals.html";
+      });
+
+      document.getElementById("navRecipes").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to Recipes page!");
+        // window.location.href = "recipes.html";
+      });
+
+      document.getElementById("navAboutUs").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to About Us page!");
+        // window.location.href = "about_us.html";
+      });
+
+      // Event listener for the main "Shop Now" button in the hero section
+      document.getElementById("heroShopNowBtn").addEventListener("click", function() {
+        showModal("Redirecting to the main Shop page!");
+        // In a real application, you would navigate to the shop page:
+        window.location.href = "shop.html";
+      });
+
+      // Event listeners for "Add to Cart" buttons
+      document.querySelectorAll(".add-to-cart-btn").forEach(button => {
+        button.addEventListener("click", function() {
+          const itemName = this.dataset.itemName;
+          const itemPrice = parseFloat(this.dataset.itemPrice);
+          cartItems.push({ name: itemName, price: itemPrice });
+          document.getElementById("cartCount").textContent = cartItems.length;
+          showModal(`${itemName} added to cart! Total items: ${cartItems.length}`);
+        });
+      });
+
+      // Event listener for the "Cart" button
+      document.getElementById("cartBtn").addEventListener("click", function() {
+        if (cartItems.length === 0) {
+          showModal("Your cart is empty.");
+        } else {
+          // You could display a detailed cart summary here in a more complex modal
+          const cartSummary = cartItems.map(item => `${item.name} ($${item.price.toFixed(2)})`).join(", ");
+          showModal(`Items in cart: ${cartItems.length}. Your items: ${cartSummary}.`);
+          // In a real application, you would navigate to a detailed cart page:
+          // window.location.href = "cart.html";
+        }
+      });
+
+      // Event listeners for footer links
+      document.getElementById("footerContactUs").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to Contact Us page!");
+      });
+
+      document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to Privacy Policy page!");
+      });
+
+      document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
+        event.preventDefault();
+        showModal("Navigating to Terms of Service page!");
+      });
+    </script>
+  </body>
+</html>

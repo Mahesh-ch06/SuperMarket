@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart - Shop</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    <style>
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        #searchInput {
+            padding-left: 2.5rem;
+        }
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+        .category-btn.active {
+            background-color: #6ec88e;
+            color: #111813;
+            font-weight: bold;
+        }
+        .wishlist-btn.active svg {
+            fill: #ef4444; /* red-500 */
+        }
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+             transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-[#f9fbfa]">
+
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="shop.html" class="flex items-center gap-3 text-[#111813]">
+                    <div class="size-5">
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                    </div>
+                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+                </a>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-9">
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <button id="wishlist-btn-header" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] flex items-center gap-1">
+                        Wishlist (<span id="wishlist-count">0</span>)
+                    </button>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="#">Deals</a>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <a href="cart.html" id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-200 text-[#111813] text-sm font-bold tracking-[0.015em]">
+                        <span>Cart (<span id="cartCount">0</span>)</span>
+                    </a>
+                    <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white z-50 shadow-lg transform translate-x-full lg:hidden">
+            <div class="p-4">
+                 <button id="close-menu-button" class="float-right p-2 text-gray-700 hover:bg-gray-200 rounded-md">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                 </button>
+                <nav class="mt-12 flex flex-col gap-6">
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">Home</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <button id="wishlist-btn-mobile" class="text-[#111813] text-lg font-medium hover:text-[#6ec88e] text-left">Wishlist</button>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">Deals</a>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            <div class="px-4 sm:px-6 lg:px-8 py-5">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Category Filters -->
+                    <div class="py-5">
+                        <h3 class="text-xl font-bold text-[#111813] mb-4">Categories</h3>
+                        <div id="category-filters" class="flex flex-wrap gap-2">
+                           <!-- Category buttons will be dynamically inserted here -->
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 py-5 border-t">
+                        <h2 class="text-[#111813] text-2xl md:text-3xl font-bold tracking-tight">All Products</h2>
+                        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                            <div class="relative w-full sm:w-48">
+                                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+                                <input type="text" id="searchInput" placeholder="Search..." class="w-full h-10 px-4 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6ec88e]">
+                            </div>
+                            <select id="sortOptions" class="h-10 px-4 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6ec88e] w-full sm:w-auto">
+                                <option value="default">Sort by</option>
+                                <option value="price-asc">Price: Low to High</option>
+                                <option value="price-desc">Price: High to Low</option>
+                                <option value="name-asc">Name: A-Z</option>
+                                <option value="name-desc">Name: Z-A</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Product cards will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t">
+            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center">
+                <div class="flex justify-center gap-x-6 sm:gap-x-12 mb-6">
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Terms of Service</a>
+                </div>
+                <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Generic Modal Wrapper -->
+    <div id="modal-wrapper" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 hidden opacity-0">
+        <div id="modal-content" class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md m-auto transform -translate-y-10">
+            <!-- Modal content will be injected here -->
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA ---
+    const products = [
+        { id: 1, name: 'Organic Carrots', price: 120.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/F9A825/333?text=Carrots', description: 'Fresh, crunchy organic carrots, packed with beta-carotene.' },
+        { id: 2, name: 'Farm Fresh Eggs', price: 90.00, unit: 'dozen', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/F5F5F5/333?text=Eggs', description: 'Free-range eggs from happy chickens, perfect for any meal.' },
+        { id: 3, name: 'Whole Wheat Bread', price: 60.00, unit: 'loaf', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/8D6E63/FFF?text=Bread', description: 'Hearty and healthy whole wheat bread, baked fresh daily.' },
+        { id: 4, name: 'Fresh Apple Juice', price: 150.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/EF5350/FFF?text=Juice', description: '100% pure pressed apple juice with no added sugar.' },
+        { id: 5, name: 'Ripe Tomatoes', price: 80.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/D32F2F/FFF?text=Tomatoes', description: 'Juicy, ripe tomatoes, ideal for salads, sauces, and sandwiches.' },
+        { id: 6, name: 'Cheddar Cheese', price: 250.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFC107/333?text=Cheese', description: 'A sharp and creamy cheddar, aged for a full flavour.' },
+        { id: 7, name: 'Spicy Potato Chips', price: 40.00, unit: 'pack', category: 'Snacks', image: 'https://placehold.co/400x400/FF7043/FFF?text=Chips', description: 'Crispy potato chips with a fiery kick of spice.' },
+        { id: 8, name: 'Mineral Water', price: 20.00, unit: 'bottle', category: 'Beverages', image: 'https://placehold.co/400x400/4FC3F7/FFF?text=Water', description: 'Pure mineral water sourced from pristine springs.' },
+        { id: 9, name: 'Green Leaf Lettuce', price: 50.00, unit: 'head', category: 'Vegetables', image: 'https://placehold.co/400x400/66BB6A/FFF?text=Lettuce', description: 'Crisp and fresh green leaf lettuce for the perfect salad base.' },
+        { id: 10, name: 'Organic Bananas', price: 70.00, unit: 'dozen', category: 'Fruits', image: 'https://placehold.co/400x400/FFEE58/333?text=Bananas', description: 'Sweet and creamy organic bananas, rich in potassium.' },
+        { id: 11, name: 'Greek Yogurt', price: 180.00, unit: '500g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/E0E0E0/333?text=Yogurt', description: 'Thick and creamy Greek yogurt, high in protein.' },
+        { id: 12, name: 'Almond Milk', price: 220.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/D7CCC8/333?text=Almond+Milk', description: 'A delicious and dairy-free alternative to milk.' },
+        { id: 13, name: 'Fresh Salmon Fillet', price: 800.00, unit: 'kg', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFA07A/FFF?text=Salmon', description: 'Rich in Omega-3, this salmon fillet is fresh from the sea.' },
+        { id: 14, name: 'Quinoa', price: 350.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FBC02D/333?text=Quinoa', description: 'A nutritious and versatile grain, perfect for salads and sides.' },
+        { id: 15, name: 'Avocado', price: 95.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/558B2F/FFF?text=Avocado', description: 'Creamy and nutritious avocados, great for toast or guacamole.' },
+        { id: 16, name: 'Blueberries', price: 400.00, unit: '125g', category: 'Fruits', image: 'https://placehold.co/400x400/3F51B5/FFF?text=Blueberries', description: 'Sweet and juicy blueberries, packed with antioxidants.' },
+        { id: 17, name: 'Dark Chocolate', price: 300.00, unit: '100g', category: 'Snacks', image: 'https://placehold.co/400x400/4E342E/FFF?text=Chocolate', description: 'Rich, indulgent dark chocolate with 70% cocoa.' },
+        { id: 18, name: 'Oats', price: 130.00, unit: '1kg', category: 'Pantry Staples', image: 'https://placehold.co/400x400/E6D5B8/333?text=Oats', description: 'Heart-healthy rolled oats for a warm and nutritious breakfast.' },
+        { id: 19, name: 'Chicken Breast', price: 450.00, unit: 'kg', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFE0B2/333?text=Chicken', description: 'Lean and tender chicken breast, perfect for grilling or roasting.' },
+        { id: 20, name: 'Broccoli', price: 110.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/2E7D32/FFF?text=Broccoli', description: 'Fresh broccoli florets, a great source of vitamins.' },
+        { id: 21, name: 'Pasta', price: 90.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FDD835/333?text=Pasta', description: 'Classic Italian pasta, the perfect canvas for your favorite sauce.' },
+        { id: 22, name: 'Olive Oil', price: 650.00, unit: '500ml', category: 'Pantry Staples', image: 'https://placehold.co/400x400/C0CA33/333?text=Olive+Oil', description: 'Extra virgin olive oil with a rich, fruity flavor.' },
+        { id: 23, name: 'Cucumber', price: 45.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/4CAF50/FFF?text=Cucumber', description: 'Cool and refreshing cucumbers, perfect for salads and drinks.' },
+        { id: 24, name: 'Red Onion', price: 65.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/880E4F/FFF?text=Onion', description: 'Crisp red onions with a mild, sweet flavor.' },
+        { id: 25, name: 'Garlic', price: 200.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/F5F5DC/333?text=Garlic', description: 'Aromatic garlic to add a punch of flavor to any dish.' }
+    ];
+    
+    // --- STATE ---
+    let cartItems = [];
+    let wishlistItems = [];
+    let activeCategory = 'All';
+
+    // --- DOM ELEMENTS ---
+    const productGrid = document.getElementById('product-grid');
+    const cartCountEl = document.getElementById('cartCount');
+    const wishlistCountEl = document.getElementById('wishlist-count');
+    const searchInput = document.getElementById('searchInput');
+    const sortOptions = document.getElementById('sortOptions');
+    const categoryFiltersContainer = document.getElementById('category-filters');
+    const modalWrapper = document.getElementById('modal-wrapper');
+    const modalContent = document.getElementById('modal-content');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeMenuButton = document.getElementById('close-menu-button');
+
+    // --- RENDER FUNCTIONS ---
+    function renderProducts() {
+        productGrid.innerHTML = '';
+        const searchTerm = searchInput.value.toLowerCase();
+        const sortValue = sortOptions.value;
+
+        // 1. Filter by category
+        let filteredProducts = products;
+        if (activeCategory !== 'All') {
+            filteredProducts = products.filter(p => p.category === activeCategory);
+        }
+
+        // 2. Filter by search term
+        if (searchTerm) {
+            filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+        }
+
+        // 3. Sort
+        switch (sortValue) {
+            case 'price-asc': filteredProducts.sort((a, b) => a.price - b.price); break;
+            case 'price-desc': filteredProducts.sort((a, b) => b.price - a.price); break;
+            case 'name-asc': filteredProducts.sort((a, b) => a.name.localeCompare(b.name)); break;
+            case 'name-desc': filteredProducts.sort((a, b) => b.name.localeCompare(a.name)); break;
+        }
+
+        // 4. Render
+        const cartIds = cartItems.map(item => item.id);
+        const wishlistIds = wishlistItems.map(item => item.id);
+
+        filteredProducts.forEach(product => {
+            const isInCart = cartIds.includes(product.id);
+            const isInWishlist = wishlistIds.includes(product.id);
+            const cartButtonDisabled = isInCart ? 'disabled' : '';
+            const cartButtonText = isInCart ? 'In Cart' : 'Add to Cart';
+            const cartButtonClass = isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#eaf0ec] hover:bg-gray-200';
+            const wishlistButtonClass = isInWishlist ? 'active' : '';
+
+            const productCard = `
+                <div class="flex flex-col rounded-xl bg-white shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 group">
+                    <div class="relative w-full h-48 bg-center bg-cover" style='background-image: url("${product.image}");'>
+                        <button class="wishlist-btn absolute top-2 right-2 p-2 bg-white/70 rounded-full text-gray-700 hover:text-red-500 ${wishlistButtonClass}" data-product-id="${product.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex flex-col flex-1 p-4">
+                        <div class="flex-1">
+                            <p class="text-[#111813] font-medium truncate">${product.name}</p>
+                            <p class="text-[#5e876d] text-sm">₹${product.price.toFixed(2)} / ${product.unit}</p>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                             <button class="quick-view-btn flex-1 rounded-xl h-10 px-4 text-[#111813] text-sm font-bold bg-white border border-gray-300 hover:bg-gray-100" data-product-id="${product.id}">Quick View</button>
+                             <button class="add-to-cart-btn flex-1 rounded-xl h-10 px-4 text-[#111813] text-sm font-bold ${cartButtonClass}" data-product-id="${product.id}" ${cartButtonDisabled}>
+                                <span>${cartButtonText}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            productGrid.insertAdjacentHTML('beforeend', productCard);
+        });
+        addEventListenersToCards();
+    }
+
+    function renderCategories() {
+        const categories = ['All', ...new Set(products.map(p => p.category))];
+        categoryFiltersContainer.innerHTML = '';
+        categories.forEach(category => {
+            const isActive = category === activeCategory ? 'active' : '';
+            const button = `
+                <button class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 ${isActive}" data-category="${category}">
+                    ${category}
+                </button>`;
+            categoryFiltersContainer.insertAdjacentHTML('beforeend', button);
+        });
+
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                activeCategory = button.dataset.category;
+                document.querySelector('.category-btn.active')?.classList.remove('active');
+                button.classList.add('active');
+                renderProducts();
+            });
+        });
+    }
+
+    // --- MODAL FUNCTIONS ---
+    function openModal(content) {
+        modalContent.innerHTML = content;
+        modalWrapper.classList.remove('hidden');
+        setTimeout(() => {
+            modalWrapper.classList.remove('opacity-0');
+            modalContent.classList.remove('-translate-y-10');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalWrapper.classList.add('opacity-0');
+        modalContent.classList.add('-translate-y-10');
+        setTimeout(() => {
+            modalWrapper.classList.add('hidden');
+            modalContent.innerHTML = '';
+        }, 300);
+    }
+
+    function showQuickView(productId) {
+        const product = products.find(p => p.id === productId);
+        if(!product) return;
+        
+        const isInCart = cartItems.some(item => item.id === productId);
+        const cartButtonDisabled = isInCart ? 'disabled' : '';
+        const cartButtonText = isInCart ? 'In Cart' : 'Add to Cart';
+        const cartButtonClass = isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#6ec88e] hover:bg-green-600';
+
+        const modalHTML = `
+            <div class="p-6 relative">
+                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">${product.name}</h3>
+                <p class="text-[#5e876d] text-lg font-medium mb-2">₹${product.price.toFixed(2)} / ${product.unit}</p>
+                <p class="text-gray-600 mb-6">${product.description}</p>
+                <button class="add-to-cart-btn-modal w-full rounded-xl h-12 px-4 text-white text-base font-bold ${cartButtonClass}" data-product-id="${product.id}" ${cartButtonDisabled}>
+                    ${cartButtonText}
+                </button>
+            </div>`;
+        openModal(modalHTML);
+    }
+    
+    function showWishlist() {
+        let modalHTML = `
+            <div class="p-6 relative">
+                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Your Wishlist</h3>
+                <div id="wishlist-items-container" class="space-y-4 max-h-96 overflow-y-auto">
+        `;
+        
+        if (wishlistItems.length === 0) {
+            modalHTML += `<p class="text-gray-500">You haven't added any items to your wishlist yet.</p>`;
+        } else {
+            wishlistItems.forEach(item => {
+                modalHTML += `
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-md object-cover">
+                            <div>
+                                <p class="font-medium text-gray-800">${item.name}</p>
+                                <p class="text-sm text-gray-500">₹${item.price.toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                             <button class="add-from-wishlist-btn text-xs font-bold bg-[#6ec88e] text-black py-1 px-2 rounded-md hover:bg-green-600" data-product-id="${item.id}">Add to Cart</button>
+                             <button class="remove-from-wishlist-btn text-xs font-bold bg-red-100 text-red-600 py-1 px-2 rounded-md hover:bg-red-200" data-product-id="${item.id}">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        modalHTML += `</div></div>`;
+        openModal(modalHTML);
+    }
+    
+    // --- CART, WISHLIST & STORAGE FUNCTIONS ---
+    function updateCounts() {
+        cartCountEl.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+        wishlistCountEl.textContent = wishlistItems.length;
+    }
+
+    function saveData() {
+        localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
+        localStorage.setItem('freshmartWishlist', JSON.stringify(wishlistItems));
+    }
+
+    function loadData() {
+        cartItems = JSON.parse(localStorage.getItem('freshmartCart')) || [];
+        wishlistItems = JSON.parse(localStorage.getItem('freshmartWishlist')) || [];
+        updateCounts();
+    }
+
+    function addToCart(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+
+        const existingItem = cartItems.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity++;
+        } else {
+            cartItems.push({ ...product, quantity: 1 });
+        }
+        
+        updateCounts();
+        saveData();
+        renderProducts(); // Re-render to update button state
+    }
+
+    function toggleWishlist(productId) {
+        const product = products.find(p => p.id === productId);
+        if (!product) return;
+        
+        const itemIndex = wishlistItems.findIndex(item => item.id === productId);
+        if (itemIndex > -1) {
+            wishlistItems.splice(itemIndex, 1); // Remove from wishlist
+        } else {
+            wishlistItems.push(product); // Add to wishlist
+        }
+        
+        updateCounts();
+        saveData();
+        renderProducts();
+    }
+
+    // --- EVENT LISTENERS ---
+    function addEventListenersToCards() {
+        document.querySelectorAll(".add-to-cart-btn").forEach(b => b.addEventListener("click", (e) => addToCart(parseInt(e.currentTarget.dataset.productId))));
+        document.querySelectorAll(".wishlist-btn").forEach(b => b.addEventListener("click", (e) => toggleWishlist(parseInt(e.currentTarget.dataset.productId))));
+        document.querySelectorAll(".quick-view-btn").forEach(b => b.addEventListener("click", (e) => showQuickView(parseInt(e.currentTarget.dataset.productId))));
+    }
+
+    modalWrapper.addEventListener('click', (e) => {
+        if (e.target === modalWrapper || e.target.closest('.modal-close-btn')) {
+            closeModal();
+        }
+        if (e.target.closest('.add-to-cart-btn-modal')) {
+            addToCart(parseInt(e.target.closest('.add-to-cart-btn-modal').dataset.productId));
+            closeModal();
+        }
+        if (e.target.closest('.add-from-wishlist-btn')) {
+             const btn = e.target.closest('.add-from-wishlist-btn');
+             addToCart(parseInt(btn.dataset.productId));
+             btn.textContent = 'Added!';
+             btn.disabled = true;
+        }
+        if (e.target.closest('.remove-from-wishlist-btn')) {
+             const productId = parseInt(e.target.closest('.remove-from-wishlist-btn').dataset.productId);
+             toggleWishlist(productId);
+             showWishlist(); // Re-render wishlist modal
+        }
+    });
+    
+    document.getElementById('wishlist-btn-header').addEventListener('click', showWishlist);
+    document.getElementById('wishlist-btn-mobile').addEventListener('click', showWishlist);
+    searchInput.addEventListener('input', renderProducts);
+    sortOptions.addEventListener('change', renderProducts);
+
+    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+    closeMenuButton.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+    
+    // --- INITIALIZATION ---
+    function init() {
+        loadData();
+        renderCategories();
+        renderProducts();
+    }
+    
+    init();
+});
+</script>
+
+</body>
+</html>

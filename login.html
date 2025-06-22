@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CodeCafe - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* Improved Autofill Styles for Webkit browsers */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #334155 inset !important; /* Tailwind slate-700 */
+            -webkit-text-fill-color: #f8fafc !important; /* Tailwind slate-50 */
+            caret-color: #f8fafc !important;
+        }
+        .tab-button.active {
+            border-color: #fb923c; /* Tailwind orange-400 */
+            color: #fb923c;
+        }
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; } /* green-500 */
+        .toast.error { background-color: #ef4444; } /* red-500 */
+        .toast.info { background-color: #3b82f6; } /* blue-500 */
+
+        /* Password visibility toggle icon */
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0.75rem; /* 12px */
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #9ca3af; /* gray-400 */
+        }
+        .password-toggle:hover {
+            color: #f8fafc; /* slate-50 */
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 to-slate-800 min-h-screen flex flex-col items-center justify-center p-4 text-slate-100">
+
+    <div id="toast-container"></div>
+
+    <div class="w-full max-w-md">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-orange-400">CodeCafe</h1>
+            <p class="text-slate-400 mt-1">Your coding journey starts here.</p>
+        </header>
+
+        <main id="auth-container" class="bg-slate-800 p-6 sm:p-8 rounded-xl shadow-2xl">
+            <div class="mb-6 border-b border-slate-700">
+                <nav class="-mb-px flex space-x-4" aria-label="Tabs">
+                    <button data-form="loginForm" class="tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                        Login
+                    </button>
+                    <button data-form="signupForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                        Sign Up
+                    </button>
+                    <button data-form="resetPasswordForm" class="tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm text-slate-300 hover:text-orange-400 hover:border-orange-400 transition-colors">
+                        Reset Password
+                    </button>
+                </nav>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <input type="email" id="loginEmail" name="loginEmail" placeholder="you@example.com" required
+                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium text-slate-300">Password</label>
+                    <div class="relative mt-1">
+                        <input type="password" id="loginPassword" name="loginPassword" placeholder="••••••••" required
+                                class="block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                        <span class="password-toggle" onclick="togglePasswordVisibility('loginPassword', this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="text-right text-sm">
+                    <a href="#" id="showResetPasswordFromLogin" class="font-medium text-orange-400 hover:text-orange-300 transition-colors">Forgot password?</a>
+                </div>
+                <button type="submit"
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    Login
+                </button>
+            </form>
+
+            <form id="signupForm" class="space-y-6 hidden">
+                <div>
+                    <label for="signupEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <input type="email" id="signupEmail" name="signupEmail" placeholder="you@example.com" required
+                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label for="signupUsername" class="block text-sm font-medium text-slate-300">Username</label>
+                    <input type="text" id="signupUsername" name="signupUsername" placeholder="Choose a username" required
+                           class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                </div>
+                <div>
+                    <label for="signupPassword" class="block text-sm font-medium text-slate-300">Password</label>
+                        <div class="relative mt-1">
+                        <input type="password" id="signupPassword" name="signupPassword" placeholder="Create a strong password (min. 6 chars)" required
+                                class="block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                        <span class="password-toggle" onclick="togglePasswordVisibility('signupPassword', this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+                        </span>
+                    </div>
+                </div>
+                <button type="submit"
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    Create Account
+                </button>
+            </form>
+
+            <form id="resetPasswordForm" class="space-y-6 hidden">
+                <div>
+                    <label for="resetEmail" class="block text-sm font-medium text-slate-300">Email address</label>
+                    <input type="email" id="resetEmail" name="resetEmail" placeholder="Enter your registered email" required
+                            class="mt-1 block w-full px-3 py-2.5 bg-slate-700 border border-slate-600 rounded-md text-sm shadow-sm placeholder-slate-400 text-slate-50 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500">
+                </div>
+                <button type="submit"
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    Send Password Reset Link
+                </button>
+            </form>
+
+            <div class="my-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-slate-600"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2 bg-slate-800 text-slate-400">Or continue with</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button id="googleLoginButton"
+                        class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-600 rounded-md shadow-sm bg-slate-700 text-sm font-medium text-slate-50 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5 mr-2" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 0C4.477 0 0 4.477 0 10s4.477 10 10 10 10-4.477 10-10S15.523 0 10 0zM8.28 16.338A5.952 5.952 0 015.706 10c0-1.939.917-3.663 2.323-4.795.152-.123.3-.258.44-.396A5.92 5.92 0 0110 4.048c.454 0 .89.057 1.304.162l-.992 1.717A3.98 3.98 0 0010 5.952c-1.939 0-3.552 1.365-3.92 3.162h2.688V10.5H6.08c.048.48.144.94.288 1.366a3.94 3.94 0 001.912 2.472zm3.44-6.546L10 8.075V6.15c.939 0 2.344.465 2.344 2.344 0 .585-.152 1.113-.423 1.569l1.458.843A5.907 5.907 0 0015.952 10a5.925 5.925 0 00-1.18-3.662l-.047-.063a5.955 5.955 0 00-3.005-2.475v-.002H11.72c-.047 0-.093 0-.14 0H10c-.396 0-.78.047-1.152.14l.78.78c.12-.03.24-.06.36-.06.54 0 1.05.15 1.48.42l1.29-1.29A5.916 5.916 0 0010 4.048a5.916 5.916 0 00-4.294 1.728l-.63.63A5.92 5.92 0 004.048 10c0 .454.057.89.162 1.304l1.717-.992A3.98 3.98 0 015.952 10c0-1.939 1.365-3.552 3.162-3.92V8.72c.48-.048.94-.144 1.366-.288a3.94 3.94 0 012.472 1.912z" clip-rule="evenodd"/>
+                    </svg>
+                    Sign in with Google
+                </button>
+                <button id="phoneLoginButton"
+                        class="w-full flex items-center justify-center py-2.5 px-4 border border-slate-600 rounded-md shadow-sm bg-slate-700 text-sm font-medium text-slate-50 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-orange-500 transition-colors">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                    </svg>
+                    Sign in with Phone
+                </button>
+            </div>
+        </main>
+        <footer class="text-center mt-8 text-sm text-slate-500">
+            <p>&copy; <span id="currentYear"></span> CodeCafe. All rights reserved. Powered by Firebase.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            sendEmailVerification,
+            sendPasswordResetEmail,
+            signInWithPopup,
+            GoogleAuthProvider,
+            signOut,
+            updateProfile // Import updateProfile
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+        // --- Firebase Configuration ---
+        // IMPORTANT: Replace with your actual Firebase configuration
+        const firebaseConfig = {
+  apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+  authDomain: "portfolio-56be7.firebaseapp.com",
+  projectId: "portfolio-56be7",
+  storageBucket: "portfolio-56be7.firebasestorage.app",
+  messagingSenderId: "888511551571",
+  appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+  measurementId: "G-X3CYL9YZR1"
+};
+    
+
+        // --- Initialize Firebase ---
+        let app;
+        let auth;
+        let googleProvider;
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            googleProvider = new GoogleAuthProvider();
+            console.log("Firebase initialized successfully.");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showToast(`Critical Error: Firebase init failed. ${error.message}`, "error", 10000);
+            // Disable all forms if Firebase fails
+            document.querySelectorAll('form button[type="submit"], #googleLoginButton, #phoneLoginButton').forEach(btn => btn.disabled = true);
+        }
+
+
+        // --- DOM Elements ---
+        const loginFormEl = document.getElementById("loginForm");
+        const signupFormEl = document.getElementById("signupForm");
+        const resetPasswordFormEl = document.getElementById("resetPasswordForm");
+        
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const allForms = [loginFormEl, signupFormEl, resetPasswordFormEl];
+
+        const googleLoginButtonEl = document.getElementById("googleLoginButton");
+        const phoneLoginButtonEl = document.getElementById("phoneLoginButton");
+        const showResetPasswordLinkEl = document.getElementById("showResetPasswordFromLogin");
+
+        // --- Toast Notification System ---
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
+
+        // --- Password Visibility Toggle ---
+        window.togglePasswordVisibility = (fieldId, iconElement) => {
+            const passwordField = document.getElementById(fieldId);
+            const isPassword = passwordField.type === "password";
+            passwordField.type = isPassword ? "text" : "password";
+            iconElement.innerHTML = isPassword ?
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" /></svg>` : // Eye slash
+                `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>`; // Eye
+        };
+
+        // --- Form Helper: Set Loading State ---
+        function setFormLoading(formElement, isLoading, baseButtonText) {
+            const button = formElement.querySelector('button[type="submit"]');
+            if (button) {
+                button.disabled = isLoading;
+                button.textContent = isLoading ? 'Processing...' : baseButtonText;
+            }
+        }
+        function setButtonLoading(buttonElement, isLoading, baseButtonText) {
+            if (buttonElement) {
+                buttonElement.disabled = isLoading;
+                const svgIcon = buttonElement.querySelector('svg');
+                if (isLoading) {
+                    buttonElement.innerHTML = 'Processing...';
+                } else {
+                    buttonElement.innerHTML = ''; // Clear current content
+                    if(svgIcon) buttonElement.appendChild(svgIcon); // Add icon back if it exists
+                    buttonElement.appendChild(document.createTextNode(baseButtonText));
+                }
+            }
+        }
+
+
+        // --- Tab Switching Logic ---
+        function switchTab(targetFormId) {
+            allForms.forEach(form => {
+                if (form) form.classList.toggle('hidden', form.id !== targetFormId);
+            });
+            tabButtons.forEach(button => {
+                button.classList.toggle('active', button.dataset.form === targetFormId);
+            });
+        }
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => switchTab(button.dataset.form));
+        });
+        
+        if (showResetPasswordLinkEl) {
+            showResetPasswordLinkEl.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchTab('resetPasswordForm');
+            });
+        }
+
+        // --- Redirect Function ---
+        function redirectToDashboard() {
+            showToast("Redirecting to dashboard...", "info", 2000);
+            setTimeout(() => {
+                window.location.href = "https://mahesh06.me/chatbot/"; // Example redirect URL
+            }, 1500);
+        }
+
+        // --- Event Handlers (only if auth is initialized) ---
+        if (auth) {
+            // Login
+            loginFormEl?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const email = loginFormEl.loginEmail.value;
+                const password = loginFormEl.loginPassword.value;
+                setFormLoading(loginFormEl, true, "Login");
+                try {
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    if (!userCredential.user.emailVerified) {
+                        showToast("Please verify your email before logging in. Verification email resent if possible.", "info", 5000);
+                        await sendEmailVerification(userCredential.user).catch(err => console.warn("Error resending verification email:", err));
+                        await signOut(auth); // Sign out user if email not verified
+                    } else {
+                        showToast(`Login successful! Welcome back.`, "success");
+                        redirectToDashboard();
+                    }
+                } catch (error) {
+                    console.error("Login error:", error);
+                    showToast(`Login failed: ${error.message}`, "error");
+                } finally {
+                    setFormLoading(loginFormEl, false, "Login");
+                }
+            });
+
+            // Signup
+            signupFormEl?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const email = signupFormEl.signupEmail.value;
+                const username = signupFormEl.signupUsername.value; // Get username
+                const password = signupFormEl.signupPassword.value;
+
+                if (!username.trim()) {
+                    showToast("Username is required.", "error");
+                    return;
+                }
+                if (password.length < 6) {
+                    showToast("Password should be at least 6 characters long.", "error");
+                    return;
+                }
+                setFormLoading(signupFormEl, true, "Create Account");
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    
+                    // After user is created, update their profile with the displayName
+                    await updateProfile(userCredential.user, {
+                        displayName: username
+                    });
+                    
+                    await sendEmailVerification(userCredential.user);
+                    showToast("Signup successful! Please check your email to verify your account.", "success", 6000);
+                    // Optionally clear form or switch tab
+                    signupFormEl.reset(); // Clear the form
+                    switchTab('loginForm'); 
+                } catch (error) {
+                    console.error("Signup error:", error);
+                    showToast(`Signup failed: ${error.message}`, "error");
+                } finally {
+                    setFormLoading(signupFormEl, false, "Create Account");
+                }
+            });
+
+            // Reset Password
+            resetPasswordFormEl?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const email = resetPasswordFormEl.resetEmail.value;
+                setFormLoading(resetPasswordFormEl, true, "Send Password Reset Link");
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    showToast("Password reset email sent! Please check your inbox.", "success", 6000);
+                    switchTab('loginForm');
+                } catch (error) {
+                    console.error("Password reset error:", error);
+                    showToast(`Password reset failed: ${error.message}`, "error");
+                } finally {
+                    setFormLoading(resetPasswordFormEl, false, "Send Password Reset Link");
+                }
+            });
+
+            // Google Login
+            googleLoginButtonEl?.addEventListener("click", async () => {
+                setButtonLoading(googleLoginButtonEl, true, "Sign in with Google");
+                try {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    showToast(`Signed in with Google as ${result.user.displayName || 'User'}!`, "success");
+                    redirectToDashboard();
+                } catch (error) {
+                    console.error("Google sign-in error:", error);
+                    if (error.code === 'auth/popup-closed-by-user') {
+                        showToast("Google sign-in cancelled.", "info");
+                    } else if (error.code === 'auth/network-request-failed') {
+                         showToast("Network error. Please check your connection and try again.", "error");
+                    } else {
+                        showToast(`Google sign-in failed: ${error.message}`, "error");
+                    }
+                } finally {
+                    setButtonLoading(googleLoginButtonEl, false, "Sign in with Google");
+                }
+            });
+        } else {
+             showToast("Firebase authentication is not available. Please try refreshing.", "error", 10000);
+        }
+
+
+        // Phone Login Button Navigation
+        phoneLoginButtonEl?.addEventListener("click", () => {
+            window.location.href = "phone-auth.html"; // Navigate to the phone auth page
+        });
+
+        // Set current year in footer
+        const currentYearEl = document.getElementById('currentYear');
+        if (currentYearEl) {
+            currentYearEl.textContent = new Date().getFullYear();
+        }
+        
+        // Set initial tab (e.g. Login)
+        switchTab('loginForm');
+
+    </script>
+</body>
+</html>
