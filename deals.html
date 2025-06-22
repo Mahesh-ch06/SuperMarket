@@ -612,6 +612,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const specialOffersContent = document.getElementById('special-offers-content');
     const dealCountdownEl = document.getElementById('deal-countdown');
 
+    // --- Firebase Configuration ---
+    // Using the API key provided by the user.
+    // WARNING: Directly embedding API keys in client-side code is NOT recommended for production.
+    // For secure deployments, use server-side environments or environment variables.
+    const firebaseConfig = {
+        apiKey: "AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU",
+        authDomain: "portfolio-56be7.firebaseapp.com",
+        projectId: "portfolio-56be7",
+        storageBucket: "portfolio-56be7.firebasestorage.app",
+        messagingSenderId: "888511551571",
+        appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+        measurementId: "G-X3CYL9YZR1"
+    };
 
     // --- COUNTDOWN FUNCTION ---
     function startCountdown(targetDate) {
@@ -850,7 +863,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const prompt = `Generate a short, enticing marketing blurb (2-3 sentences) for a grocery product on sale. The product is "${itemName}". Its description/deal is: "${itemDescription}". Focus on its benefits and why it's a good deal.`;
                         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
                         const payload = { contents: chatHistory };
-                        const apiKey = ""; // Canvas will automatically provide the API key
+                        // Canvas will automatically provide the API key for Gemini API calls
+                        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU'; 
                         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                         const response = await fetch(apiUrl, {
