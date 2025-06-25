@@ -238,6 +238,17 @@
 
     // Ensure the page attempts to load orders as soon as auth state is determined
     // onAuthStateChanged handles the initial rendering based on user presence.
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Contact Us navigation
+        const footerContactUs = document.querySelector('footer a[href="#"]:nth-child(2)'); // Assuming Contact is the 2nd link
+        if (footerContactUs && footerContactUs.textContent.includes('Contact')) {
+            footerContactUs.addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "contactus.html";
+            });
+        }
+    });
 </script>
 </body>
 </html>

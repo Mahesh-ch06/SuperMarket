@@ -1005,6 +1005,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Contact Us navigation
+    const contactUsLink = document.getElementById("navContactUs");
+    if (contactUsLink) {
+        contactUsLink.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "contactus.html";
+        });
+    }
+
+    // Footer Contact Us
+    const footerContactUs = document.getElementById("footerContactUs");
+    if (footerContactUs) {
+        footerContactUs.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "contactus.html";
+        });
+    }
+
     // Initial Render
     function init() {
         loadData();

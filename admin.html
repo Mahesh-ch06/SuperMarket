@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - FreshMart</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    <style>
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+        /* Custom styles for the modal - copied from other FreshMart pages for consistency */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0; /* For fade in/out transition */
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal.show {
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%; /* Responsive width */
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-20px); /* For slight slide-down transition */
+            transition: transform 0.3s ease-in-out;
+            max-height: 90vh; /* Limit modal height */
+            overflow-y: auto; /* Enable scroll within modal content if needed */
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        /* Input field focus styles */
+        .form-input-field:focus {
+            border-color: #38a169; /* FreshMart green */
+            box-shadow: 0 0 0 1px #38a169;
+            outline: none;
+        }
+
+        /* Specific styles for admin dashboard elements */
+        .admin-card {
+            @apply bg-white rounded-lg shadow-md p-6;
+        }
+        .admin-section-heading {
+            @apply text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3;
+        }
+        .data-table {
+            @apply min-w-full divide-y divide-gray-200;
+        }
+        .data-table th, .data-table td {
+            @apply px-4 py-3 text-left text-sm font-medium text-gray-700;
+        }
+        .data-table th {
+            @apply bg-gray-50 uppercase tracking-wider;
+        }
+        .data-table tbody tr:nth-child(odd) {
+            @apply bg-white;
+        }
+        .data-table tbody tr:nth-child(even) {
+            @apply bg-gray-50;
+        }
+        /* Dashboard metric cards hover effect */
+        .metric-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Toast Notification System styles (copied from login-page for consistency) */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Loading spinner for buttons */
+        .button-loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-[#f9fbfa]">
+
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+                <div class="flex items-center justify-between">
+                    <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                        <div class="size-4">
+                            <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                        </div>
+                        <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
+                    </a>
+                    <div class="flex flex-1 justify-end gap-4 sm:gap-8">
+                        <nav class="flex items-center gap-4 sm:gap-9">
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="shop.html" id="navShop">Shop</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="deals.html" id="navDeals">Deals</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="about.html" id="navAboutUs">About Us</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="contact.html" id="navContactUs">Contact Us</a>
+                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169]" href="#" id="navAdmin">Admin</a> <!-- Active link for admin -->
+                        </nav>
+                        <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
+                            <button
+                                id="profileBtn"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
+                            >
+                                <span class="truncate">Profile</span>
+                            </button>
+                            <button
+                                id="myOrdersBtn"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
+                            >
+                                <span class="truncate">My Orders</span>
+                            </button>
+                            <button
+                                id="loginLogoutBtn"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors"
+                            >
+                                <span class="truncate">Login</span>
+                            </button>
+                            <button
+                                id="cartBtn"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                            >
+                                <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+            <main class="flex-1 px-4 py-5 sm:px-6 lg:px-8">
+                <div class="max-w-6xl mx-auto space-y-8">
+                    <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center sm:text-left">Admin Dashboard</h1>
+
+                    <!-- Dashboard Overview Section -->
+                    <section class="admin-card">
+                        <h2 class="admin-section-heading">Overview</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="metric-card bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+                                <p class="text-3xl font-bold text-[#38a169]" id="totalOrdersCount">0</p>
+                                <p class="text-gray-600 text-sm">Total Orders</p>
+                            </div>
+                            <div class="metric-card bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+                                <p class="text-3xl font-bold text-[#38a169]" id="revenueThisMonth">₹ 0.00</p>
+                                <p class="text-gray-600 text-sm">Revenue This Month</p>
+                            </div>
+                            <div class="metric-card bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+                                <p class="text-3xl font-bold text-[#38a169]" id="registeredUsersCount">0</p>
+                                <p class="text-gray-600 text-sm">Registered Users</p>
+                            </div>
+                            <div class="metric-card bg-gray-50 rounded-lg p-4 text-center border border-gray-200">
+                                <p class="text-3xl font-bold text-[#38a169]" id="newOrdersToday">0</p>
+                                <p class="text-gray-600 text-sm">New Orders Today</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Product Management Section -->
+                    <section class="admin-card">
+                        <h2 class="admin-section-heading">Product Management</h2>
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+                            <input type="text" id="productSearchInput" placeholder="Search products by name or category..." class="form-input-field flex-grow rounded-md border-gray-300 shadow-sm">
+                            <button id="addNewProductBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors flex-shrink-0">
+                                Add New Product
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="cursor-pointer" data-sort="name">Product Name</th>
+                                        <th class="cursor-pointer" data-sort="category">Category</th>
+                                        <th class="cursor-pointer" data-sort="price">Price (₹)</th>
+                                        <th class="cursor-pointer" data-sort="stock">Stock</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <!-- Products will be rendered here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button id="loadMoreProductsBtn" class="rounded-xl h-10 px-6 bg-[#eaf0ec] text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto">
+                                Load More Products
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Order Management Section -->
+                    <section class="admin-card">
+                        <h2 class="admin-section-heading">Order Management</h2>
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+                            <input type="text" id="orderSearchInput" placeholder="Search orders by ID or customer..." class="form-input-field flex-grow rounded-md border-gray-300 shadow-sm">
+                            <select id="orderStatusFilter" class="form-input-field rounded-md border-gray-300 shadow-sm flex-shrink-0">
+                                <option value="All">All Statuses</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="cursor-pointer" data-sort="id">Order ID</th>
+                                        <th class="cursor-pointer" data-sort="customer">Customer</th>
+                                        <th class="cursor-pointer" data-sort="total">Total (₹)</th>
+                                        <th class="cursor-pointer" data-sort="status">Status</th>
+                                        <th class="cursor-pointer" data-sort="date">Order Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <!-- Orders will be rendered here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button id="loadMoreOrdersBtn" class="rounded-xl h-10 px-6 bg-[#eaf0ec] text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto">
+                                Load More Orders
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- User Management Section -->
+                    <section class="admin-card">
+                        <h2 class="admin-section-heading">User Management</h2>
+                        <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
+                            <input type="text" id="userSearchInput" placeholder="Search users by name or email..." class="form-input-field flex-grow rounded-md border-gray-300 shadow-sm">
+                            <button id="addNewUserBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors flex-shrink-0">
+                                Add New User
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border border-gray-200">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="cursor-pointer" data-sort="name">Name</th>
+                                        <th class="cursor-pointer" data-sort="email">Email</th>
+                                        <th class="cursor-pointer" data-sort="joinedDate">Joined Date</th>
+                                        <th class="cursor-pointer" data-sort="status">Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be rendered here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button id="loadMoreUsersBtn" class="rounded-xl h-10 px-6 bg-[#eaf0ec] text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto">
+                                View All Users
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </main>
+
+            <footer class="flex justify-center">
+                <div class="flex max-w-[960px] flex-1 flex-col">
+                    <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+                        <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="contact.html" id="footerContactUs">Contact Us</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerTermsOfService">Terms of Service</a>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                        <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
+                    </footer>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Generic Modal for alerts and messages -->
+    <div id="generalModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" id="generalModalCloseBtn">&times;</span>
+            <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
+            <button id="generalModalOkBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">OK</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmationModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Confirm Action</h3>
+            <p id="confirmationMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-4">
+                <button id="confirmYesBtn" class="flex-1 rounded-xl h-10 px-4 bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors">Yes, proceed</button>
+                <button id="confirmNoBtn" class="flex-1 rounded-xl h-10 px-4 bg-gray-200 text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Form Modal (Add/Edit Product) -->
+    <div id="productFormModal" class="modal hidden">
+        <div class="modal-content text-left">
+            <span class="close-button" id="productFormModalCloseBtn">&times;</span>
+            <h3 id="productFormModalTitle" class="text-xl font-bold text-gray-800 mb-4">Add New Product</h3>
+            <form id="productForm" class="space-y-4">
+                <div>
+                    <label for="productName" class="block text-sm font-medium text-gray-700">Product Name</label>
+                    <input type="text" id="productName" name="name" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="productCategory" class="block text-sm font-medium text-gray-700">Category</label>
+                    <input type="text" id="productCategory" name="category" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="productPrice" class="block text-sm font-medium text-gray-700">Price (₹)</label>
+                    <input type="number" id="productPrice" name="price" step="0.01" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="productStock" class="block text-sm font-medium text-gray-700">Stock</label>
+                    <input type="text" id="productStock" name="stock" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="e.g., 100 kg or 50 units">
+                </div>
+                <div>
+                    <label for="productImageUrl" class="block text-sm font-medium text-gray-700">Image URL (Placeholder)</label>
+                    <input type="text" id="productImageUrl" name="imageUrl" class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm" placeholder="https://placehold.co/60x60?text=Product">
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="productFormCancelBtn" class="rounded-xl h-10 px-4 bg-gray-200 text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" id="productFormSaveBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal hidden">
+        <div class="modal-content text-left">
+            <span class="close-button" id="orderDetailsModalCloseBtn">&times;</span>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Order Details: <span id="modalOrderId"></span></h3>
+            <div class="space-y-3">
+                <p><strong>Customer:</strong> <span id="modalOrderCustomer"></span></p>
+                <p><strong>Order Date:</strong> <span id="modalOrderDate"></span></p>
+                <p><strong>Total Amount:</strong> <span id="modalOrderTotal"></span></p>
+                
+                <div>
+                    <label for="modalOrderStatus" class="block text-sm font-medium text-gray-700 mb-1">Update Status:</label>
+                    <select id="modalOrderStatus" class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="pt-3 border-t border-gray-200">
+                    <p class="text-base font-medium text-gray-800 mb-2">Items:</p>
+                    <ul id="modalOrderItems" class="list-disc list-inside text-gray-700 space-y-1">
+                        <!-- Order items will be dynamically loaded here -->
+                    </ul>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button type="button" id="orderDetailsModalSaveBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Form Modal (Add/Edit User) -->
+    <div id="userFormModal" class="modal hidden">
+        <div class="modal-content text-left">
+            <span class="close-button" id="userFormModalCloseBtn">&times;</span>
+            <h3 id="userFormModalTitle" class="text-xl font-bold text-gray-800 mb-4">Add New User</h3>
+            <form id="userForm" class="space-y-4">
+                <div>
+                    <label for="userName" class="block text-sm font-medium text-gray-700">Name</label>
+                    <input type="text" id="userName" name="name" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="userEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                    <input type="email" id="userEmail" name="email" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="userJoinedDate" class="block text-sm font-medium text-gray-700">Joined Date</label>
+                    <input type="date" id="userJoinedDate" name="joinedDate" required class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="userStatus" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="userStatus" name="status" class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="userFormCancelBtn" class="rounded-xl h-10 px-4 bg-gray-200 text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Cancel</button>
+                    <button type="submit" id="userFormSaveBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // --- Mock Data for Admin Dashboard ---
+        // In a real application, this data would be fetched from a backend database (e.g., Firestore).
+        // For this demo, we use in-memory arrays.
+        let products = [
+            { id: 'prod001', name: 'Organic Bananas', category: 'Fruits', price: 80.00, stock: '150 kg', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Banana' },
+            { id: 'prod002', name: 'Farm Fresh Eggs (12 pcs)', category: 'Dairy & Eggs', price: 120.00, stock: '80 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Eggs' },
+            { id: 'prod003', name: 'Whole Wheat Bread', category: 'Bakery', price: 75.00, stock: '120 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Bread' },
+            { id: 'prod004', name: 'Almond Milk (1L)', category: 'Beverages', price: 250.00, stock: '60 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Almond+Milk' },
+            { id: 'prod005', name: 'Spinach (500g)', category: 'Vegetables', price: 50.00, stock: '200 kg', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Spinach' },
+            { id: 'prod006', name: 'Basmati Rice (5kg)', category: 'Grains & Pasta', price: 600.00, stock: '40 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Rice' },
+            { id: 'prod007', name: 'Paneer (200g)', category: 'Dairy & Eggs', price: 100.00, stock: '90 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Paneer' },
+            { id: 'prod008', name: 'Bell Peppers (Green)', category: 'Vegetables', price: 90.00, stock: '180 kg', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Peppers' },
+            { id: 'prod009', name: 'Greek Yogurt (500g)', category: 'Dairy & Eggs', price: 180.00, stock: '70 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Yogurt' },
+            { id: 'prod010', name: 'Oatmeal (1kg)', category: 'Breakfast', price: 140.00, stock: '110 units', imageUrl: 'https://placehold.co/60x60/b7cdbe/5e876d?text=Oatmeal' },
+        ];
+
+        let orders = [
+            { id: 'ORD001', customer: 'Priya Sharma', total: 450.00, status: 'Pending', date: '2024-06-25', items: [{name: 'Organic Bananas', qty: 3, price: 80}, {name: 'Whole Wheat Bread', qty: 1, price: 75}, {name: 'Farm Fresh Eggs (12 pcs)', qty: 1, price: 120}] },
+            { id: 'ORD002', customer: 'Amit Kumar', total: 780.00, status: 'Delivered', date: '2024-06-24', items: [{name: 'Basmati Rice (5kg)', qty: 1, price: 600}, {name: 'Spinach (500g)', qty: 2, price: 50}, {name: 'Paneer (200g)', qty: 1, price: 100}] },
+            { id: 'ORD003', customer: 'Sneha Patel', total: 250.00, status: 'Processing', date: '2024-06-23', items: [{name: 'Almond Milk (1L)', qty: 1, price: 250}] },
+            { id: 'ORD004', customer: 'Rajat Gupta', total: 120.00, status: 'Cancelled', date: '2024-06-22', items: [{name: 'Farm Fresh Eggs (12 pcs)', qty: 1, price: 120}] },
+            { id: 'ORD005', customer: 'Priya Sharma', total: 300.00, status: 'Delivered', date: '2024-06-20', items: [{name: 'Organic Bananas', qty: 2, price: 80}, {name: 'Whole Wheat Bread', qty: 2, price: 75}] },
+            { id: 'ORD006', customer: 'Ajay Sharma', total: 500.00, status: 'Shipped', date: '2024-06-19', items: [{name: 'Bell Peppers (Green)', qty: 2, price: 90}, {name: 'Oatmeal (1kg)', qty: 1, price: 140}, {name: 'Greek Yogurt (500g)', qty: 1, price: 180}] },
+            { id: 'ORD007', customer: 'Deepika Rao', total: 180.00, status: 'Pending', date: '2024-06-18', items: [{name: 'Greek Yogurt (500g)', qty: 1, price: 180}] },
+            { id: 'ORD008', customer: 'Vikram Singh', total: 950.00, status: 'Processing', date: '2024-06-17', items: [{name: 'Basmati Rice (5kg)', qty: 1, price: 600}, {name: 'Almond Milk (1L)', qty: 1, price: 250}, {name: 'Organic Bananas', qty: 1, price: 80}] },
+        ];
+
+        let users = [
+            { id: 'user001', name: 'Priya Sharma', email: 'priya.s@example.com', joinedDate: '2023-01-10', status: 'Active' },
+            { id: 'user002', name: 'Amit Kumar', email: 'amit.k@example.com', joinedDate: '2023-03-20', status: 'Active' },
+            { id: 'user003', name: 'Sneha Patel', email: 'sneha.p@example.com', joinedDate: '2023-05-15', status: 'Active' },
+            { id: 'user004', name: 'Rajat Gupta', email: 'rajat.g@example.com', joinedDate: '2023-07-01', status: 'Inactive' },
+            { id: 'user005', name: 'Ajay Sharma', email: 'ajay.s@example.com', joinedDate: '2023-08-01', status: 'Active' },
+            { id: 'user006', name: 'Deepika Rao', email: 'deepika.r@example.com', joinedDate: '2023-09-10', status: 'Active' },
+            { id: 'user007', name: 'Vikram Singh', email: 'vikram.s@example.com', joinedDate: '2023-10-25', status: 'Active' },
+            { id: 'user008', name: 'Shruti Desai', email: 'shruti.d@example.com', joinedDate: '2023-11-05', status: 'Inactive' },
+        ];
+
+        // Helper to generate unique IDs (simple for mock data)
+        function generateUniqueId(prefix) {
+            return prefix + Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+        }
+
+        // --- DOM Elements ---
+        const cartCountEl = document.getElementById("cartCount");
+        const loginLogoutBtn = document.getElementById("loginLogoutBtn");
+        const profileBtn = document.getElementById("profileBtn");
+        const myOrdersBtn = document.getElementById("myOrdersBtn");
+        
+        const generalModal = document.getElementById('generalModal');
+        const generalModalMessage = document.getElementById('generalModalMessage');
+        const generalModalOkBtn = document.getElementById('generalModalOkBtn');
+        const generalModalCloseBtn = document.getElementById('generalModalCloseBtn');
+
+        const confirmationModal = document.getElementById('confirmationModal');
+        const confirmationMessage = document.getElementById('confirmationMessage');
+        const confirmYesBtn = document.getElementById('confirmYesBtn');
+        const confirmNoBtn = document.getElementById('confirmNoBtn');
+        let confirmActionCallback = null; // Callback for confirmation modal
+
+        const productFormModal = document.getElementById('productFormModal');
+        const productFormModalTitle = document.getElementById('productFormModalTitle');
+        const productFormModalCloseBtn = document.getElementById('productFormModalCloseBtn');
+        const productForm = document.getElementById('productForm');
+        const productNameInput = document.getElementById('productName');
+        const productCategoryInput = document.getElementById('productCategory');
+        const productPriceInput = document.getElementById('productPrice');
+        const productStockInput = document.getElementById('productStock');
+        const productImageUrlInput = document.getElementById('productImageUrl');
+        const productFormCancelBtn = document.getElementById('productFormCancelBtn');
+        let currentEditingProductId = null; // To store the ID of the product being edited
+
+        const orderDetailsModal = document.getElementById('orderDetailsModal');
+        const orderDetailsModalCloseBtn = document.getElementById('orderDetailsModalCloseBtn');
+        const modalOrderId = document.getElementById('modalOrderId');
+        const modalOrderCustomer = document.getElementById('modalOrderCustomer');
+        const modalOrderDate = document.getElementById('modalOrderDate');
+        const modalOrderTotal = document.getElementById('modalOrderTotal');
+        const modalOrderStatus = document.getElementById('modalOrderStatus');
+        const modalOrderItems = document.getElementById('modalOrderItems');
+        const orderDetailsModalSaveBtn = document.getElementById('orderDetailsModalSaveBtn');
+        let currentViewingOrderId = null; // To store the ID of the order being viewed/edited
+
+        const userFormModal = document.getElementById('userFormModal');
+        const userFormModalTitle = document.getElementById('userFormModalTitle');
+        const userFormModalCloseBtn = document.getElementById('userFormModalCloseBtn');
+        const userForm = document.getElementById('userForm');
+        const userNameInput = document.getElementById('userName');
+        const userEmailInput = document.getElementById('userEmail');
+        const userJoinedDateInput = document.getElementById('userJoinedDate');
+        const userStatusInput = document.getElementById('userStatus');
+        const userFormCancelBtn = document.getElementById('userFormCancelBtn');
+        let currentEditingUserId = null; // To store the ID of the user being edited
+
+        // Dashboard Metrics
+        const totalOrdersCountEl = document.getElementById('totalOrdersCount');
+        const revenueThisMonthEl = document.getElementById('revenueThisMonth');
+        const registeredUsersCountEl = document.getElementById('registeredUsersCount');
+        const newOrdersTodayEl = document.getElementById('newOrdersToday');
+
+        // Product Management elements
+        const productSearchInput = document.getElementById('productSearchInput');
+        const productsTableBody = document.getElementById('productsTableBody');
+        const addNewProductBtn = document.getElementById('addNewProductBtn');
+        const loadMoreProductsBtn = document.getElementById('loadMoreProductsBtn');
+
+        // Order Management elements
+        const orderSearchInput = document.getElementById('orderSearchInput');
+        const orderStatusFilter = document.getElementById('orderStatusFilter');
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        const loadMoreOrdersBtn = document.getElementById('loadMoreOrdersBtn');
+
+        // User Management elements
+        const userSearchInput = document.getElementById('userSearchInput');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const addNewUserBtn = document.getElementById('addNewUserBtn');
+        const loadMoreUsersBtn = document.getElementById('loadMoreUsersBtn');
+
+        // --- Toast Notification System ---
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
+
+        // --- Generic Modal Functions ---
+        function openGeneralModal(message) {
+            generalModalMessage.textContent = message;
+            generalModal.classList.remove('hidden');
+            setTimeout(() => generalModal.classList.add('show'), 10);
+        }
+
+        function closeGeneralModal() {
+            generalModal.classList.remove('show');
+            setTimeout(() => generalModal.classList.add('hidden'), 300);
+        }
+
+        // --- Confirmation Modal Functions ---
+        function openConfirmationModal(message, callback) {
+            confirmationMessage.textContent = message;
+            confirmActionCallback = callback;
+            confirmationModal.classList.remove('hidden');
+            setTimeout(() => confirmationModal.classList.add('show'), 10);
+        }
+
+        function closeConfirmationModal() {
+            confirmationModal.classList.remove('show');
+            setTimeout(() => confirmationModal.classList.add('hidden'), 300);
+            confirmActionCallback = null;
+        }
+
+        // --- Loading Spinner for Buttons ---
+        const spinnerSvg = `<svg class="button-loading-spinner -ml-1 mr-3 h-5 w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+        function setButtonLoading(buttonElement, isLoading, originalContent = '') {
+            if (buttonElement) {
+                buttonElement.disabled = isLoading;
+                if (isLoading) {
+                    buttonElement.innerHTML = spinnerSvg + (originalContent || buttonElement.textContent);
+                } else {
+                    buttonElement.innerHTML = originalContent || buttonElement.textContent.replace(spinnerSvg, ''); // Remove spinner if it exists
+                }
+            }
+        }
+
+        // --- Cart Count Function (reused from index.html) ---
+        function updateCartCount() {
+            const savedCart = localStorage.getItem('freshmartCart');
+            const cartItems = savedCart ? JSON.parse(savedCart) : [];
+            const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartCountEl.textContent = totalCount;
+        }
+
+        // --- Dashboard Overview Functions ---
+        function updateDashboardMetrics() {
+            totalOrdersCountEl.textContent = orders.length;
+            const totalRevenue = orders.reduce((sum, order) => {
+                // Only count revenue from delivered orders for a more realistic metric
+                return order.status === 'Delivered' ? sum + order.total : sum;
+            }, 0);
+            revenueThisMonthEl.textContent = `₹ ${totalRevenue.toFixed(2)}`;
+            registeredUsersCountEl.textContent = users.length;
+            
+            // Calculate new orders today (mock: orders from current mock date)
+            const today = new Date().toISOString().slice(0, 10); // e.g., '2024-06-25'
+            const newOrdersCount = orders.filter(order => order.date === today).length;
+            newOrdersTodayEl.textContent = newOrdersCount;
+        }
+
+        // --- Product Management Functions ---
+        function renderProducts(filter = '', sortBy = 'name', sortOrder = 'asc', limitCount = 5) {
+            let filteredProducts = products.filter(p => 
+                p.name.toLowerCase().includes(filter.toLowerCase()) || 
+                p.category.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            // Client-side sorting
+            filteredProducts.sort((a, b) => {
+                let valA = a[sortBy];
+                let valB = b[sortBy];
+
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            productsTableBody.innerHTML = '';
+            const productsToDisplay = filteredProducts.slice(0, limitCount);
+
+            if (productsToDisplay.length === 0) {
+                productsTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">No products found.</td></tr>`;
+                loadMoreProductsBtn.classList.add('hidden');
+                return;
+            }
+
+            productsToDisplay.forEach(product => {
+                const row = `
+                    <tr>
+                        <td class="flex items-center gap-2">
+                            <img src="${product.imageUrl || 'https://placehold.co/40x40/cccccc/000000?text=NA'}" alt="${product.name}" class="w-10 h-10 rounded object-cover">
+                            ${product.name}
+                        </td>
+                        <td>${product.category}</td>
+                        <td>₹${product.price.toFixed(2)}</td>
+                        <td>${product.stock}</td>
+                        <td class="flex flex-col sm:flex-row gap-2 py-2">
+                            <button class="edit-product-btn rounded-lg h-8 px-3 bg-blue-100 text-blue-700 text-xs font-medium hover:bg-blue-200 transition-colors" data-id="${product.id}">Edit</button>
+                            <button class="delete-product-btn rounded-lg h-8 px-3 bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200 transition-colors" data-id="${product.id}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+                productsTableBody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Show/hide load more button
+            if (filteredProducts.length > limitCount) {
+                loadMoreProductsBtn.classList.remove('hidden');
+            } else {
+                loadMoreProductsBtn.classList.add('hidden');
+            }
+            attachProductActionListeners();
+        }
+
+        function attachProductActionListeners() {
+            document.querySelectorAll('.edit-product-btn').forEach(button => {
+                button.onclick = () => openProductFormModal(products.find(p => p.id === button.dataset.id));
+            });
+            document.querySelectorAll('.delete-product-btn').forEach(button => {
+                button.onclick = () => openConfirmationModal('Are you sure you want to delete this product?', () => deleteProduct(button.dataset.id));
+            });
+        }
+
+        function openProductFormModal(product = null) {
+            productForm.reset();
+            currentEditingProductId = null;
+            productFormModalTitle.textContent = 'Add New Product';
+            productFormSaveBtn.textContent = 'Save Product';
+
+            if (product) {
+                productFormModalTitle.textContent = 'Edit Product';
+                productFormSaveBtn.textContent = 'Update Product';
+                currentEditingProductId = product.id;
+                productNameInput.value = product.name;
+                productCategoryInput.value = product.category;
+                productPriceInput.value = product.price;
+                productStockInput.value = product.stock;
+                productImageUrlInput.value = product.imageUrl || '';
+            }
+            productFormModal.classList.remove('hidden');
+            setTimeout(() => productFormModal.classList.add('show'), 10);
+        }
+
+        function closeProductFormModal() {
+            productFormModal.classList.remove('show');
+            setTimeout(() => productFormModal.classList.add('hidden'), 300);
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            const newProduct = {
+                name: productNameInput.value,
+                category: productCategoryInput.value,
+                price: parseFloat(productPriceInput.value),
+                stock: productStockInput.value,
+                imageUrl: productImageUrlInput.value,
+            };
+
+            // Simple validation
+            if (!newProduct.name || !newProduct.category || isNaN(newProduct.price) || !newProduct.stock) {
+                showToast('Please fill all required product fields.', 'error');
+                return;
+            }
+
+            const originalButtonContent = productFormSaveBtn.innerHTML;
+            setButtonLoading(productFormSaveBtn, true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                if (currentEditingProductId) {
+                    const index = products.findIndex(p => p.id === currentEditingProductId);
+                    if (index !== -1) {
+                        products[index] = { ...products[index], ...newProduct };
+                        showToast('Product updated successfully!', 'success');
+                    }
+                } else {
+                    newProduct.id = generateUniqueId('prod');
+                    products.push(newProduct);
+                    showToast('Product added successfully!', 'success');
+                }
+                renderProducts(productSearchInput.value); // Re-render table with current filter
+                closeProductFormModal();
+                setButtonLoading(productFormSaveBtn, false, originalButtonContent);
+                updateDashboardMetrics(); // Update dashboard after product changes
+            }, 500);
+        }
+
+        function deleteProduct(id) {
+            closeConfirmationModal(); // Close confirmation modal first
+            const originalButtonContent = document.querySelector(`.delete-product-btn[data-id="${id}"]`).innerHTML;
+            setButtonLoading(document.querySelector(`.delete-product-btn[data-id="${id}"]`), true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                products = products.filter(p => p.id !== id);
+                showToast('Product deleted successfully!', 'success');
+                renderProducts(productSearchInput.value); // Re-render table with current filter
+                setButtonLoading(document.querySelector(`.delete-product-btn[data-id="${id}"]`), false, originalButtonContent); // Will not find it, but good practice
+                updateDashboardMetrics(); // Update dashboard after product changes
+            }, 500);
+        }
+        let currentProductsLimit = 5;
+
+        // --- Order Management Functions ---
+        function renderOrders(filterStatus = 'All', filterSearch = '', sortBy = 'date', sortOrder = 'desc', limitCount = 5) {
+            let filteredOrders = orders.filter(order => {
+                const statusMatch = filterStatus === 'All' || order.status === filterStatus;
+                const searchMatch = order.id.toLowerCase().includes(filterSearch.toLowerCase()) ||
+                                    order.customer.toLowerCase().includes(filterSearch.toLowerCase()) ||
+                                    order.items.some(item => item.name.toLowerCase().includes(filterSearch.toLowerCase()));
+                return statusMatch && searchMatch;
+            });
+
+            // Client-side sorting
+            filteredOrders.sort((a, b) => {
+                let valA = a[sortBy];
+                let valB = b[sortBy];
+
+                if (sortBy === 'date') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            ordersTableBody.innerHTML = '';
+            const ordersToDisplay = filteredOrders.slice(0, limitCount);
+
+            if (ordersToDisplay.length === 0) {
+                ordersTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-500">No orders found matching your criteria.</td></tr>`;
+                loadMoreOrdersBtn.classList.add('hidden');
+                return;
+            }
+
+            ordersToDisplay.forEach(order => {
+                let statusClass = '';
+                switch (order.status) {
+                    case 'Pending': statusClass = 'bg-yellow-100 text-yellow-800'; break;
+                    case 'Processing': statusClass = 'bg-blue-100 text-blue-800'; break;
+                    case 'Shipped': statusClass = 'bg-purple-100 text-purple-800'; break;
+                    case 'Delivered': statusClass = 'bg-green-100 text-green-800'; break;
+                    case 'Cancelled': statusClass = 'bg-red-100 text-red-800'; break;
+                    default: statusClass = 'bg-gray-100 text-gray-800'; break;
+                }
+
+                const row = `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${order.customer}</td>
+                        <td>₹${order.total.toFixed(2)}</td>
+                        <td><span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${order.status}</span></td>
+                        <td>${order.date}</td>
+                        <td class="flex flex-col sm:flex-row gap-2 py-2">
+                            <button class="view-order-details-btn rounded-lg h-8 px-3 bg-blue-100 text-blue-700 text-xs font-medium hover:bg-blue-200 transition-colors" data-id="${order.id}">View</button>
+                            <button class="update-order-status-btn rounded-lg h-8 px-3 bg-green-100 text-green-700 text-xs font-medium hover:bg-green-200 transition-colors" data-id="${order.id}">Update</button>
+                            <button class="cancel-order-btn rounded-lg h-8 px-3 bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200 transition-colors" data-id="${order.id}">Cancel</button>
+                        </td>
+                    </tr>
+                `;
+                ordersTableBody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Show/hide load more button
+            if (filteredOrders.length > limitCount) {
+                loadMoreOrdersBtn.classList.remove('hidden');
+            } else {
+                loadMoreOrdersBtn.classList.add('hidden');
+            }
+            attachOrderActionListeners();
+        }
+
+        function attachOrderActionListeners() {
+            document.querySelectorAll('.view-order-details-btn').forEach(button => {
+                button.onclick = () => openOrderDetailsModal(orders.find(o => o.id === button.dataset.id));
+            });
+            document.querySelectorAll('.update-order-status-btn').forEach(button => {
+                button.onclick = () => openOrderDetailsModal(orders.find(o => o.id === button.dataset.id), true); // Pass true to enable status editing directly
+            });
+            document.querySelectorAll('.cancel-order-btn').forEach(button => {
+                button.onclick = () => openConfirmationModal('Are you sure you want to cancel this order?', () => cancelOrder(button.dataset.id));
+            });
+        }
+
+        function openOrderDetailsModal(order, enableStatusEdit = false) {
+            currentViewingOrderId = order.id;
+            modalOrderId.textContent = order.id;
+            modalOrderCustomer.textContent = order.customer;
+            modalOrderDate.textContent = order.date;
+            modalOrderTotal.textContent = `₹${order.total.toFixed(2)}`;
+            
+            modalOrderStatus.value = order.status;
+            modalOrderStatus.disabled = !enableStatusEdit; // Enable/disable dropdown
+            orderDetailsModalSaveBtn.classList.toggle('hidden', !enableStatusEdit); // Hide save button if not editing
+
+            modalOrderItems.innerHTML = '';
+            order.items.forEach(item => {
+                modalOrderItems.insertAdjacentHTML('beforeend', `<li>${item.name} (Qty: ${item.qty}) - ₹${(item.qty * item.price).toFixed(2)}</li>`);
+            });
+
+            orderDetailsModal.classList.remove('hidden');
+            setTimeout(() => orderDetailsModal.classList.add('show'), 10);
+        }
+
+        function closeOrderDetailsModal() {
+            orderDetailsModal.classList.remove('show');
+            setTimeout(() => orderDetailsModal.classList.add('hidden'), 300);
+        }
+
+        function updateOrderStatus(id, newStatus) {
+            const originalButtonContent = orderDetailsModalSaveBtn.innerHTML;
+            setButtonLoading(orderDetailsModalSaveBtn, true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                const index = orders.findIndex(o => o.id === id);
+                if (index !== -1) {
+                    orders[index].status = newStatus;
+                    showToast(`Order ${id} status updated to ${newStatus}!`, 'success');
+                    renderOrders(orderStatusFilter.value, orderSearchInput.value); // Re-render table
+                    updateDashboardMetrics(); // Update dashboard
+                }
+                closeOrderDetailsModal();
+                setButtonLoading(orderDetailsModalSaveBtn, false, originalButtonContent);
+            }, 500);
+        }
+
+        function cancelOrder(id) {
+            closeConfirmationModal(); // Close confirmation modal first
+            const originalButtonContent = document.querySelector(`.cancel-order-btn[data-id="${id}"]`).innerHTML;
+            setButtonLoading(document.querySelector(`.cancel-order-btn[data-id="${id}"]`), true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                const index = orders.findIndex(o => o.id === id);
+                if (index !== -1) {
+                    orders[index].status = 'Cancelled';
+                    showToast(`Order ${id} has been cancelled.`, 'info');
+                    renderOrders(orderStatusFilter.value, orderSearchInput.value); // Re-render table
+                    updateDashboardMetrics(); // Update dashboard
+                }
+                setButtonLoading(document.querySelector(`.cancel-order-btn[data-id="${id}"]`), false, originalButtonContent); // Will not find it after re-render, but good practice
+            }, 500);
+        }
+        let currentOrdersLimit = 5;
+
+        // --- User Management Functions ---
+        function renderUsers(filter = '', sortBy = 'joinedDate', sortOrder = 'desc', limitCount = 5) {
+            let filteredUsers = users.filter(u =>
+                u.name.toLowerCase().includes(filter.toLowerCase()) ||
+                u.email.toLowerCase().includes(filter.toLowerCase())
+            );
+
+            // Client-side sorting
+            filteredUsers.sort((a, b) => {
+                let valA = a[sortBy];
+                let valB = b[sortBy];
+
+                if (sortBy === 'joinedDate') {
+                    valA = new Date(valA);
+                    valB = new Date(valB);
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            usersTableBody.innerHTML = '';
+            const usersToDisplay = filteredUsers.slice(0, limitCount);
+
+            if (usersToDisplay.length === 0) {
+                usersTableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-500">No users found.</td></tr>`;
+                loadMoreUsersBtn.classList.add('hidden');
+                return;
+            }
+
+            usersToDisplay.forEach(user => {
+                let statusClass = '';
+                switch (user.status) {
+                    case 'Active': statusClass = 'bg-green-100 text-green-800'; break;
+                    case 'Inactive': statusClass = 'bg-red-100 text-red-800'; break;
+                    case 'Suspended': statusClass = 'bg-yellow-100 text-yellow-800'; break;
+                    default: statusClass = 'bg-gray-100 text-gray-800'; break;
+                }
+
+                const row = `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.joinedDate}</td>
+                        <td><span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${user.status}</span></td>
+                        <td class="flex flex-col sm:flex-row gap-2 py-2">
+                            <button class="edit-user-btn rounded-lg h-8 px-3 bg-blue-100 text-blue-700 text-xs font-medium hover:bg-blue-200 transition-colors" data-id="${user.id}">Edit</button>
+                            <button class="toggle-user-status-btn rounded-lg h-8 px-3 ${user.status === 'Active' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'} text-xs font-medium hover:opacity-75 transition-colors" data-id="${user.id}">
+                                ${user.status === 'Active' ? 'Deactivate' : 'Activate'}
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                usersTableBody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Show/hide load more button
+            if (filteredUsers.length > limitCount) {
+                loadMoreUsersBtn.classList.remove('hidden');
+            } else {
+                loadMoreUsersBtn.classList.add('hidden');
+            }
+            attachUserActionListeners();
+        }
+
+        function attachUserActionListeners() {
+            document.querySelectorAll('.edit-user-btn').forEach(button => {
+                button.onclick = () => openUserFormModal(users.find(u => u.id === button.dataset.id));
+            });
+            document.querySelectorAll('.toggle-user-status-btn').forEach(button => {
+                button.onclick = () => {
+                    const user = users.find(u => u.id === button.dataset.id);
+                    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
+                    openConfirmationModal(`Are you sure you want to change ${user.name}'s status to ${newStatus}?`, () => toggleUserStatus(user.id, newStatus));
+                };
+            });
+        }
+
+        function openUserFormModal(user = null) {
+            userForm.reset();
+            currentEditingUserId = null;
+            userFormModalTitle.textContent = 'Add New User';
+            userFormSaveBtn.textContent = 'Save User';
+
+            if (user) {
+                userFormModalTitle.textContent = 'Edit User';
+                userFormSaveBtn.textContent = 'Update User';
+                currentEditingUserId = user.id;
+                userNameInput.value = user.name;
+                userEmailInput.value = user.email;
+                userJoinedDateInput.value = user.joinedDate;
+                userStatusInput.value = user.status;
+            }
+            userFormModal.classList.remove('hidden');
+            setTimeout(() => userFormModal.classList.add('show'), 10);
+        }
+
+        function closeUserFormModal() {
+            userFormModal.classList.remove('show');
+            setTimeout(() => userFormModal.classList.add('hidden'), 300);
+        }
+
+        function saveUser(event) {
+            event.preventDefault();
+            const newUser = {
+                name: userNameInput.value,
+                email: userEmailInput.value,
+                joinedDate: userJoinedDateInput.value,
+                status: userStatusInput.value,
+            };
+
+            // Simple validation
+            if (!newUser.name || !newUser.email || !newUser.joinedDate || !newUser.status) {
+                showToast('Please fill all required user fields.', 'error');
+                return;
+            }
+
+            const originalButtonContent = userFormSaveBtn.innerHTML;
+            setButtonLoading(userFormSaveBtn, true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                if (currentEditingUserId) {
+                    const index = users.findIndex(u => u.id === currentEditingUserId);
+                    if (index !== -1) {
+                        users[index] = { ...users[index], ...newUser };
+                        showToast('User updated successfully!', 'success');
+                    }
+                } else {
+                    newUser.id = generateUniqueId('user');
+                    users.push(newUser);
+                    showToast('User added successfully!', 'success');
+                }
+                renderUsers(userSearchInput.value); // Re-render table with current filter
+                closeUserFormModal();
+                setButtonLoading(userFormSaveBtn, false, originalButtonContent);
+                updateDashboardMetrics(); // Update dashboard after user changes
+            }, 500);
+        }
+
+        function toggleUserStatus(id, newStatus) {
+            closeConfirmationModal(); // Close confirmation modal first
+            const originalButtonContent = document.querySelector(`.toggle-user-status-btn[data-id="${id}"]`).innerHTML;
+            setButtonLoading(document.querySelector(`.toggle-user-status-btn[data-id="${id}"]`), true, originalButtonContent);
+
+            setTimeout(() => { // Simulate async operation
+                const index = users.findIndex(u => u.id === id);
+                if (index !== -1) {
+                    users[index].status = newStatus;
+                    showToast(`User ${users[index].name}'s status changed to ${newStatus}.`, 'info');
+                    renderUsers(userSearchInput.value); // Re-render table
+                    updateDashboardMetrics(); // Update dashboard
+                }
+                setButtonLoading(document.querySelector(`.toggle-user-status-btn[data-id="${id}"]`), false, originalButtonContent);
+            }, 500);
+        }
+        let currentUsersLimit = 5;
+
+        // --- Initial Render and Event Listeners ---
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount(); // Update cart count on page load
+            updateDashboardMetrics(); // Initial dashboard metrics update
+
+            // Initial renders of tables
+            renderProducts(productSearchInput.value, 'name', 'asc', currentProductsLimit);
+            renderOrders(orderStatusFilter.value, orderSearchInput.value, 'date', 'desc', currentOrdersLimit);
+            renderUsers(userSearchInput.value, 'name', 'asc', currentUsersLimit);
+
+            // --- Product Management Event Listeners ---
+            productSearchInput.addEventListener('input', () => renderProducts(productSearchInput.value, 'name', 'asc', currentProductsLimit));
+            addNewProductBtn.addEventListener('click', () => openProductFormModal());
+            productForm.addEventListener('submit', saveProduct);
+            productFormModalCloseBtn.addEventListener('click', closeProductFormModal);
+            productFormCancelBtn.addEventListener('click', closeProductFormModal);
+            loadMoreProductsBtn.addEventListener('click', () => {
+                currentProductsLimit += 5; // Load 5 more products
+                renderProducts(productSearchInput.value, 'name', 'asc', currentProductsLimit);
+            });
+            // Add sorting to table headers
+            document.querySelectorAll('#productsTableBody').forEach(thead => {
+                thead.querySelectorAll('th[data-sort]').forEach(th => {
+                    let sortOrder = 'asc';
+                    th.addEventListener('click', () => {
+                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                        renderProducts(productSearchInput.value, th.dataset.sort, sortOrder, currentProductsLimit);
+                    });
+                });
+            });
+
+
+            // --- Order Management Event Listeners ---
+            orderSearchInput.addEventListener('input', () => renderOrders(orderStatusFilter.value, orderSearchInput.value, 'date', 'desc', currentOrdersLimit));
+            orderStatusFilter.addEventListener('change', () => renderOrders(orderStatusFilter.value, orderSearchInput.value, 'date', 'desc', currentOrdersLimit));
+            orderDetailsModalCloseBtn.addEventListener('click', closeOrderDetailsModal);
+            orderDetailsModalSaveBtn.addEventListener('click', () => updateOrderStatus(currentViewingOrderId, modalOrderStatus.value));
+            loadMoreOrdersBtn.addEventListener('click', () => {
+                currentOrdersLimit += 5; // Load 5 more orders
+                renderOrders(orderStatusFilter.value, orderSearchInput.value, 'date', 'desc', currentOrdersLimit);
+            });
+            // Add sorting to table headers
+            document.querySelectorAll('#ordersTableBody').forEach(thead => {
+                thead.querySelectorAll('th[data-sort]').forEach(th => {
+                    let sortOrder = 'desc'; // Default desc for dates
+                    th.addEventListener('click', () => {
+                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                        renderOrders(orderStatusFilter.value, orderSearchInput.value, th.dataset.sort, sortOrder, currentOrdersLimit);
+                    });
+                });
+            });
+
+
+            // --- User Management Event Listeners ---
+            userSearchInput.addEventListener('input', () => renderUsers(userSearchInput.value, 'name', 'asc', currentUsersLimit));
+            addNewUserBtn.addEventListener('click', () => openUserFormModal());
+            userForm.addEventListener('submit', saveUser);
+            userFormModalCloseBtn.addEventListener('click', closeUserFormModal);
+            userFormCancelBtn.addEventListener('click', closeUserFormModal);
+            loadMoreUsersBtn.addEventListener('click', () => {
+                currentUsersLimit += 5; // Load 5 more users
+                renderUsers(userSearchInput.value, 'name', 'asc', currentUsersLimit);
+            });
+            // Add sorting to table headers
+            document.querySelectorAll('#usersTableBody').forEach(thead => {
+                thead.querySelectorAll('th[data-sort]').forEach(th => {
+                    let sortOrder = 'asc';
+                    th.addEventListener('click', () => {
+                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                        renderUsers(userSearchInput.value, th.dataset.sort, sortOrder, currentUsersLimit);
+                    });
+                });
+            });
+
+
+            // --- General Modal & Header/Footer Navigation Listeners (reused) ---
+            loginLogoutBtn.addEventListener('click', async () => {
+                // Mock logged in state for admin page context
+                const isLoggedIn = true; // Assume admin is logged in for this page
+                if (isLoggedIn) {
+                    openGeneralModal("Logout functionality for Admin would be implemented here.");
+                    // In a real app: signOut(auth); window.location.href = 'login.html';
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            profileBtn.addEventListener('click', () => {
+                window.location.href = 'profile.html';
+            });
+
+            myOrdersBtn.addEventListener('click', () => {
+                window.location.href = 'my_orders.html';
+            });
+
+            document.getElementById("cartBtn").addEventListener("click", function() {
+                window.location.href = "cart.html";
+            });
+
+            document.getElementById("navShop").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "shop.html";
+            });
+            document.getElementById("navDeals").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "deals.html";
+            });
+            document.getElementById("navRecipes").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Recipes page (placeholder)!");
+            });
+            document.getElementById("navAboutUs").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "about.html";
+            });
+            document.getElementById("navContactUs").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "contact.html";
+            });
+            document.getElementById("navAdmin").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("You are already on the Admin Dashboard!");
+            });
+
+            document.getElementById("footerContactUs").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "contact.html";
+            });
+
+            document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Privacy Policy page (placeholder)!");
+            });
+
+            document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Terms of Service page (placeholder)!");
+            });
+            
+            generalModalOkBtn.addEventListener('click', closeGeneralModal);
+            generalModalCloseBtn.addEventListener('click', closeGeneralModal);
+            confirmYesBtn.addEventListener('click', () => {
+                if (confirmActionCallback) {
+                    confirmActionCallback();
+                }
+            });
+            confirmNoBtn.addEventListener('click', closeConfirmationModal);
+        });
+    </script>
+</body>
+</html>

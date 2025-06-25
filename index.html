@@ -141,6 +141,7 @@
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navDeals">Deals</a>
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
                 <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navAboutUs">About Us</a>
+                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navContactUs">Contact Us</a>
               </nav>
               <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
                 <span id="userEmailDisplay" class="text-[#2f855a] text-sm font-medium hidden"></span>
@@ -179,6 +180,7 @@
               <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navDealsMobile">Deals</a>
               <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navRecipesMobile">Recipes</a>
               <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navAboutUsMobile">About Us</a>
+              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navContactUsMobile">Contact Us</a>
             </nav>
             <div class="flex flex-col w-full gap-2 py-2 border-t border-[#eaf0ec]">
               <span id="userEmailDisplayMobile" class="text-[#2f855a] text-sm font-medium hidden px-3 py-2"></span>
@@ -682,7 +684,7 @@
           // Profile Button Handler
           profileBtn.addEventListener('click', () => {
               if (currentUser) {
-                  openGeneralModal(`Welcome, ${currentUser.displayName || currentUser.email || 'User'}! This is your profile page (placeholder).`);
+                  window.location.href = 'profile.html';
               } else {
                   // This case ideally won't be hit because the button is hidden if not logged in
                   showToast('You need to be logged in to view your profile.', 'info');
@@ -717,16 +719,105 @@
           });
           document.getElementById("navDeals").addEventListener("click", function(event) {
               event.preventDefault();
-              window.location.href = "deal.html";
+              showToast("Navigating to Deals page (placeholder)!", "info");
           });
           document.getElementById("navRecipes").addEventListener("click", function(event) {
               event.preventDefault();
-              window.location.href = "recipes.html";
+              showToast("Navigating to Recipes page (placeholder)!", "info");
           });
           document.getElementById("navAboutUs").addEventListener("click", function(event) {
               event.preventDefault();
               showToast("Navigating to About Us page (placeholder)!", "info");
           });
+          document.getElementById("navContactUs").addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "contactus.html";
+          });
+
+          // Mobile menu toggle
+          const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+          const mobileMenu = document.getElementById('mobileMenu');
+
+          if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+              mobileMenu.classList.toggle('hidden');
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', (e) => {
+              if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+              }
+            });
+            
+            // Sync mobile menu with desktop menu
+            document.querySelectorAll('#mobileMenu a').forEach(link => {
+              link.addEventListener('click', () => {
+                const desktopCounterpart = document.getElementById(link.id.replace('Mobile', ''));
+                if (desktopCounterpart) {
+                  desktopCounterpart.click();
+                }
+                mobileMenu.classList.add('hidden');
+              });
+            });
+            
+            // Sync authentication status between desktop and mobile
+            onAuthStateChanged(auth, (user) => {
+              // Update mobile buttons too
+              const loginLogoutBtnMobile = document.getElementById('loginLogoutBtnMobile');
+              const profileBtnMobile = document.getElementById('profileBtnMobile');
+              const myOrdersBtnMobile = document.getElementById('myOrdersBtnMobile');
+              const userEmailDisplayMobile = document.getElementById('userEmailDisplayMobile');
+              const cartCountMobile = document.getElementById('cartCountMobile');
+              
+              // Sync cart count
+              if (cartCountMobile) {
+                cartCountMobile.textContent = cartCountEl.textContent;
+              }
+              
+              if (user) {
+                // User is logged in (mobile updates)
+                if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Logout';
+                if (profileBtnMobile) profileBtnMobile.classList.remove('hidden');
+                if (myOrdersBtnMobile) myOrdersBtnMobile.classList.remove('hidden');
+                if (userEmailDisplayMobile) {
+                  userEmailDisplayMobile.textContent = user.displayName || user.email || 'User';
+                  userEmailDisplayMobile.classList.remove('hidden');
+                }
+              } else {
+                // User is logged out (mobile updates)
+                if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Login';
+                if (profileBtnMobile) profileBtnMobile.classList.add('hidden');
+                if (myOrdersBtnMobile) myOrdersBtnMobile.classList.add('hidden');
+                if (userEmailDisplayMobile) {
+                  userEmailDisplayMobile.classList.add('hidden');
+                }
+              }
+            });
+          }
+
+          // Mobile Contact Us navigation (if mobile menu exists)
+          const contactUsLinkMobile = document.getElementById("navContactUsMobile");
+          if (contactUsLinkMobile) {
+              contactUsLinkMobile.addEventListener("click", function(event) {
+                  event.preventDefault();
+                  window.location.href = "contactus.html";
+                  // Close mobile menu if it's open
+                  const mobileMenu = document.getElementById('mobileMenu');
+                  if (mobileMenu) {
+                      mobileMenu.classList.add('hidden');
+                  }
+              });
+          }
+
+          // Footer Contact Us link
+          const footerContactUs = document.getElementById("footerContactUs");
+          if (footerContactUs) {
+              footerContactUs.addEventListener("click", function(event) {
+                  event.preventDefault();
+                  window.location.href = "contactus.html";
+              });
+          }
 
           // Event listeners for "Add to Cart" buttons
           document.querySelectorAll(".add-to-cart-btn").forEach(button => {
