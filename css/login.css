@@ -1,0 +1,93 @@
+/* Background pattern */
+.bg-pattern {
+    background-image: 
+        radial-gradient(circle at 25px 25px, rgba(110, 200, 142, 0.1) 2px, transparent 0),
+        radial-gradient(circle at 75px 75px, rgba(110, 200, 142, 0.05) 2px, transparent 0);
+    background-size: 100px 100px;
+}
+
+/* Tab styles */
+.tab-button {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.tab-button.active {
+    color: #6ec88e;
+    font-weight: 600;
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #6ec88e;
+    border-radius: 1px;
+}
+
+/* Form animations */
+.form-container {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.form-container.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Input focus styles */
+.form-input:focus {
+    border-color: #6ec88e;
+    box-shadow: 0 0 0 3px rgba(110, 200, 142, 0.1);
+    outline: none;
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s;
+}
+
+.password-toggle:hover {
+    color: #374151;
+}
+
+/* Social button styles */
+.social-btn {
+    transition: all 0.2s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 640px) {
+    .form-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .auth-container {
+        margin: 16px;
+        padding: 24px;
+    }
+    
+    .welcome-section {
+        margin-bottom: 24px;
+    }
+    
+    .welcome-section h2 {
+        font-size: 1.875rem;
+    }
+}
