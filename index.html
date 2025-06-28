@@ -1,73 +1,53 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
-    <link
-      rel="stylesheet"
-      as="style"
-      onload="this.rel='stylesheet'"
-      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Space+Grotesk%3Awght%40400%3B500%3B700"
-    />
-
-    <title>FreshMart</title>
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64," />
-
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart - Fresh Groceries Delivered</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
     <style>
-      /* Custom styles for the modal */
-      .modal {
-        display: none; /* Hidden by default */
-        position: fixed; /* Stay in place */
-        z-index: 1000; /* Sit on top */
-        left: 0;
-        top: 0;
-        width: 100%; /* Full width */
-        height: 100%; /* Full height */
-        overflow: auto; /* Enable scroll if needed */
-        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0; /* For fade in/out transition */
-        transition: opacity 0.3s ease-in-out;
-      }
-      .modal-content {
-        background-color: #fefefe;
-        margin: auto;
-        padding: 15px;
-        border: 1px solid #888;
-        width: 95%; /* Responsive width */
-        max-width: 500px;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transform: translateY(-20px); /* For slight slide-down transition */
-        transition: transform 0.3s ease-in-out;
-        max-height: 90vh; /* Prevent modals from being taller than viewport */
-        overflow-y: auto; /* Allow scrolling within tall modals */
-      }
-      .modal.show {
-          opacity: 1;
-      }
-      .modal.show .modal-content {
-          transform: translateY(0);
-      }
-      .close-button {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .close-button:hover,
-      .close-button:focus {
-        color: black;
-        text-decoration: none;
-      }
-
-      /* Custom Toast Notification System */
-      #toast-container {
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+        
+        /* Hero section background animation */
+        .hero-bg {
+            background: linear-gradient(135deg, #f9fbfa 0%, #eaf0ec 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Floating animation for feature cards */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Custom Toast Notification System */
+        #toast-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -94,842 +74,249 @@
         .toast.success { background-color: #22c55e; }
         .toast.error { background-color: #ef4444; }
         .toast.info { background-color: #3b82f6; }
-
-      /* Mobile-friendly header styles */
-      @media (max-width: 767px) {
-        #mobileMenuBtn {
-          display: block;
-        }
-        .hidden {
-          display: none !important;
-        }
-        .md\\:flex {
-          display: none !important;
-        }
-        #mobileMenu {
-          display: flex !important;
-        }
-      }
     </style>
-  </head>
-  <body>
-    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
-      <div class="layout-container flex h-full grow flex-col">
-        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
-          <div class="flex items-center justify-between">
-            <!-- Logo remains the same -->
-            <a href="index.html" class="flex items-center gap-3 text-[#111813]">
-              <div class="size-4">
-                <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
-                </svg>
-              </div>
-              <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
-            </a>
-            
-            <!-- Mobile Menu Button -->
-            <button id="mobileMenuBtn" class="block md:hidden p-2 rounded-lg text-[#111813] hover:bg-[#eaf0ec]">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+</head>
+<body class="bg-[#f9fbfa]">
 
-            <!-- Desktop Navigation -->
-            <div class="hidden md:flex flex-1 justify-end gap-4 sm:gap-8">
-              <nav class="flex items-center gap-4 sm:gap-9">
-                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navShop">Shop</a>
-                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navDeals">Deals</a>
-                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
-                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navAboutUs">About Us</a>
-                <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navContactUs">Contact Us</a>
-              </nav>
-              <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
-                <span id="userEmailDisplay" class="text-[#2f855a] text-sm font-medium hidden"></span>
-                <button
-                  id="profileBtn"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors hidden"
-                >
-                  <span class="truncate">Profile</span>
-                </button>
-                <button
-                  id="myOrdersBtn"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors hidden"
-                >
-                  <span class="truncate">My Orders</span>
-                </button>
-                <button
-                  id="loginLogoutBtn"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors"
-                >
-                  <span class="truncate">Login</span>
-                </button>
-                <button
-                  id="cartBtn"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                >
-                  <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
-                </button>
-              </div>
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <div class="size-5">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                    </div>
+                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+                </a>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="shop.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Shop</a>
+                    <a href="deals.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Deals</a>
+                    <a href="recipes.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Recipes</a>
+                    <a href="aboutus.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">About</a>
+                    <a href="contactus.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Contact</a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <button id="loginBtn" class="hidden md:flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                        <span>Login</span>
+                    </button>
+                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                        <span>Cart (<span id="cartCount">0</span>)</span>
+                    </button>
+                </div>
             </div>
-          </div>
-          
-          <!-- Mobile Navigation Drawer -->
-          <div id="mobileMenu" class="hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40 px-4 py-2 border-t border-[#eaf0ec] flex flex-col gap-2">
-            <nav class="flex flex-col w-full gap-2 py-2">
-              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navShopMobile">Shop</a>
-              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navDealsMobile">Deals</a>
-              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navRecipesMobile">Recipes</a>
-              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navAboutUsMobile">About Us</a>
-              <a class="text-[#111813] text-sm font-medium py-2 px-3 rounded-lg hover:bg-[#eaf0ec]" href="#" id="navContactUsMobile">Contact Us</a>
-            </nav>
-            <div class="flex flex-col w-full gap-2 py-2 border-t border-[#eaf0ec]">
-              <span id="userEmailDisplayMobile" class="text-[#2f855a] text-sm font-medium hidden px-3 py-2"></span>
-              <button id="profileBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] hidden">Profile</button>
-              <button id="myOrdersBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] hidden">My Orders</button>
-              <button id="loginLogoutBtnMobile" class="w-full text-left py-2 px-3 rounded-lg bg-[#38a169] text-white text-sm font-bold">Login</button>
-              <button id="cartBtnMobile" class="w-full text-left py-2 px-3 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec]">Cart (<span id="cartCountMobile">0</span>)</button>
-            </div>
-          </div>
         </header>
-        <div class="px-4 flex flex-1 justify-center py-5 sm:px-40">
-          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="@container">
-              <div class="p-2 @[480px]:p-4">
-                <div
-                  class="flex min-h-[320px] @[480px]:min-h-[480px] flex-col gap-4 @[480px]:gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-start justify-end px-3 @[480px]:px-4 pb-6 @[480px]:pb-10 @[480px]:px-10"
-                  style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOP3jqOqhCKiAVW8Wt-oiwgBN0jGojNIo4iIJsZ-Wmi1A30queaycpK614tuFvKsBS6Yb0g1A0WJfc5W9eQwxEj0CzE0s_f5PmIjfY0bqh6OfQ4OMcO6W4fVxVYeNU14n6d0lmqMyq6kwT9uDOwWcDBm6BqhjGuYzXpfmB1jsNmvQCF8CDLooA2nc5W_XD3_MoKDYsBVnAku1FWaY8QNVUQrlOIWYpGi5x_WpfADbWX3AO8ITbtKkG6xZXU1c1aE6BeJi82TJ564MM");'
-                >
-                  <div class="flex flex-col gap-2 text-left">
-                    <h1
-                      class="text-white text-3xl @[480px]:text-4xl font-black leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-black @[480px]:leading-tight @[480px]:tracking-[-0.033em]"
-                    >
-                      Fresh Groceries Delivered to Your Doorstep
-                    </h1>
-                    <h2 class="text-white text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
-                      Get everything you need, from farm-fresh produce to daily essentials – delivered fast and fresh.
-                    </h2>
-                  </div>
-                  <button
-                    id="heroShopNowBtn"
-                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 @[480px]:h-12 @[480px]:px-5 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] @[480px]:text-base @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#2f855a] transition-colors"
-                  >
-                    <span class="truncate">Shop Now</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Our Products</h2>
-            <!-- Improved product cards for mobile -->
-            <div class="grid grid-cols-2 sm:flex sm:overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div class="grid grid-cols-2 sm:flex items-stretch p-4 gap-3">
-                <!-- Each product card gets proper sizing for both mobile and desktop -->
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD8dLspY1cCnj8epLZuHgjv3FNaxZR0IjLvpUmtTgVEXIq0B8_Jemcm40cb8hqs2lCQvJYrNJOHBuO7KtJ_dfQbdcJr59MGfSBZy8AafTF0lTXbLXWqoW522KgjCi4ESBiax-o02zJZUfbj1sqQDRh6iWPDrcG9bmQj8xGNzFX3YoC96ZVkGL1MWXjeNUENBCanGDojMjX1brdH_44eQQusYk8RhDGkiIUvqJVQj8t-YqnSfsRggt0lj87DTThhOjnkJyQqwwaEYc7q");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
-                    <div>
-                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Vegetables</p>
-                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Fresh and organic vegetables</p>
-                    </div>
-                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBPcN3sG6A2VTHL7nynS4nruCdwIciSKtncs1KCXnKjU9b5L-oEr7QNnRIoy9dXKwPEoqtpADivAFwWGEl8qyP1ghl11NGmoLQnFoz_EsdaQUpTOBflAnqsPh7gZgMuBx9AHwexVzUEYQYxJNtBqnH1tpMjkh8veREveMyoDucuOIGUDWPguSQ0vdJ4R9AweM4jrLavd9y5V52jbkOog3uYjhjao-pz2q80aoGAPGGxE8MCGAfshGhFHgdh_HLIiyMCDbtOv73DflcD");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
-                    <div>
-                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Dairy</p>
-                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Organic dairy products</p>
-                    </div>
-                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDbhtun9NkJ7GoSeOabCyb0JlGEhQso--pgbiK2Nwm4sSVaCLdl5ZLIM2y6zhNE6Sdc6nsrcEaiBEO7xKqmC1M1pvUR_r1RWWJwZUUwSkZRSrBjyw3KIUYU6gc6rDHS0ZaajtAhGWUHfy4oRQXpURWdudLNj1lClUvSB4_98JXXdIfwjfVVxF8iL_OmF3uw88D94rMMbIPyl-88vthBKAaGWwlHs9UKb4PsiO4PWpdLsV5j7peILcIufo8yIE2NwvxUxrOWkb9DfLtH");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
-                    <div>
-                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Snacks</p>
-                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Tasty and healthy snacks</p>
-                    </div>
-                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-[150px] sm:min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAKj0JM2qEcwYzwUbHQTIHZTwiPLC3giwXIq7QK72NBbKPR6OWFxtrPU-MywkJcKVALHb39XQEehwaIqWatRArddXyS79ougt6sbBhPAy7OXSTcdbi_QqQGe4TTAWF_EhqJFgjY8Yap8msh_vIVbyKn4pLvdf-V70DCt3lbPveq-F4Kl-QtYzO7vq-ZN4WncKr-wF8PTGUrYZaZrjOFsPvXoMaZE1p1c4eQ3gP6Nbts-dsMxqrP-7R63w1sLLrDCYyZ4C2nB_l4l3rg");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-3 sm:p-4 pt-0 gap-2 sm:gap-4">
-                    <div>
-                      <p class="text-[#111813] text-sm sm:text-base font-medium leading-normal">Beverages</p>
-                      <p class="text-[#5e876d] text-xs sm:text-sm font-normal leading-normal">Refreshing drinks</p>
-                    </div>
-                    <button class="add-to-cart-btn flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl h-9 sm:h-10 px-3 sm:px-4 bg-[#eaf0ec] text-[#111813] text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Deals</h2>
-            <div class="flex overflow-x-auto [-ms-scrollbar-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div class="flex items-stretch p-4 gap-3">
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACR44YXWYar8eIAYkSIsxvDCiI9EQmWUi6OtNlN1sEEsm0zI5pby_yHGoT8fOdH9EExxMHOV-fKRzbV1JT8H3bd5hFc6eZPMa534g9oWS0mSVj09yxwue2C8OvPod5DF7jcY10zOF0DmFXjLZehzEnyM8VG_Fx1TwU9aIGuzib8n_yGSDOhnBWZjkymyM44XlDAVHt3LB2EBDDiLTtf3I5LPp-PRsud7g_rPxmG7dA1n7FjDqldtDyKMoCZujAdFxW17VXWJVL3GcE");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
-                    <div>
-                      <p class="text-[#111813] text-base font-medium leading-normal">Apples - 20% Off</p>
-                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Fresh Gala Apples</p>
-                    </div>
-                    <button
-                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                      data-item-id="9" data-item-name="Apples" data-item-price="1.99"
-                    >
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgp6O0riMZiO7xiHQAtTt0eq4IJ_q2nPCG9YcMobtR0zEes1nAh6tk4YMA8wtlbwZhUv_5xfRxa5h5PC2Asp3eW27TxjfhspiAI0XbBkeGdoudmz8LB6QPDDDWtcYY3Mxhhr5TxwCFG-MD4G7qaB-V6fDWTsz29HhC8rGlWW8MygnBY35oRVZOg4_-U7skhxHdH41OqAvr6motVNGlqd1nTnAmmC5Sim-lQE6pG6C6lQSxcL7sRBcCSG83gxV1teNiDbYS0qTmEDDq");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
-                    <div>
-                      <p class="text-[#111813] text-base font-medium leading-normal">Milk - 15% Off</p>
-                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Organic Whole Milk</p>
-                    </div>
-                    <button
-                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                      data-item-id="10" data-item-name="Milk" data-item-price="3.49"
-                    >
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACOynmXRk-AOtaAN6YJ1dxh3U_KzFUMQxUxkv6aYsfvZ6YJKLNotmmkTbtquzcgNK60_72uka196QaXo3Eb2PQ_z4p0BniTyVJGh5DmqHEXTzNpa7VSu2xyDdWVxc0EqXx7LjdK0me1SRdu6c9NeJHOedwtuNOfvTcYc1O41ztlxV3Am5YwwCo2ibD7wnaHdgFVZJ97g7HmRXV_3t4ZjcemMX3CFGuzThVIaXYOZNPvM-YHfTEulvIM-eoxGzk-MqaM03ClZ3B1LgR");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
-                    <div>
-                      <p class="text-[#111813] text-base font-medium leading-normal">Chips - 25% Off</p>
-                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Assorted Potato Chips</p>
-                    </div>
-                    <button
-                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                      data-item-id="11" data-item-name="Chips" data-item-price="2.25"
-                    >
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-                <div class="flex h-full flex-1 flex-col gap-4 rounded-xl bg-[#f9fbfa] shadow-[0_0_4px_rgba(0,0,0,0.1)] min-w-40">
-                  <div
-                    class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl flex flex-col"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApuak_2AVGPbGSOZz5lLC7e3J3mv3NNcqhDrAyyEIWIUr2MidOS0Jsg9pj03tCrQRTZSW-mwNgMjyIeTRQYV_Bw1A3gYgZBbo_GpaAu5D07cMMSLC8jl7GTo3EzJzvf-480P6omMIc62DSkzSrXfbkcHAxYy3XJTiQnAY7NAjr_zCsme87mIr7v_EZZ-iStt5VMQ7EIU78MqJL3pwnF16VQ0kzhwyRRqgdvNV6rJmJmcEbkVZTS34r0pINM1lXxRkwCOQ22bniSsL3");'
-                  ></div>
-                  <div class="flex flex-col flex-1 justify-between p-4 pt-0 gap-4">
-                    <div>
-                      <p class="text-[#111813] text-base font-medium leading-normal">Soda - 10% Off</p>
-                      <p class="text-[#5e876d] text-sm font-normal leading-normal">Various Soda Flavors</p>
-                    </div>
-                    <button
-                      class="add-to-cart-btn flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                      data-item-id="12" data-item-name="Soda" data-item-price="1.50"
-                    >
-                      <span class="truncate">Add to Cart</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Why Choose Us</h2>
-            <div class="grid grid-cols-1 gap-3 p-4 sm:grid-cols-[repeat(auto-fit,minmax(158px,1fr))]">
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
-                <div class="text-[#111813]" data-icon="Truck" data-size="24px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M247.42,117l-14-35A15.93,15.93,0,0,0,218.58,72H184V64a8,8,0,0,0-8-8H24A16,16,0,0,0,8,72V184a16,16,0,0,0,16,16H41a32,32,0,0,0,62,0h50a32,32,0,0,0,62,0h17a16,16,0,0,0,16-16V120A7.94,7.94,0,0,0,247.42,117ZM184,88h34.58l9.6,24H184ZM24,72H168v64H24ZM72,208a16,16,0,1,1,16-16A16,16,0,0,1,72,208Zm81-24H103a32,32,0,0,0-62,0H24V152H168v12.31A32.11,32.11,0,0,0,153,184Zm31,24a16,16,0,1,1,16-16A16,16,0,0,1,184,208Zm48-24H215a32.06,32.06,0,0,0-31-24V128h48Z"
-                    ></path>
-                  </svg>
-                </div>
-                <h2 class="text-[#111813] text-base font-bold leading-tight">Fast Delivery</h2>
-              </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
-                <div class="text-[#111813]" data-icon="CurrencyDollar" data-size="24px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M152,120H136V56h8a32,32,0,0,1,32,32,8,8,0,0,0,16,0,48.05,48.05,0,0,0-48-48h-8V24a8,8,0,0,0-16,0V40h-8a48,48,0,0,0,0,96h8v64H104a32,32,0,0,1-32-32,8,8,0,0,0-16,0,48.05,48.05,0,0,0,48,48h16v16a8,8,0,0,0,16,0V216h16a48,48,0,0,0,0-96Zm-40,0a32,32,0,0,1,0-64h8v64Zm40,80H136V136h16a32,32,0,0,1,0,64Z"
-                    ></path>
-                  </svg>
-                </div>
-                <h2 class="text-[#111813] text-base font-bold leading-tight">Best Prices</h2>
-              </div>
-              <div class="flex flex-1 gap-3 rounded-lg border border-[#d5e2d9] bg-[#f9fbfa] p-4 items-center">
-                <div class="text-[#111813]" data-icon="Leaf" data-size="24px" data-weight="regular">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                    <path
-                      d="M223.45,40.07a8,8,0,0,0-7.52-7.52C139.8,28.08,78.82,51,52.82,94a87.09,87.09,0,0,0-12.76,49c.57,15.92,5.21,32,13.79,47.85l-19.51,19.5a8,8,0,0,0,11.32,11.32l19.5-19.51C81,210.73,97.09,215.37,113,215.94q1.67.06,3.33.06A86.93,86.93,0,0,0,162,203.18C205,177.18,227.93,116.21,223.45,40.07ZM153.75,189.5c-22.75,13.78-49.68,14-76.71.77l88.63-88.62a8,8,0,0,0-11.32-11.32L65.73,179c-13.19-27-13-54,.77-76.71,22.09-36.47,74.6-56.44,141.31-54.06C210.2,114.89,190.22,167.41,153.75,189.5Z"
-                    ></path>
-                  </svg>
-                </div>
-                <h2 class="text-[#111813] text-base font-bold leading-tight">Eco-Friendly Packaging</h2>
-              </div>
-            </div>
-            <h2 class="text-[#111813] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Customer Reviews</h2>
-            <div class="flex flex-col gap-8 overflow-x-hidden bg-[#f9fbfa] p-4">
-              <div class="flex flex-col gap-3 bg-[#f9fbfa]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCcfJ-ILVRqRq2Spg6I5ygRNKVNMz4BR3xeeTARmdd8ZoQO__ZNPBJNAhQUiOVx8b2MuZ8sATIBiStSFXflji3oKfzGrBmruvrGXd-vH4SEQxkVs4hhhMSvIduCoiOieRwxpzuOGpeexmPZPl6wll5PaparSRxuSdWTmj-7DaEDL14DQY4i8qR0JEY9bJd1QrhWhVjUS7a8bz0OhLNxP-QSa5jSaTOoiZ8MJOQMNZoZ-wfSh1RHJsXP1igXGA0-KSPWzqIKLx7iMIW7");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-[#111813] text-base font-medium leading-normal">Olivia Carter</p>
-                    <p class="text-[#5e876d] text-sm font-normal leading-normal">2023-09-15</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-[#111813] text-base font-normal leading-normal">
-                  "I love the quality and freshness of the produce from FreshMart. The delivery is always on time, and the customer service is excellent!"
-                </p>
-              </div>
-              <div class="flex flex-col gap-3 bg-[#f9fbfa]">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBuPq60IIfmvgCmug0cJH9MdpxlZzZcX4WQKfMdfYKJapgALCgaetfPeV4R0FH0TqdmCikpT_Zk_zl2zKFh6LtjjUsMjEzNZu6lnn_DtmZptYo7ChTms-wg9rJvixAD6qjKDh4xViZhD9V7g2oVJV8bAenIXq14F9m7wEpGWjyJkvsx6hYXdN24cTkmx_DR9f57EJGG9M0iT7AbMCbmtOdX120WK25VrA8a4ALwt5OMUAwYCGM9ZlJsJwPOHeplG2rubuyzHr7e5hWZ");'
-                  ></div>
-                  <div class="flex-1">
-                    <p class="text-[#111813] text-base font-medium leading-normal">Liam Harper</p>
-                    <p class="text-[#5e876d] text-sm font-normal leading-normal">2023-08-22</p>
-                  </div>
-                </div>
-                <div class="flex gap-0.5">
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                  <div class="text-[#6ec88e]" data-icon="Star" data-size="20px" data-weight="fill">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M234.5,114.38l-45.1,39.36,13.51,58.6a16,16,0,0,1-23.84,17.34l-51.11-31-51,31a16,16,0,0,1-23.84-17.34L66.61,153.8,21.5,114.38a16,16,0,0,1,9.11-28.06l59.46-5.15,23.21-55.36a15.95,15.95,0,0,1,29.44,0h0L166,81.17l59.44,5.15a16,16,0,0,1,9.11,28.06Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </div>
-                <p class="text-[#111813] text-base font-normal leading-normal">
-                  "Great selection of products and competitive prices. The eco-friendly packaging is a big plus. Highly recommend!"
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <footer class="flex justify-center">
-          <div class="flex max-w-[960px] flex-1 flex-col">
-            <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
-              <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerContactUs">Contact Us</a>
-                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
-                <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerTermsOfService">Terms of Service</a>
-              </div>
-              <div class="flex flex-wrap justify-center gap-4">
-                <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                  <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </a>
-                <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                  <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </a>
-                <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                  <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                      <path
-                        d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"
-                      ></path>
-                    </svg>
-                  </div>
-                </a>
-              </div>
-              <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
-            </footer>
-          </div>
-        </footer>
-      </div>
-    </div>
 
-    <!-- Generic Modal for alerts and messages -->
-    <div id="generalModal" class="modal hidden">
-      <div class="modal-content">
-        <span class="close-button" id="generalModalCloseBtn">&times;</span>
-        <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
-        <div class="flex justify-center gap-4">
-            <button id="generalModalOkBtn" class="flex-1 rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">OK</button>
-        </div>
-      </div>
+        <!-- Hero Section -->
+        <section class="hero-bg py-20 px-4">
+            <div class="hero-content max-w-6xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-[#111813] mb-6 leading-tight">
+                    Fresh Groceries<br>
+                    <span class="text-[#6ec88e]">Delivered Daily</span>
+                </h1>
+                <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Get the freshest produce, pantry essentials, and organic foods delivered right to your doorstep. Quality guaranteed, convenience delivered.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="shop.html" class="inline-flex items-center justify-center rounded-xl h-12 px-8 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-base font-bold tracking-[0.015em] transition-colors">
+                        Start Shopping
+                    </a>
+                    <a href="deals.html" class="inline-flex items-center justify-center rounded-xl h-12 px-8 bg-white hover:bg-gray-50 text-[#111813] text-base font-bold tracking-[0.015em] border border-gray-200 transition-colors">
+                        View Deals
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-20 px-4 bg-white">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#111813] mb-12">
+                    Why Choose FreshMart?
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation">
+                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM12 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM15.75 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#111813] mb-2">Fresh Quality</h3>
+                        <p class="text-gray-600">Hand-picked fresh produce and quality ingredients sourced directly from local farms.</p>
+                    </div>
+                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 0.5s;">
+                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM12 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM15.75 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#111813] mb-2">Fast Delivery</h3>
+                        <p class="text-gray-600">Same-day delivery available. Get your groceries delivered within hours of ordering.</p>
+                    </div>
+                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 1s;">
+                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-[#111813] mb-2">Best Prices</h3>
+                        <p class="text-gray-600">Competitive prices with regular deals and discounts. Save more on your grocery shopping.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Categories -->
+        <section class="py-20 px-4 bg-[#f9fbfa]">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#111813] mb-12">
+                    Popular Categories
+                </h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('fruits')">
+                        <img src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Fresh Fruits" class="w-full h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813]">Fresh Fruits</h3>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('vegetables')">
+                        <img src="https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Vegetables" class="w-full h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813]">Vegetables</h3>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('dairy')">
+                        <img src="https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Dairy Products" class="w-full h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813]">Dairy Products</h3>
+                    </div>
+                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('bakery')">
+                        <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Bakery Items" class="w-full h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813]">Bakery Items</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t">
+            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="size-5">
+                                <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                            </div>
+                            <h3 class="text-lg font-bold text-[#111813]">FreshMart</h3>
+                        </div>
+                        <p class="text-gray-600 text-sm">Your trusted partner for fresh groceries and quality food products.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[#111813] mb-4">Quick Links</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="shop.html" class="text-gray-600 hover:text-[#6ec88e]">Shop</a></li>
+                            <li><a href="deals.html" class="text-gray-600 hover:text-[#6ec88e]">Deals</a></li>
+                            <li><a href="aboutus.html" class="text-gray-600 hover:text-[#6ec88e]">About Us</a></li>
+                            <li><a href="contactus.html" class="text-gray-600 hover:text-[#6ec88e]">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[#111813] mb-4">Customer Service</h4>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="my_orders.html" class="text-gray-600 hover:text-[#6ec88e]">My Orders</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Help Center</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Return Policy</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-[#111813] mb-4">Contact Info</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li>📞 +91 12345 67890</li>
+                            <li>📧 support@freshmart.com</li>
+                            <li>📍 Mumbai, Maharashtra</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t mt-8 pt-8 text-center">
+                    <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-      import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-      // --- Firebase Configuration ---
-      // This configuration is for demonstration purposes.
-      // In a real application, ensure your Firebase project settings are correctly linked.
-      const firebaseConfig = {
-          apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-          authDomain: "portfolio-56be7.firebaseapp.com",
-          projectId: "portfolio-56be7",
-          storageBucket: "portfolio-56be7.firebasestorage.app",
-          messagingSenderId: "888511551571",
-          appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-          measurementId: "G-X3CYL9YZR1"
-      };
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+            authDomain: "portfolio-56be7.firebaseapp.com",
+            projectId: "portfolio-56be7",
+            storageBucket: "portfolio-56be7.firebasestorage.app",
+            messagingSenderId: "888511551571",
+            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+            measurementId: "G-X3CYL9YZR1"
+        };
 
-      // --- Initialize Firebase ---
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      let currentUser = null; // To store the authenticated user
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-      // --- DOM Elements ---
-      const cartCountEl = document.getElementById("cartCount");
-      const loginLogoutBtn = document.getElementById("loginLogoutBtn");
-      const profileBtn = document.getElementById("profileBtn");
-      const myOrdersBtn = document.getElementById("myOrdersBtn"); // New
-      const userEmailDisplay = document.getElementById("userEmailDisplay");
-      const generalModal = document.getElementById('generalModal');
-      const generalModalMessage = document.getElementById('generalModalMessage');
-      const generalModalOkBtn = document.getElementById('generalModalOkBtn');
-      const generalModalCloseBtn = document.getElementById('generalModalCloseBtn');
+        // DOM Elements
+        const cartCountEl = document.getElementById("cartCount");
+        const loginBtn = document.getElementById("loginBtn");
+        const cartBtn = document.getElementById("cartBtn");
 
-      // --- Toast Notification System ---
-      const toastContainer = document.getElementById('toast-container');
-      function showToast(message, type = 'info', duration = 4000) {
-          const toast = document.createElement('div');
-          toast.className = `toast ${type}`;
-          toast.textContent = message;
-          toastContainer.appendChild(toast);
+        // Toast Notification System
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
 
-          setTimeout(() => toast.classList.add('show'), 10);
-          setTimeout(() => {
-              toast.classList.remove('show');
-              setTimeout(() => toast.parentNode?.removeChild(toast), 300);
-          }, duration);
-      }
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
 
-      // --- Generic Modal Functions ---
-      function openGeneralModal(message) {
-          generalModalMessage.textContent = message;
-          generalModal.classList.remove('hidden');
-          setTimeout(() => generalModal.classList.add('show'), 10);
-      }
+        // Update cart count
+        function updateCartCount() {
+            const savedCart = localStorage.getItem('freshmartCart');
+            const cartItems = savedCart ? JSON.parse(savedCart) : [];
+            const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartCountEl.textContent = totalCount;
+        }
 
-      function closeGeneralModal() {
-          generalModal.classList.remove('show');
-          setTimeout(() => generalModal.classList.add('hidden'), 300);
-      }
+        // Navigation functions
+        window.navigateToShop = function(category) {
+            window.location.href = `shop.html?category=${category}`;
+        };
 
-      // --- Cart Count Function ---
-      function updateCartCount() {
-          const savedCart = localStorage.getItem('freshmartCart');
-          const cartItems = savedCart ? JSON.parse(savedCart) : [];
-          // Sum the quantity of all items in the cart
-          const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-          cartCountEl.textContent = totalCount;
-      }
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
 
-      // --- Event Listeners ---
-      document.addEventListener('DOMContentLoaded', () => {
-          updateCartCount(); // Update cart count on page load
-
-          // Firebase Auth state change listener
-          onAuthStateChanged(auth, (user) => {
-              currentUser = user;
-              if (user) {
-                  // User is logged in
-                  loginLogoutBtn.textContent = 'Logout';
-                  loginLogoutBtn.classList.remove('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
-                  loginLogoutBtn.classList.add('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
-                  
-                  profileBtn.classList.remove('hidden'); // Show profile button
-                  myOrdersBtn.classList.remove('hidden'); // Show My Orders button (New)
-
-                  // Prioritize display name, then email, then a generic "User"
-                  userEmailDisplay.textContent = user.displayName || user.email || 'User';
-                  userEmailDisplay.classList.remove('hidden'); // Show user name/email
-              } else {
-                  // User is logged out
-                  loginLogoutBtn.textContent = 'Login';
-                  loginLogoutBtn.classList.remove('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
-                  loginLogoutBtn.classList.add('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
-                  
-                  profileBtn.classList.add('hidden'); // Hide profile button
-                  myOrdersBtn.classList.add('hidden'); // Hide My Orders button (New)
-
-                  userEmailDisplay.textContent = ''; // Clear user name/email
-                  userEmailDisplay.classList.add('hidden');
-              }
-          });
-
-          // Login/Logout Button Handler
-          loginLogoutBtn.addEventListener('click', async () => {
-              if (currentUser) {
-                  // If logged in, log out
-                  try {
-                      await signOut(auth);
-                      showToast('Successfully logged out!', 'success');
-                  } catch (error) {
-                      console.error('Logout error:', error);
-                      showToast(`Logout failed: ${error.message}`, 'error');
-                  }
-              } else {
-                  // If not logged in, go to login page
-                  window.location.href = 'login.html';
-              }
-          });
-
-          // Profile Button Handler
-          profileBtn.addEventListener('click', () => {
-              if (currentUser) {
-                  window.location.href = 'profile.html';
-              } else {
-                  // This case ideally won't be hit because the button is hidden if not logged in
-                  showToast('You need to be logged in to view your profile.', 'info');
-              }
-          });
-
-          // My Orders Button Handler (New)
-          myOrdersBtn.addEventListener('click', () => {
-            if (currentUser) {
-                window.location.href = 'my_orders.html';
-            } else {
-                showToast('Please log in to view your orders.', 'info');
-            }
-          });
-
-
-          // Cart Button Handler
-          document.getElementById("cartBtn").addEventListener("click", function() {
-              window.location.href = "cart.html"; // Navigate to cart page
-          });
-
-          // Hero Section "Shop Now" button
-          document.getElementById("heroShopNowBtn").addEventListener("click", function() {
-              showToast("Redirecting to the main Shop page!", "info");
-              window.location.href = "shop.html";
-          });
-
-          // Navigation Links
-          document.getElementById("navShop").addEventListener("click", function(event) {
-              event.preventDefault();
-              window.location.href = "shop.html";
-          });
-          document.getElementById("navDeals").addEventListener("click", function(event) {
-              event.preventDefault();
-              showToast("Navigating to Deals page (placeholder)!", "info");
-          });
-          document.getElementById("navRecipes").addEventListener("click", function(event) {
-              event.preventDefault();
-              showToast("Navigating to Recipes page (placeholder)!", "info");
-          });
-          document.getElementById("navAboutUs").addEventListener("click", function(event) {
-              event.preventDefault();
-              showToast("Navigating to About Us page (placeholder)!", "info");
-          });
-          document.getElementById("navContactUs").addEventListener("click", function(event) {
-            event.preventDefault();
-            window.location.href = "contactus.html";
-          });
-
-          // Mobile menu toggle
-          const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-          const mobileMenu = document.getElementById('mobileMenu');
-
-          if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => {
-              mobileMenu.classList.toggle('hidden');
-            });
-            
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-              if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.add('hidden');
-              }
-            });
-            
-            // Sync mobile menu with desktop menu
-            document.querySelectorAll('#mobileMenu a').forEach(link => {
-              link.addEventListener('click', () => {
-                const desktopCounterpart = document.getElementById(link.id.replace('Mobile', ''));
-                if (desktopCounterpart) {
-                  desktopCounterpart.click();
-                }
-                mobileMenu.classList.add('hidden');
-              });
-            });
-            
-            // Sync authentication status between desktop and mobile
+            // Auth state listener
             onAuthStateChanged(auth, (user) => {
-              // Update mobile buttons too
-              const loginLogoutBtnMobile = document.getElementById('loginLogoutBtnMobile');
-              const profileBtnMobile = document.getElementById('profileBtnMobile');
-              const myOrdersBtnMobile = document.getElementById('myOrdersBtnMobile');
-              const userEmailDisplayMobile = document.getElementById('userEmailDisplayMobile');
-              const cartCountMobile = document.getElementById('cartCountMobile');
-              
-              // Sync cart count
-              if (cartCountMobile) {
-                cartCountMobile.textContent = cartCountEl.textContent;
-              }
-              
-              if (user) {
-                // User is logged in (mobile updates)
-                if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Logout';
-                if (profileBtnMobile) profileBtnMobile.classList.remove('hidden');
-                if (myOrdersBtnMobile) myOrdersBtnMobile.classList.remove('hidden');
-                if (userEmailDisplayMobile) {
-                  userEmailDisplayMobile.textContent = user.displayName || user.email || 'User';
-                  userEmailDisplayMobile.classList.remove('hidden');
+                if (user) {
+                    loginBtn.textContent = 'Profile';
+                    loginBtn.onclick = () => window.location.href = 'profile.html';
+                } else {
+                    loginBtn.textContent = 'Login';
+                    loginBtn.onclick = () => window.location.href = 'login.html';
                 }
-              } else {
-                // User is logged out (mobile updates)
-                if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Login';
-                if (profileBtnMobile) profileBtnMobile.classList.add('hidden');
-                if (myOrdersBtnMobile) myOrdersBtnMobile.classList.add('hidden');
-                if (userEmailDisplayMobile) {
-                  userEmailDisplayMobile.classList.add('hidden');
-                }
-              }
             });
-          }
 
-          // Mobile Contact Us navigation (if mobile menu exists)
-          const contactUsLinkMobile = document.getElementById("navContactUsMobile");
-          if (contactUsLinkMobile) {
-              contactUsLinkMobile.addEventListener("click", function(event) {
-                  event.preventDefault();
-                  window.location.href = "contactus.html";
-                  // Close mobile menu if it's open
-                  const mobileMenu = document.getElementById('mobileMenu');
-                  if (mobileMenu) {
-                      mobileMenu.classList.add('hidden');
-                  }
-              });
-          }
-
-          // Footer Contact Us link
-          const footerContactUs = document.getElementById("footerContactUs");
-          if (footerContactUs) {
-              footerContactUs.addEventListener("click", function(event) {
-                  event.preventDefault();
-                  window.location.href = "contactus.html";
-              });
-          }
-
-          // Event listeners for "Add to Cart" buttons
-          document.querySelectorAll(".add-to-cart-btn").forEach(button => {
-            button.addEventListener("click", function() {
-              const itemId = parseInt(this.dataset.itemId);
-              const itemName = this.dataset.itemName;
-              const itemPrice = parseFloat(this.dataset.itemPrice);
-              
-              // Find if item already exists in cart, then update quantity
-              let existingItem = cartItems.find(item => item.id === itemId);
-              if (existingItem) {
-                  existingItem.quantity = (existingItem.quantity || 1) + 1; // Increment quantity
-              } else {
-                  // Add new item to cart with quantity 1
-                  cartItems.push({ id: itemId, name: itemName, price: itemPrice, quantity: 1 });
-              }
-              
-              localStorage.setItem('freshmartCart', JSON.stringify(cartItems)); // Save to localStorage
-              updateCartCount(); // Update the cart count displayed in header
-              showToast(`${itemName} added to cart!`, "success"); // Use toast for feedback
+            // Cart button
+            cartBtn.addEventListener('click', () => {
+                window.location.href = 'cart.html';
             });
-          });
 
-          // Event listeners for footer links
-          document.getElementById("footerContactUs").addEventListener("click", function(event) {
-            event.preventDefault();
-            showToast("Navigating to Contact Us page!", "info");
-          });
-
-          document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
-            event.preventDefault();
-            showToast("Navigating to Privacy Policy page!", "info");
-          });
-
-          document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
-            event.preventDefault();
-            showToast("Navigating to Terms of Service page!", "info");
-          });
-          
-          // General Modal Close Button
-          generalModalOkBtn.addEventListener('click', closeGeneralModal);
-          generalModalCloseBtn.addEventListener('click', closeGeneralModal);
-
-          // Initial load of cart items to ensure count is correct
-          const savedCart = localStorage.getItem('freshmartCart');
-          if (savedCart) {
-              cartItems = JSON.parse(savedCart);
-          }
-      });
-
-
-      // Mobile menu toggle
-      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-
-      if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', () => {
-          mobileMenu.classList.toggle('hidden');
+            // Welcome message
+            showToast('Welcome to FreshMart! 🛒', 'success', 3000);
         });
-        
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', (e) => {
-          if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.add('hidden');
-          }
-        });
-        
-        // Sync mobile menu with desktop menu
-        document.querySelectorAll('#mobileMenu a').forEach(link => {
-          link.addEventListener('click', () => {
-            const desktopCounterpart = document.getElementById(link.id.replace('Mobile', ''));
-            if (desktopCounterpart) {
-              desktopCounterpart.click();
-            }
-            mobileMenu.classList.add('hidden');
-          });
-        });
-        
-        // Sync authentication status between desktop and mobile
-        onAuthStateChanged(auth, (user) => {
-          // Update mobile buttons too
-          const loginLogoutBtnMobile = document.getElementById('loginLogoutBtnMobile');
-          const profileBtnMobile = document.getElementById('profileBtnMobile');
-          const myOrdersBtnMobile = document.getElementById('myOrdersBtnMobile');
-          const userEmailDisplayMobile = document.getElementById('userEmailDisplayMobile');
-          const cartCountMobile = document.getElementById('cartCountMobile');
-          
-          // Sync cart count
-          if (cartCountMobile) {
-            cartCountMobile.textContent = cartCountEl.textContent;
-          }
-          
-          if (user) {
-            // User is logged in (mobile updates)
-            if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Logout';
-            if (profileBtnMobile) profileBtnMobile.classList.remove('hidden');
-            if (myOrdersBtnMobile) myOrdersBtnMobile.classList.remove('hidden');
-            if (userEmailDisplayMobile) {
-              userEmailDisplayMobile.textContent = user.displayName || user.email || 'User';
-              userEmailDisplayMobile.classList.remove('hidden');
-            }
-          } else {
-            // User is logged out (mobile updates)
-            if (loginLogoutBtnMobile) loginLogoutBtnMobile.textContent = 'Login';
-            if (profileBtnMobile) profileBtnMobile.classList.add('hidden');
-            if (myOrdersBtnMobile) myOrdersBtnMobile.classList.add('hidden');
-            if (userEmailDisplayMobile) {
-              userEmailDisplayMobile.classList.add('hidden');
-            }
-          }
-        });
-      }
     </script>
-  </body>
+</body>
 </html>

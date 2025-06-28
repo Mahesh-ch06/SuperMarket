@@ -10,14 +10,13 @@ const PORT = process.env.PORT || 3000;
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// Serve static files from the root directory (where your HTML, CSS, JS are)
-// Assuming your HTML files (index.html, deals.html, cart.html, my_orders.html)
-// are in the same directory as your 'server' folder, or in a 'public' folder
-// next to 'server'. Adjust this path based on your project structure.
-// For example, if your HTML files are in a folder called 'public' at the same level as 'server':
-// app.use(express.static(path.join(__dirname, '../public')));
-// For simplicity, if they are one level up from this 'server' directory:
-app.use(express.static(path.join(__dirname, '..'))); // Serves files from the parent directory
+// Serve static files from the current directory
+app.use(express.static(__dirname));
+
+// Default route to serve index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 // --- Gemini API Proxy Endpoint ---
 app.post('/api/gemini-insight', async (req, res) => {
@@ -50,9 +49,6 @@ app.post('/api/gemini-insight', async (req, res) => {
 });
 
 // --- Firebase Config Endpoint (Optional but Recommended for Full Security) ---
-// If you want to dynamically load Firebase config from backend env vars,
-// your client-side Firebase initialization would fetch from this endpoint.
-// For now, your existing HTML hardcodes it, but this shows the pattern.
 app.get('/api/firebase-config', (req, res) => {
     const firebaseConfig = {
         apiKey: process.env.FIREBASE_API_KEY,
@@ -70,9 +66,8 @@ app.get('/api/firebase-config', (req, res) => {
     res.json(cleanedConfig);
 });
 
-
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    console.log('Serving static files from:', path.join(__dirname, '..'));
+    console.log('Serving static files from:', __dirname);
 });
