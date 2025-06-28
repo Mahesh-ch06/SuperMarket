@@ -125,6 +125,150 @@
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
+
+        /* AI Insight Modal Styles */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .ai-modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .ai-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            position: relative;
+        }
+
+        .ai-modal-body {
+            padding: 25px;
+            line-height: 1.6;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .close-modal:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .ai-insight-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .ai-insight-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-insight-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .insight-content {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .insight-content h4 {
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insight-content p {
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .insight-content ul {
+            color: #475569;
+            padding-left: 20px;
+        }
+
+        .insight-content li {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
@@ -290,28 +434,46 @@
                                 <div class="bg-white rounded-lg p-4 shadow-sm border">
                                     <h3 class="font-semibold text-gray-800 mb-2">🥬 Fresh Produce Bundle</h3>
                                     <p class="text-sm text-gray-600 mb-2">Mix & match any 5 vegetables</p>
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between mb-3">
                                         <span class="text-lg font-bold text-green-600">₹299</span>
                                         <span class="text-sm text-gray-500 line-through">₹450</span>
                                     </div>
+                                    <button class="ai-insight-btn" onclick="getAIInsight('Fresh Produce Bundle', 'Mix and match any 5 vegetables for a healthy diet')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                 </div>
                                 
                                 <div class="bg-white rounded-lg p-4 shadow-sm border">
                                     <h3 class="font-semibold text-gray-800 mb-2">🥛 Dairy Essentials Pack</h3>
                                     <p class="text-sm text-gray-600 mb-2">Milk, yogurt, cheese combo</p>
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between mb-3">
                                         <span class="text-lg font-bold text-green-600">₹199</span>
                                         <span class="text-sm text-gray-500 line-through">₹280</span>
                                     </div>
+                                    <button class="ai-insight-btn" onclick="getAIInsight('Dairy Essentials Pack', 'Milk, yogurt, and cheese combo for daily nutrition')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                 </div>
                                 
                                 <div class="bg-white rounded-lg p-4 shadow-sm border">
                                     <h3 class="font-semibold text-gray-800 mb-2">🍞 Bakery Special</h3>
                                     <p class="text-sm text-gray-600 mb-2">Fresh bread + pastries</p>
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex items-center justify-between mb-3">
                                         <span class="text-lg font-bold text-green-600">₹149</span>
                                         <span class="text-sm text-gray-500 line-through">₹220</span>
                                     </div>
+                                    <button class="ai-insight-btn" onclick="getAIInsight('Bakery Special', 'Fresh bread and pastries baked daily')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -339,6 +501,12 @@
                                         </div>
                                         <div class="text-sm text-gray-500">per basket</div>
                                     </div>
+                                    <button class="ai-insight-btn mb-3" onclick="getAIInsight('Premium Fruit Basket', 'Fresh seasonal fruits handpicked for quality, rich in vitamins and antioxidants')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                     <button class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-colors">
                                         Add to Cart
                                     </button>
@@ -363,6 +531,12 @@
                                         </div>
                                         <div class="text-sm text-gray-500">per kg</div>
                                     </div>
+                                    <button class="ai-insight-btn mb-3" onclick="getAIInsight('Organic Vegetable Mix', 'Farm-fresh organic vegetables bundle, pesticide-free and nutrient-rich')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                     <button class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-colors">
                                         Add to Cart
                                     </button>
@@ -387,6 +561,12 @@
                                         </div>
                                         <div class="text-sm text-gray-500">per combo</div>
                                     </div>
+                                    <button class="ai-insight-btn mb-3" onclick="getAIInsight('Fresh Dairy Combo', 'Milk, cheese, and yogurt package with high protein and calcium content')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                        </svg>
+                                        AI Insight
+                                    </button>
                                     <button class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 rounded-lg transition-colors">
                                         Add to Cart
                                     </button>
@@ -399,25 +579,49 @@
                     <div class="mb-12">
                         <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Shop by Category</h2>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="getAIInsight('Fresh Fruits Category', 'Wide variety of fresh, seasonal fruits rich in vitamins, minerals, and antioxidants')">
                                 <div class="text-4xl mb-3">🍎</div>
                                 <h3 class="font-bold text-gray-800">Fruits</h3>
-                                <p class="text-sm text-gray-600">Fresh & Juicy</p>
+                                <p class="text-sm text-gray-600 mb-2">Fresh & Juicy</p>
+                                <button class="ai-insight-btn text-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                    </svg>
+                                    AI Tips
+                                </button>
                             </div>
-                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="getAIInsight('Fresh Vegetables Category', 'Farm-fresh vegetables packed with essential nutrients, fiber, and vitamins for healthy living')">
                                 <div class="text-4xl mb-3">🥬</div>
                                 <h3 class="font-bold text-gray-800">Vegetables</h3>
-                                <p class="text-sm text-gray-600">Farm Fresh</p>
+                                <p class="text-sm text-gray-600 mb-2">Farm Fresh</p>
+                                <button class="ai-insight-btn text-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                    </svg>
+                                    AI Tips
+                                </button>
                             </div>
-                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="getAIInsight('Dairy Products Category', 'Pure and natural dairy products including milk, cheese, yogurt rich in protein and calcium')">
                                 <div class="text-4xl mb-3">🥛</div>
                                 <h3 class="font-bold text-gray-800">Dairy</h3>
-                                <p class="text-sm text-gray-600">Pure & Natural</p>
+                                <p class="text-sm text-gray-600 mb-2">Pure & Natural</p>
+                                <button class="ai-insight-btn text-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                    </svg>
+                                    AI Tips
+                                </button>
                             </div>
-                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+                            <div class="bg-white rounded-lg p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="getAIInsight('Bakery Items Category', 'Fresh baked goods including bread, pastries, and baked items made with quality ingredients')">
                                 <div class="text-4xl mb-3">🍞</div>
                                 <h3 class="font-bold text-gray-800">Bakery</h3>
-                                <p class="text-sm text-gray-600">Fresh Baked</p>
+                                <p class="text-sm text-gray-600 mb-2">Fresh Baked</p>
+                                <button class="ai-insight-btn text-xs">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                                    </svg>
+                                    AI Tips
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -470,6 +674,29 @@
                 </div>
             </div>
         </footer>
+    </div>
+
+    <!-- AI Insight Modal -->
+    <div id="aiModal" class="ai-modal">
+        <div class="ai-modal-content">
+            <div class="ai-modal-header">
+                <h2 id="modalTitle" class="text-xl font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    </svg>
+                    AI Insights
+                </h2>
+                <span class="close-modal" onclick="closeAIModal()">&times;</span>
+            </div>
+            <div class="ai-modal-body">
+                <div id="modalContent">
+                    <div class="flex items-center justify-center py-8">
+                        <div class="loading-spinner"></div>
+                        <span class="ml-3 text-gray-600">Generating AI insights...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Container -->
@@ -557,6 +784,98 @@
                 }
             }, 1000);
         }
+
+        // AI Insight Functions
+        window.getAIInsight = async function(productName, productDescription) {
+            const modal = document.getElementById('aiModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+            
+            // Show modal with loading state
+            modalTitle.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+                AI Insights for ${productName}
+            `;
+            
+            modalContent.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="loading-spinner"></div>
+                    <span class="ml-3 text-gray-600">Generating AI insights...</span>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            try {
+                const prompt = `Provide detailed insights about "${productName}" - ${productDescription}. Include:
+                1. Nutritional benefits and health advantages
+                2. Best storage and preparation tips
+                3. Recipe suggestions or usage ideas
+                4. Quality indicators to look for when buying
+                5. Seasonal availability and freshness tips
+                
+                Format the response in a clear, informative way that helps customers make informed decisions.`;
+
+                const response = await fetch('/api/gemini-insight', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get AI insight');
+                }
+
+                const data = await response.json();
+                
+                modalContent.innerHTML = `
+                    <div class="insight-content">
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189 6.01 6.01 0 01-3 0 6.01 6.01 0 001.5.189zm0 0V9.75a6 6 0 013 0v8.25a6 6 0 01-3 0z" />
+                            </svg>
+                            AI-Powered Product Insights
+                        </h4>
+                        <div class="prose prose-sm max-w-none">
+                            ${data.insight.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Error getting AI insight:', error);
+                modalContent.innerHTML = `
+                    <div class="insight-content">
+                        <h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                            Unable to Generate Insights
+                        </h4>
+                        <p>Sorry, we couldn't generate AI insights for this product at the moment. Please try again later.</p>
+                        <p class="text-sm text-gray-500 mt-2">Error: ${error.message}</p>
+                    </div>
+                `;
+                showToast('Failed to get AI insights. Please try again.', 'error');
+            }
+        };
+
+        window.closeAIModal = function() {
+            const modal = document.getElementById('aiModal');
+            modal.style.display = 'none';
+        };
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('aiModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', () => {
