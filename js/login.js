@@ -140,7 +140,9 @@ function initializeLoginPage() {
             const { getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
             
-            const app = initializeApp(window.FreshMartCommon.firebaseConfig);
+            // Get secure Firebase config from server
+            const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+            const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -224,7 +226,9 @@ function initializeLoginPage() {
             const { getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
             
-            const app = initializeApp(window.FreshMartCommon.firebaseConfig);
+            // Get secure Firebase config from server
+            const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+            const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -281,7 +285,9 @@ function initializeLoginPage() {
             const { getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
             
-            const app = initializeApp(window.FreshMartCommon.firebaseConfig);
+            // Get secure Firebase config from server
+            const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+            const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const googleProvider = new GoogleAuthProvider();
             
@@ -344,7 +350,9 @@ function initializeLoginPage() {
             const { getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
             
-            const app = initializeApp(window.FreshMartCommon.firebaseConfig);
+            // Get secure Firebase config from server
+            const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+            const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             
             await sendPasswordResetEmail(auth, email);
@@ -378,9 +386,14 @@ function initializeLoginPage() {
     });
 
     // Check if user is already logged in
-    import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js").then(({ onAuthStateChanged, getAuth }) => {
-        import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js").then(({ initializeApp }) => {
-            const app = initializeApp(window.FreshMartCommon.firebaseConfig);
+    (async () => {
+        try {
+            const { onAuthStateChanged, getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
+            
+            // Get secure Firebase config from server
+            const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+            const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             
             onAuthStateChanged(auth, (user) => {
@@ -388,8 +401,10 @@ function initializeLoginPage() {
                     window.location.href = 'index.html';
                 }
             });
-        });
-    });
+        } catch (error) {
+            console.error('Auth state check error:', error);
+        }
+    })();
 
     window.FreshMartCommon.showToast('Welcome to FreshMart! Please sign in to continue.', 'info', 3000);
 }

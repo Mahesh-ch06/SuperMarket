@@ -105,7 +105,9 @@ async function initializeFirebase() {
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js");
         const { getAuth } = await import("https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js");
         
-        app = initializeApp(window.FreshMartCommon.firebaseConfig);
+        // Get secure Firebase config from server
+        const firebaseConfig = await window.FreshMartCommon.getFirebaseConfig();
+        app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         updateDebugInfo("Firebase initialized successfully");
         

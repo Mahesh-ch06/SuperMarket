@@ -1,4 +1,4 @@
-// Enhanced Contact page JavaScript with multiple submission methods
+// Enhanced Contact page JavaScript with secure API key handling
 
 // Generic Modal Functions
 function openGeneralModal(message) {
@@ -17,6 +17,20 @@ function closeGeneralModal() {
     setTimeout(() => generalModal.classList.add('hidden'), 300);
 }
 
+// Secure API configuration fetching
+async function getSecureConfig() {
+    try {
+        const response = await fetch('/api/config');
+        if (!response.ok) {
+            throw new Error('Failed to fetch configuration');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching secure config:', error);
+        return null;
+    }
+}
+
 // Form submission with multiple fallback methods
 async function submitContactForm(formData) {
     const submitBtn = document.getElementById('submitBtn');
@@ -29,41 +43,58 @@ async function submitContactForm(formData) {
     submitLoader.classList.remove('hidden');
     
     try {
-        // Method 1: Try Web3Forms first
-        console.log('Attempting Web3Forms submission...');
-        const web3Response = await submitToWeb3Forms(formData);
+        // Method 1: Try Web3Forms through server proxy (secure)
+        console.log('Attempting secure Web3Forms submission...');
+        const serverResponse = await submitThroughServer(formData);
         
-        if (web3Response.success) {
+        if (serverResponse.success) {
             showSuccessMessage();
             resetForm();
             return;
         }
         
-        throw new Error('Web3Forms failed');
+        throw new Error('Server submission failed');
         
     } catch (error) {
-        console.log('Web3Forms failed, trying fallback methods...', error);
+        console.log('Server submission failed, trying direct methods...', error);
         
         try {
-            // Method 2: Try Formspree as fallback
-            console.log('Attempting Formspree submission...');
-            const formspreeResponse = await submitToFormspree(formData);
+            // Method 2: Try direct Web3Forms (fallback)
+            console.log('Attempting direct Web3Forms submission...');
+            const web3Response = await submitToWeb3FormsDirect(formData);
             
-            if (formspreeResponse.ok) {
+            if (web3Response.success) {
                 showSuccessMessage();
                 resetForm();
                 return;
             }
             
-            throw new Error('Formspree failed');
+            throw new Error('Direct Web3Forms failed');
             
         } catch (error2) {
-            console.log('Formspree failed, using local storage fallback...', error2);
+            console.log('Direct Web3Forms failed, trying Formspree...', error2);
             
-            // Method 3: Local storage fallback
-            saveToLocalStorage(formData);
-            showFallbackMessage();
-            resetForm();
+            try {
+                // Method 3: Try Formspree as fallback
+                console.log('Attempting Formspree submission...');
+                const formspreeResponse = await submitToFormspree(formData);
+                
+                if (formspreeResponse.ok) {
+                    showSuccessMessage();
+                    resetForm();
+                    return;
+                }
+                
+                throw new Error('Formspree failed');
+                
+            } catch (error3) {
+                console.log('All external services failed, using local storage fallback...', error3);
+                
+                // Method 4: Local storage fallback
+                saveToLocalStorage(formData);
+                showFallbackMessage();
+                resetForm();
+            }
         }
     } finally {
         // Reset button state
@@ -73,8 +104,22 @@ async function submitContactForm(formData) {
     }
 }
 
-// Web3Forms submission
-async function submitToWeb3Forms(formData) {
+// Server-side submission (most secure)
+async function submitThroughServer(formData) {
+    const response = await fetch('/api/contact-submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    });
+    
+    const result = await response.json();
+    return result;
+}
+
+// Direct Web3Forms submission (fallback)
+async function submitToWeb3FormsDirect(formData) {
     const web3FormData = new FormData();
     web3FormData.append('access_key', '330e0585-6990-4a15-b2f0-f20df66dc3e8');
     web3FormData.append('name', formData.name);
@@ -338,7 +383,7 @@ function initializeContactPage() {
         await submitContactForm(formData);
     });
 
-    console.log('Contact page initialized with enhanced form submission');
+    console.log('Contact page initialized with secure API key handling');
 }
 
 // Export for use in other modules
@@ -346,5 +391,6 @@ window.FreshMartContact = {
     openGeneralModal,
     closeGeneralModal,
     submitContactForm,
+    getSecureConfig,
     initializeContactPage
 };

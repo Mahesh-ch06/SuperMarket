@@ -157,16 +157,33 @@ function setupCommonEventListeners() {
     });
 }
 
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-    authDomain: "portfolio-56be7.firebaseapp.com",
-    projectId: "portfolio-56be7",
-    storageBucket: "portfolio-56be7.firebasestorage.app",
-    messagingSenderId: "888511551571",
-    appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-    measurementId: "G-X3CYL9YZR1"
-};
+// Secure Firebase configuration - fetch from server
+let firebaseConfig = null;
+
+async function getFirebaseConfig() {
+    if (firebaseConfig) {
+        return firebaseConfig;
+    }
+    
+    try {
+        const response = await fetch('/api/firebase-config');
+        if (!response.ok) {
+            throw new Error('Failed to fetch Firebase config');
+        }
+        firebaseConfig = await response.json();
+        return firebaseConfig;
+    } catch (error) {
+        console.error('Error fetching Firebase config:', error);
+        // Fallback to basic config (without sensitive keys)
+        return {
+            authDomain: "portfolio-56be7.firebaseapp.com",
+            projectId: "portfolio-56be7",
+            storageBucket: "portfolio-56be7.firebasestorage.app",
+            messagingSenderId: "888511551571",
+            appId: "1:888511551571:web:11e809e995377e9a4ccea6"
+        };
+    }
+}
 
 // Export for use in other modules
 window.FreshMartCommon = {
@@ -176,5 +193,5 @@ window.FreshMartCommon = {
     closeMobileMenu,
     updateUserInterface,
     setupCommonEventListeners,
-    firebaseConfig
+    getFirebaseConfig
 };
