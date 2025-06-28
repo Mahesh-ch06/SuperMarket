@@ -314,18 +314,8 @@
             signInWithPhoneNumber
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-            authDomain: "portfolio-56be7.firebaseapp.com",
-            projectId: "portfolio-56be7",
-            storageBucket: "portfolio-56be7.firebasestorage.app",
-            messagingSenderId: "888511551571",
-            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-            measurementId: "G-X3CYL9YZR1"
-        };
-
-        // Initialize Firebase
+        // Global variables
+        let firebaseConfig = null;
         let app, auth, recaptchaVerifier, confirmationResult;
         let countdownTimer = null;
 
@@ -360,6 +350,28 @@
                 toast.classList.remove('show');
                 setTimeout(() => toast.parentNode?.removeChild(toast), 300);
             }, duration);
+        }
+
+        // Load Firebase config from server
+        async function loadFirebaseConfig() {
+            try {
+                const response = await fetch('/api/firebase-config');
+                if (!response.ok) {
+                    throw new Error('Failed to load Firebase configuration');
+                }
+                firebaseConfig = await response.json();
+                console.log('✅ Firebase config loaded from server');
+                
+                // Initialize Firebase
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Error loading Firebase config:', error);
+                showToast('Failed to initialize authentication system', 'error');
+                return false;
+            }
         }
 
         // Debug helper
@@ -443,22 +455,6 @@
                     resendOtpBtn.innerHTML = 'Resend OTP';
                 }
             }, 1000);
-        }
-
-        // Initialize Firebase and reCAPTCHA
-        async function initializeFirebase() {
-            try {
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                updateDebugInfo("Firebase initialized successfully");
-                
-                // Initialize reCAPTCHA
-                setTimeout(initRecaptcha, 100);
-                
-            } catch (error) {
-                updateDebugInfo("Firebase initialization error: " + error.message);
-                showToast('Failed to initialize authentication system', 'error');
-            }
         }
 
         // Initialize reCAPTCHA
@@ -643,9 +639,17 @@
         });
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeFirebase();
+        document.addEventListener('DOMContentLoaded', async () => {
             showToast('Enter your phone number to get started', 'info', 3000);
+            
+            // Load Firebase config and initialize auth
+            const configLoaded = await loadFirebaseConfig();
+            if (configLoaded) {
+                updateDebugInfo("Firebase initialized successfully");
+                
+                // Initialize reCAPTCHA
+                setTimeout(initRecaptcha, 100);
+            }
         });
     </script>
 </body>

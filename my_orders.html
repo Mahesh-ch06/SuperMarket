@@ -241,30 +241,19 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-    // --- Firebase Configuration ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-        authDomain: "portfolio-56be7.firebaseapp.com",
-        projectId: "portfolio-56be7",
-        storageBucket: "portfolio-56be7.firebasestorage.app",
-        messagingSenderId: "888511551571",
-        appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-        measurementId: "G-X3CYL9YZR1"
-    };
-
-    // --- Initialize Firebase ---
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    // Global variables
+    let firebaseConfig = null;
+    let app, auth;
     let currentUser = null;
     let allOrders = [];
 
-    // --- DOM Elements ---
+    // DOM Elements
     const ordersContainer = document.getElementById('orders-container');
     const loadingIndicator = document.getElementById('loading-indicator');
     const statusFilter = document.getElementById('statusFilter');
     const refreshBtn = document.getElementById('refreshBtn');
 
-    // --- Toast Notification System ---
+    // Toast Notification System
     const toastContainer = document.getElementById('toast-container');
     function showToast(message, type = 'info', duration = 4000) {
         const toast = document.createElement('div');
@@ -279,7 +268,29 @@
         }, duration);
     }
 
-    // --- Helper Functions ---
+    // Load Firebase config from server
+    async function loadFirebaseConfig() {
+        try {
+            const response = await fetch('/api/firebase-config');
+            if (!response.ok) {
+                throw new Error('Failed to load Firebase configuration');
+            }
+            firebaseConfig = await response.json();
+            console.log('✅ Firebase config loaded from server');
+            
+            // Initialize Firebase
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Error loading Firebase config:', error);
+            showToast('Failed to initialize authentication system', 'error');
+            return false;
+        }
+    }
+
+    // Helper Functions
     function formatDate(dateString) {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
@@ -308,7 +319,7 @@
         return fullId.substring(4, 12).toUpperCase(); // Remove 'ORD-' prefix and show 8 chars
     }
 
-    // --- localStorage Order Management ---
+    // localStorage Order Management
     function getOrdersFromLocalStorage(userId) {
         const allOrders = JSON.parse(localStorage.getItem('freshmartOrders') || '[]');
         return allOrders.filter(order => order.userId === userId);
@@ -326,7 +337,7 @@
         return false;
     }
 
-    // --- Fetch and Render Orders ---
+    // Fetch and Render Orders
     async function fetchAndRenderOrders(userId) {
         try {
             showLoading(true);
@@ -511,7 +522,7 @@
                     icon.style.transform = 'rotate(0deg)';
                     e.currentTarget.querySelector('span').textContent = 'View Details';
                 } else {
-                    detailsElement.classList.add('expanded');
+                    detail sElement.classList.add('expanded');
                     icon.style.transform = 'rotate(180deg)';
                     e.currentTarget.querySelector('span').textContent = 'Hide Details';
                 }
@@ -595,7 +606,7 @@
         renderOrders(filteredOrders);
     }
 
-    // --- Event Listeners ---
+    // Event Listeners
     statusFilter.addEventListener('change', filterOrders);
     
     refreshBtn.addEventListener('click', () => {
@@ -605,30 +616,37 @@
         }
     });
 
-    // --- Firebase Auth State Listener ---
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user;
-        if (user) {
-            fetchAndRenderOrders(user.uid);
-        } else {
-            showEmptyState('Please log in to view your orders.');
-            ordersContainer.innerHTML = `
-                <div class="text-center py-12 sm:py-20">
-                    <div class="max-w-md mx-auto">
-                        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                            </svg>
+    // Initialize
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Load Firebase config and initialize auth
+        const configLoaded = await loadFirebaseConfig();
+        if (configLoaded) {
+            // Firebase Auth State Listener
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+                if (user) {
+                    fetchAndRenderOrders(user.uid);
+                } else {
+                    showEmptyState('Please log in to view your orders.');
+                    ordersContainer.innerHTML = `
+                        <div class="text-center py-12 sm:py-20">
+                            <div class="max-w-md mx-auto">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10 text-gray-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Please Log In</h3>
+                                <p class="text-gray-600 mb-6">You need to be logged in to view your orders.</p>
+                                <a href="login.html" class="inline-block rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-[#6ec88e] text-[#111813] text-base font-bold tracking-[0.015em] hover:bg-green-500 transition-colors touch-button">
+                                    Go to Login
+                                </a>
+                            </div>
                         </div>
-                        <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Please Log In</h3>
-                        <p class="text-gray-600 mb-6">You need to be logged in to view your orders.</p>
-                        <a href="login.html" class="inline-block rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-[#6ec88e] text-[#111813] text-base font-bold tracking-[0.015em] hover:bg-green-500 transition-colors touch-button">
-                            Go to Login
-                        </a>
-                    </div>
-                </div>
-            `;
-            showLoading(false);
+                    `;
+                    showLoading(false);
+                }
+            });
         }
     });
 </script>
