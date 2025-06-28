@@ -118,20 +118,16 @@
                         </div>
                     </section>
 
-                    <!-- Simplified Contact Form Section - Following Web3Forms Format -->
+                    <!-- Contact Form Section with Fallback -->
                     <section id="contact-form" class="contact-form-section rounded-2xl shadow-xl p-6 sm:p-8 lg:p-12">
                         <div class="text-center mb-8 sm:mb-12">
                             <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Send Us a Message</h2>
                             <p class="text-lg text-gray-600 max-w-2xl mx-auto">Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.</p>
                         </div>
                         
-                        <!-- Simplified Web3Forms Contact Form -->
-                        <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
+                        <!-- Contact Form with Multiple Submission Methods -->
+                        <form id="contactForm" class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
 
-                            <!-- Replace with your Access Key -->
-                            <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8">
-
-                            <!-- Form Inputs. Each input must have a name="" attribute -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
@@ -177,16 +173,11 @@
                                             placeholder="Tell us how we can help you..."></textarea>
                             </div>
 
-                            <!-- Honeypot Spam Protection -->
-                            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
-
-                            <!-- Custom Confirmation / Success Page -->
-                            <!-- <input type="hidden" name="redirect" value="https://mywebsite.com/thanks.html"> -->
-
                             <!-- Submit Button -->
                             <div class="text-center">
-                                <button type="submit" class="bg-[#38a169] text-white font-bold py-4 px-8 rounded-xl hover:bg-[#2f855a] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                                    Send Message
+                                <button type="submit" id="submitBtn" class="bg-[#38a169] text-white font-bold py-4 px-8 rounded-xl hover:bg-[#2f855a] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                    <span id="submitText">Send Message</span>
+                                    <div id="submitLoader" class="hidden inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
                                 </button>
                                 <p class="text-sm text-gray-500 mt-4">We typically respond within 2 hours during business hours</p>
                             </div>
