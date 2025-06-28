@@ -3,524 +3,1132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipes - FreshMart</title>
+    <title>FreshMart - Recipes</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400%3B500%3B700%3B900&display=swap">
     <style>
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        /* Custom Toast Notification System */
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
         }
-        .toast {
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            transform: translateX(100%);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            min-width: 250px;
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
         }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
         }
-        .toast.success { background-color: #22c55e; }
-        .toast.error { background-color: #ef4444; }
-        .toast.info { background-color: #3b82f6; }
+        /* Collapsible section for grocery list */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 1000px; /* Arbitrary large value, adjust as needed */
+            transition: max-height 0.6s ease-in-out;
+        }
+        .collapsible-btn svg {
+            transition: transform 0.3s ease-in-out;
+        }
+        .collapsible-btn.expanded svg {
+            transform: rotate(180deg);
+        }
+        /* Style for active filter button */
+        .filter-btn.active {
+            background-color: #6ec88e;
+            color: #111813;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* subtle shadow for active state */
+            transform: translateY(-2px); /* slight lift for active state */
+        }
+        .recipe-card-btn {
+            @apply flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] transition-all duration-200 ease-in-out;
+            @apply shadow-sm hover:shadow-md hover:scale-105; /* Consistent hover effects */
+        }
+        .difficulty-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+        .difficulty-tag.easy { background-color: #d1fae5; color: #065f46; } /* green-100, green-800 */
+        .difficulty-tag.medium { background-color: #fef3c7; color: #92400e; } /* yellow-100, yellow-800 */
+        .difficulty-tag.hard { background-color: #fee2e2; color: #991b1b; } /* red-100, red-800 */
+
+        .dietary-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #e0f2f7; /* light blue for tags */
+            color: #0c4a6e; /* dark blue for text */
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem; /* for wrapping */
+            display: inline-flex; /* for alignment with icon if any */
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Responsive filter button groups */
+        .filter-group {
+            @apply flex flex-wrap gap-2 sm:gap-4 justify-center sm:justify-start;
+        }
+        .filter-group h4 {
+            @apply text-gray-600 font-semibold mr-2 hidden sm:block;
+        }
+
+        /* Modal specific button styling */
+        .modal-action-button {
+            @apply mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors shadow-md hover:shadow-lg transform hover:scale-105;
+        }
+        .modal-confirm-button {
+            @apply flex-1 rounded-xl h-10 px-4 text-sm font-bold transition-colors shadow-md hover:shadow-lg transform hover:scale-105;
+        }
+        .modal-confirm-button.yes {
+            @apply bg-red-600 text-white hover:bg-red-700;
+        }
+        .modal-confirm-button.no {
+            @apply bg-gray-200 text-[#111813] hover:bg-gray-300;
+        }
+
+        /* Servings adjustment buttons in modal */
+        #decrease-servings, #increase-servings {
+            @apply size-8 rounded-full bg-gray-200 text-[#111813] font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors duration-200;
+            @apply shadow-sm hover:shadow-md;
+        }
+
+        /* Header action buttons */
+        .header-action-btn {
+            @apply flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 text-sm font-bold tracking-[0.015em] transition-all duration-200 ease-in-out;
+            @apply shadow-sm hover:shadow-md hover:scale-105;
+        }
+        #loginBtn {
+            @apply bg-[#6ec88e] text-[#111813] hover:bg-green-600;
+        }
+        #cartBtn {
+            @apply bg-[#eaf0ec] text-[#111813] hover:bg-gray-200;
+        }
+
+        /* Footer links */
+        footer a {
+            @apply text-gray-600 hover:text-[#6ec88e] transition-colors duration-200;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
     <div class="relative flex min-h-screen flex-col">
         <!-- Header -->
-        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
             <div class="flex items-center justify-between">
+                <!-- Logo -->
                 <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                     <div class="size-5">
-                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                     </div>
                     <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
                 </a>
-                <nav class="hidden md:flex items-center gap-8">
-                    <a href="shop.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Shop</a>
-                    <a href="deals.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Deals</a>
-                    <a href="recipes.html" class="text-[#6ec88e] text-sm font-bold">Recipes</a>
-                    <a href="aboutus.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">About</a>
-                    <a href="contactus.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Contact</a>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-9">
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="deals.html">Deals</a>
+                    <a class="text-[#6ec88e] text-sm font-bold" href="recipes.html">Recipes</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="#">About Us</a>
                 </nav>
-                <div class="flex items-center gap-3">
-                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em]">
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button id="loginBtn" class="header-action-btn hidden sm:flex">
+                        <span class="truncate">Login</span>
+                    </button>
+                    <a href="cart.html" id="cartBtn" class="header-action-btn">
                         <span>Cart (<span id="cartCount">0</span>)</span>
+                    </a>
+                    <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] py-20 px-4">
-            <div class="max-w-6xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-[#111813] mb-6">🍳 Fresh Recipes</h1>
-                <p class="text-xl text-gray-700 max-w-3xl mx-auto">
-                    Discover delicious recipes using fresh ingredients from FreshMart. 
-                    From quick weeknight dinners to special occasion meals.
-                </p>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white z-50 shadow-lg transform translate-x-full lg:hidden">
+            <div class="p-4">
+                <button id="close-menu-button" class="float-right p-2 text-gray-700 hover:bg-gray-200 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <nav class="mt-12 flex flex-col gap-6">
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="deals.html">Deals</a>
+                    <a class="text-[#6ec88e] text-lg font-bold" href="recipes.html">Recipes</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">About Us</a>
+                </nav>
             </div>
-        </section>
+        </div>
 
-        <!-- Recipe Categories -->
-        <section class="py-12 px-4">
-            <div class="max-w-7xl mx-auto">
-                <div class="flex flex-wrap gap-2 justify-center mb-8">
-                    <button class="recipe-filter active px-4 py-2 rounded-full bg-[#6ec88e] text-white text-sm font-medium" data-category="all">All Recipes</button>
-                    <button class="recipe-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300" data-category="breakfast">Breakfast</button>
-                    <button class="recipe-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300" data-category="lunch">Lunch</button>
-                    <button class="recipe-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300" data-category="dinner">Dinner</button>
-                    <button class="recipe-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300" data-category="snacks">Snacks</button>
-                    <button class="recipe-filter px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-300" data-category="dessert">Dessert</button>
-                </div>
+        <!-- Main Content -->
+        <main class="flex-1">
+            <div class="px-4 py-5 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto">
+                    <h2 class="text-[#111813] text-3xl md:text-4xl font-bold tracking-tight mb-6 text-center sm:text-left">Fresh & Flavorful Recipes</h2>
+                    <p class="text-gray-700 text-lg mb-8 text-center sm:text-left max-w-3xl mx-auto sm:mx-0">
+                        Explore our collection of easy-to-follow recipes, crafted to help you make the most of your FreshMart ingredients. From quick weeknight dinners to gourmet weekend feasts, we've got something for everyone!
+                    </p>
 
-                <!-- Recipes Grid -->
-                <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Recipes will be dynamically loaded here -->
+                    <!-- Search and Filter Section -->
+                    <div class="mb-8 flex flex-col gap-4 px-4 sm:px-0">
+                        <div class="relative w-full">
+                            <input type="text" id="recipeSearch" placeholder="Search recipes by name or ingredient..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-300 focus:ring-green-500 focus:border-green-500 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <h4>Category:</h4>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="category" data-filter-value="All">All</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="category" data-filter-value="Breakfast">Breakfast</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="category" data-filter-value="Lunch/Dinner">Lunch/Dinner</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="category" data-filter-value="Snacks/Desserts">Snacks/Desserts</button>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Difficulty:</h4>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="difficulty" data-filter-value="All">All</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="difficulty" data-filter-value="Easy">Easy</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="difficulty" data-filter-value="Medium">Medium</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="difficulty" data-filter-value="Hard">Hard</button>
+                        </div>
+
+                        <div class="filter-group">
+                            <h4>Dietary:</h4>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="dietary" data-filter-value="All">All</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="dietary" data-filter-value="Vegetarian">Vegetarian</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="dietary" data-filter-value="Vegan">Vegan</button>
+                            <button class="filter-btn px-4 py-2 rounded-xl bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors" data-filter-group="dietary" data-filter-value="Gluten-Free">Gluten-Free</button>
+                        </div>
+                    </div>
+
+                    <div id="recipes-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Recipe Cards will be dynamically loaded here -->
+                    </div>
+
+                    <!-- Grocery List Section -->
+                    <div class="mt-12 mb-8 px-4 sm:px-0">
+                        <button id="grocery-list-toggle" class="collapsible-btn w-full flex items-center justify-between bg-[#eaf0ec] hover:bg-gray-200 rounded-xl p-4 text-[#111813] text-lg font-bold leading-normal tracking-[0.015em] transition-colors shadow-md hover:shadow-lg">
+                            <span>🛒 Your Grocery List</span>
+                            <span id="grocery-list-count" class="bg-[#6ec88e] text-[#111813] text-sm font-bold rounded-full px-3 py-1">0 items</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="grocery-list-content" class="collapsible-content bg-white p-4 mt-2 rounded-xl shadow-md">
+                            <ul id="grocery-list-items" class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                                <!-- Grocery list items will be injected here -->
+                            </ul>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-end mt-4">
+                                <button id="clear-grocery-list-btn" class="recipe-card-btn bg-red-100 text-red-700 hover:bg-red-200">Clear List</button>
+                                <button id="add-to-cart-from-grocery-btn" class="recipe-card-btn bg-[#6ec88e] hover:bg-green-600">Add All to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </section>
+        </main>
 
         <!-- Footer -->
         <footer class="bg-gray-50 border-t">
             <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center">
-                <div class="flex justify-center gap-x-6 sm:gap-x-12 mb-6">
-                    <a href="aboutus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
-                    <a href="contactus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
+                <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-x-12 mb-6">
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
                     <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a>
                     <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Terms of Service</a>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
+                            </svg>
+                        </div>
+                    </a>
                 </div>
                 <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
             </div>
         </footer>
     </div>
-
-    <!-- Recipe Modal -->
-    <div id="recipeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-800"></h2>
-                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <img id="modalImage" src="" alt="" class="w-full h-64 object-cover rounded-lg mb-4">
-                <div class="grid grid-cols-3 gap-4 mb-6 text-center">
-                    <div>
-                        <div class="text-sm text-gray-500">Prep Time</div>
-                        <div id="modalPrepTime" class="font-semibold"></div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Cook Time</div>
-                        <div id="modalCookTime" class="font-semibold"></div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-500">Servings</div>
-                        <div id="modalServings" class="font-semibold"></div>
-                    </div>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold mb-3">Ingredients</h3>
-                    <ul id="modalIngredients" class="space-y-1"></ul>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-lg font-bold mb-3">Instructions</h3>
-                    <ol id="modalInstructions" class="space-y-2"></ol>
-                </div>
-                <div id="modalShoppingList" class="bg-[#f9fbfa] p-4 rounded-lg">
-                    <h3 class="text-lg font-bold mb-3">Shop Ingredients</h3>
-                    <div id="shoppingItems" class="space-y-2"></div>
-                </div>
-            </div>
+    
+    <!-- Generic Modal Wrapper for Recipes -->
+    <div id="recipe-modal-wrapper" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 hidden opacity-0">
+        <div id="recipe-modal-content" class="modal-content bg-white rounded-xl shadow-xl w-full max-w-2xl m-auto transform -translate-y-10">
+            <!-- Recipe details will be injected here -->
         </div>
     </div>
 
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
-
     <script>
-        // Sample recipes data
-        const recipes = [
-            {
-                id: 1,
-                title: "Fresh Garden Salad",
-                category: "lunch",
-                image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "15 min",
-                cookTime: "0 min",
-                servings: 4,
-                description: "A refreshing mix of fresh vegetables and greens",
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Global State ---
+        let cartItems = []; 
+        let groceryList = []; // New: To store ingredients for grocery list
+
+        // --- DOM Elements ---
+        const cartCountEl = document.getElementById('cartCount');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const loginBtn = document.getElementById('loginBtn');
+        const cartBtn = document.getElementById('cartBtn');
+        const recipesGrid = document.getElementById('recipes-grid'); // Renamed for clarity
+        const recipeModalWrapper = document.getElementById('recipe-modal-wrapper');
+        const recipeModalContent = document.getElementById('recipe-modal-content');
+        const recipeSearchInput = document.getElementById('recipeSearch');
+        // Select all filter buttons
+        const categoryFilterButtons = document.querySelectorAll('[data-filter-group="category"]');
+        const difficultyFilterButtons = document.querySelectorAll('[data-filter-group="difficulty"]');
+        const dietaryFilterButtons = document.querySelectorAll('[data-filter-group="dietary"]');
+
+        const groceryListToggle = document.getElementById('grocery-list-toggle');
+        const groceryListContent = document.getElementById('grocery-list-content');
+        const groceryListItemsUl = document.getElementById('grocery-list-items');
+        const groceryListCountSpan = document.getElementById('grocery-list-count');
+        const clearGroceryListBtn = document.getElementById('clear-grocery-list-btn');
+        const addToCartFromGroceryBtn = document.getElementById('add-to-cart-from-grocery-btn');
+
+
+        // --- Recipe Data ---
+        // Using a structured array for easier management and filtering
+        const allRecipes = [
+            { 
+                id: 1, 
+                name: 'Hearty Vegetable Curry', 
+                image: 'https://placehold.co/600x400/5e876d/f9fbfa?text=Vegetable+Curry', 
+                time: '30 mins', 
+                servings: 4, // Changed to number for calculations
+                category: 'Lunch/Dinner',
+                difficulty: 'Medium',
+                dietary: ['Vegetarian', 'Vegan', 'Gluten-Free'],
                 ingredients: [
-                    "2 cups mixed lettuce",
-                    "1 cup cherry tomatoes",
-                    "1 cucumber, sliced",
-                    "1/2 red onion, sliced",
-                    "1/4 cup olive oil",
-                    "2 tbsp balsamic vinegar"
+                    { name: 'olive oil', quantity: 2, unit: 'tbsp' },
+                    { name: 'large onion', quantity: 1, unit: '' },
+                    { name: 'garlic', quantity: 2, unit: 'cloves' }, 
+                    { name: 'ginger', quantity: 1, unit: 'inch' }, 
+                    { name: 'cumin powder', quantity: 1, unit: 'tsp' }, 
+                    { name: 'coriander powder', quantity: 1, unit: 'tsp' }, 
+                    { name: 'turmeric powder', quantity: 0.5, unit: 'tsp' }, 
+                    { name: 'chili powder', quantity: 0.25, unit: 'tsp', optional: true }, 
+                    { name: 'chopped tomatoes', quantity: 400, unit: 'g can' }, 
+                    { name: 'coconut milk', quantity: 400, unit: 'ml can' }, 
+                    { name: 'mixed vegetables', quantity: 2, unit: 'cups' }, 
+                    { name: 'salt', quantity: 1, unit: 'to taste' }, 
+                    { name: 'pepper', quantity: 1, unit: 'to taste' }, 
+                    { name: 'fresh cilantro', quantity: 1, unit: 'for garnish' }
                 ],
+                ingredientPrices: { // Prices per base unit
+                    'olive oil': {price: 50, unit: 'tbsp'}, 'onion': {price: 20, unit: 'unit'}, 
+                    'garlic': {price: 10, unit: 'cloves'}, 'ginger': {price: 15, unit: 'inch'},
+                    'cumin powder': {price: 5, unit: 'tsp'}, 'coriander powder': {price: 5, unit: 'tsp'}, 
+                    'turmeric powder': {price: 5, unit: 'tsp'}, 'chili powder': {price: 5, unit: 'tsp'}, 
+                    'chopped tomatoes': {price: 40, unit: 'can'}, 'coconut milk': {price: 60, unit: 'can'},
+                    'mixed vegetables': {price: 80, unit: 'cup'}, 'salt': {price: 2, unit: 'unit'}, 
+                    'pepper': {price: 3, unit: 'unit'}, 'fresh cilantro': {price: 10, unit: 'unit'}
+                },
                 instructions: [
-                    "Wash and dry all vegetables thoroughly",
-                    "Chop lettuce into bite-sized pieces",
-                    "Slice tomatoes, cucumber, and onion",
-                    "Combine all vegetables in a large bowl",
-                    "Whisk olive oil and balsamic vinegar",
-                    "Drizzle dressing over salad and toss"
-                ],
-                shoppingItems: [
-                    { name: "Mixed Lettuce", id: 13 },
-                    { name: "Cherry Tomatoes", id: 3 },
-                    { name: "Cucumber", id: 14 }
+                    'Heat oil in a large pot over medium heat. Add onion and cook until softened, about 5 minutes.', 
+                    'Stir in garlic and ginger, cook for 1 minute until fragrant.', 
+                    'Add cumin, coriander, turmeric, and chili powder. Cook for 1 minute, stirring constantly.', 
+                    'Pour in chopped tomatoes and coconut milk. Bring to a simmer.', 
+                    'Add mixed vegetables, salt, and pepper. Cover and simmer for 15-20 minutes, or until vegetables are tender.', 
+                    'Garnish with fresh cilantro and serve hot with rice or naan.'
                 ]
             },
-            {
-                id: 2,
-                title: "Banana Pancakes",
-                category: "breakfast",
-                image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "10 min",
-                cookTime: "15 min",
-                servings: 2,
-                description: "Fluffy pancakes with fresh bananas",
+            { 
+                id: 2, 
+                name: 'Fresh Salmon Salad', 
+                image: 'https://placehold.co/600x400/b7cdbe/5e876d?text=Salmon+Salad', 
+                time: '20 mins', 
+                servings: 2, 
+                category: 'Lunch/Dinner',
+                difficulty: 'Easy',
+                dietary: ['Gluten-Free'],
                 ingredients: [
-                    "2 ripe bananas",
-                    "2 eggs",
-                    "1/4 cup milk",
-                    "1 cup flour",
-                    "1 tsp baking powder",
-                    "1 tbsp honey"
+                    { name: 'salmon fillets', quantity: 2, unit: 'fillets' }, 
+                    { name: 'mixed greens', quantity: 4, unit: 'cups' }, 
+                    { name: 'cucumber', quantity: 0.5, unit: '' }, 
+                    { name: 'red onion', quantity: 0.5, unit: '' }, 
+                    { name: 'fresh dill', quantity: 0.25, unit: 'cup' }, 
+                    { name: 'olive oil', quantity: 3, unit: 'tbsp' }, 
+                    { name: 'lemon juice', quantity: 1, unit: 'tbsp' }, 
+                    { name: 'Dijon mustard', quantity: 1, unit: 'tsp' }, 
+                    { name: 'salt', quantity: 1, unit: 'to taste' }, 
+                    { name: 'pepper', quantity: 1, unit: 'to taste' }
                 ],
+                ingredientPrices: {
+                    'salmon fillets': {price: 300, unit: 'fillet'}, 'mixed greens': {price: 50, unit: 'cup'}, 
+                    'cucumber': {price: 20, unit: 'unit'}, 'red onion': {price: 15, unit: 'unit'}, 
+                    'fresh dill': {price: 25, unit: 'cup'}, 'olive oil': {price: 50, unit: 'tbsp'}, 
+                    'lemon juice': {price: 10, unit: 'tbsp'}, 'Dijon mustard': {price: 20, unit: 'tsp'}, 
+                    'salt': {price: 2, unit: 'unit'}, 'pepper': {price: 3, unit: 'unit'}
+                },
                 instructions: [
-                    "Mash bananas in a large bowl",
-                    "Beat in eggs and milk",
-                    "Mix flour and baking powder in separate bowl",
-                    "Combine wet and dry ingredients",
-                    "Heat pan over medium heat",
-                    "Cook pancakes 2-3 minutes each side"
-                ],
-                shoppingItems: [
-                    { name: "Bananas", id: 2 },
-                    { name: "Fresh Milk", id: 5 },
-                    { name: "Fresh Bread", id: 7 }
+                    'Season salmon fillets with salt and pepper. Cook in a pan or bake until cooked through and flaky (internal temp 145°F). Let cool slightly, then flake with a fork.', 
+                    'In a large bowl, combine mixed greens, cucumber, red onion, and fresh dill.', 
+                    'In a small bowl, whisk together olive oil, lemon juice, Dijon mustard, salt, and pepper. ',
+                    'Add flaked salmon to the salad. Pour dressing over salad and toss gently to combine. Serve immediately.'
                 ]
             },
-            {
-                id: 3,
-                title: "Grilled Chicken Dinner",
-                category: "dinner",
-                image: "https://images.pexels.com/photos/616354/pexels-photo-616354.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "20 min",
-                cookTime: "25 min",
-                servings: 4,
-                description: "Perfectly seasoned grilled chicken with vegetables",
+            { 
+                id: 3, 
+                name: 'Sunrise Berry Smoothie', 
+                image: 'https://placehold.co/600x400/d5e2d9/111813?text=Berry+Smoothie', 
+                time: '5 mins', 
+                servings: 1, 
+                category: 'Breakfast',
+                difficulty: 'Easy',
+                dietary: ['Vegetarian', 'Gluten-Free'],
                 ingredients: [
-                    "4 chicken breasts",
-                    "2 tbsp olive oil",
-                    "1 tsp garlic powder",
-                    "1 tsp paprika",
-                    "Salt and pepper to taste",
-                    "2 cups mixed vegetables"
+                    { name: 'mixed berries', quantity: 1, unit: 'cup' }, 
+                    { name: 'banana', quantity: 0.5, unit: '' }, 
+                    { name: 'Greek yogurt', quantity: 0.5, unit: 'cup' }, 
+                    { name: 'orange juice', quantity: 0.25, unit: 'cup', alternative: 'milk/water' }, 
+                    { name: 'honey or maple syrup', quantity: 1, unit: 'tsp', optional: true }
                 ],
+                ingredientPrices: {
+                    'mixed berries': {price: 100, unit: 'cup'}, 'banana': {price: 10, unit: 'unit'}, 
+                    'Greek yogurt': {price: 60, unit: 'cup'}, 'orange juice': {price: 30, unit: 'cup'}, 
+                    'milk': {price: 20, unit: 'cup'}, 'water': {price: 0, unit: 'cup'}, 
+                    'honey': {price: 15, unit: 'tsp'}, 'maple syrup': {price: 15, unit: 'tsp'}
+                },
                 instructions: [
-                    "Preheat grill to medium-high heat",
-                    "Season chicken with spices and oil",
-                    "Grill chicken 6-7 minutes per side",
-                    "Check internal temperature reaches 165°F",
-                    "Grill vegetables for 10-12 minutes",
-                    "Let chicken rest 5 minutes before serving"
-                ],
-                shoppingItems: [
-                    { name: "Chicken Breast", id: 9 },
-                    { name: "Fresh Tomatoes", id: 3 },
-                    { name: "Carrots", id: 4 }
+                    'Combine all ingredients in a blender.', 
+                    'Blend until smooth. Add more liquid if needed to reach desired consistency.', 
+                    'Pour into a glass and enjoy immediately.'
                 ]
             },
             {
                 id: 4,
-                title: "Apple Cinnamon Muffins",
-                category: "dessert",
-                image: "https://images.pexels.com/photos/2067396/pexels-photo-2067396.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "15 min",
-                cookTime: "20 min",
-                servings: 12,
-                description: "Sweet and spicy muffins with fresh apples",
+                name: 'Spicy Chickpea & Spinach Wrap',
+                image: 'https://placehold.co/600x400/5e876d/f9fbfa?text=Chickpea+Wrap',
+                time: '25 mins',
+                servings: 2,
+                category: 'Lunch/Dinner',
+                difficulty: 'Easy',
+                dietary: ['Vegetarian', 'Vegan'],
                 ingredients: [
-                    "2 cups flour",
-                    "1/2 cup sugar",
-                    "2 tsp baking powder",
-                    "1 tsp cinnamon",
-                    "2 apples, diced",
-                    "1/2 cup milk"
+                    { name: 'chickpeas', quantity: 1, unit: 'can (15 oz)', unit_price_base: 'can' }, 
+                    { name: 'fresh spinach', quantity: 2, unit: 'cups' }, 
+                    { name: 'red bell pepper', quantity: 0.25, unit: 'cup', desc: 'chopped' }, 
+                    { name: 'vegan mayonnaise', quantity: 2, unit: 'tbsp' }, 
+                    { name: 'sriracha or hot sauce', quantity: 1, unit: 'tsp', optional: true }, 
+                    { name: 'smoked paprika', quantity: 0.5, unit: 'tsp' }, 
+                    { name: 'salt', quantity: 1, unit: 'to taste' }, 
+                    { name: 'pepper', quantity: 1, unit: 'to taste' }, 
+                    { name: 'whole wheat tortillas', quantity: 2, unit: 'large' }
                 ],
+                ingredientPrices: {
+                    'chickpeas': {price: 35, unit: 'can'}, 'fresh spinach': {price: 40, unit: 'cup'}, 
+                    'red bell pepper': {price: 30, unit: 'unit'}, 'vegan mayonnaise': {price: 50, unit: 'tbsp'}, 
+                    'sriracha': {price: 10, unit: 'tsp'}, 'hot sauce': {price: 10, unit: 'tsp'},
+                    'smoked paprika': {price: 8, unit: 'tsp'}, 'salt': {price: 2, unit: 'unit'}, 
+                    'pepper': {price: 3, unit: 'unit'}, 'whole wheat tortillas': {price: 40, unit: 'unit'}
+                },
                 instructions: [
-                    "Preheat oven to 375°F",
-                    "Mix dry ingredients in large bowl",
-                    "Dice apples into small pieces",
-                    "Combine wet ingredients separately",
-                    "Fold wet into dry ingredients",
-                    "Bake 18-20 minutes until golden"
-                ],
-                shoppingItems: [
-                    { name: "Fresh Apples", id: 1 },
-                    { name: "Fresh Milk", id: 5 }
+                    'In a medium bowl, mash chickpeas with a fork until chunky. Do not mash completely.',
+                    'Add chopped red bell pepper, vegan mayonnaise, sriracha, smoked paprika, salt, and pepper. Mix well.',
+                    'Gently fold in fresh spinach.',
+                    'Warm tortillas according to package directions. Spread the chickpea mixture evenly onto each tortilla. Roll up tightly and serve immediately.'
                 ]
             },
             {
                 id: 5,
-                title: "Veggie Stir Fry",
-                category: "lunch",
-                image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "15 min",
-                cookTime: "10 min",
-                servings: 3,
-                description: "Quick and healthy vegetable stir fry",
+                name: 'Overnight Oats with Berries & Nuts',
+                image: 'https://placehold.co/600x400/b7cdbe/5e876d?text=Overnight+Oats',
+                time: '5 mins prep (+ overnight)',
+                servings: 1,
+                category: 'Breakfast',
+                difficulty: 'Easy',
+                dietary: ['Vegetarian', 'Gluten-Free'],
                 ingredients: [
-                    "2 cups mixed vegetables",
-                    "2 tbsp soy sauce",
-                    "1 tbsp sesame oil",
-                    "2 cloves garlic",
-                    "1 tsp ginger",
-                    "2 cups cooked rice"
+                    { name: 'rolled oats', quantity: 0.5, unit: 'cup' }, 
+                    { name: 'milk', quantity: 1, unit: 'cup', alternative: 'dairy or non-dairy' }, 
+                    { name: 'chia seeds', quantity: 1, unit: 'tbsp' }, 
+                    { name: 'vanilla extract', quantity: 0.5, unit: 'tsp' }, 
+                    { name: 'maple syrup or honey', quantity: 1, unit: 'tbsp', optional: true }, 
+                    { name: 'mixed berries', quantity: 0.25, unit: 'cup' }, 
+                    { name: 'chopped nuts', quantity: 1, unit: 'tbsp', desc: '(almonds, walnuts, or pecans)' }
                 ],
+                ingredientPrices: {
+                    'rolled oats': {price: 25, unit: 'cup'}, 'milk': {price: 20, unit: 'cup'}, 
+                    'chia seeds': {price: 15, unit: 'tbsp'}, 'vanilla extract': {price: 5, unit: 'tsp'}, 
+                    'maple syrup': {price: 15, unit: 'tbsp'}, 'honey': {price: 15, unit: 'tbsp'},
+                    'mixed berries': {price: 100, unit: 'cup'}, 'chopped nuts': {price: 20, unit: 'tbsp'}
+                },
                 instructions: [
-                    "Heat oil in large wok or pan",
-                    "Add garlic and ginger, stir 30 seconds",
-                    "Add vegetables, stir fry 5-7 minutes",
-                    "Add soy sauce and toss",
-                    "Serve over cooked rice",
-                    "Garnish with sesame seeds if desired"
-                ],
-                shoppingItems: [
-                    { name: "Carrots", id: 4 },
-                    { name: "Fresh Tomatoes", id: 3 },
-                    { name: "Spinach", id: 12 }
+                    'In a jar or container with a lid, combine rolled oats, milk, chia seeds, vanilla extract, and maple syrup/honey. Stir well.',
+                    'Cover and refrigerate overnight (or for at least 4 hours).',
+                    'In the morning, stir the oats and top with mixed berries and chopped nuts before serving.'
                 ]
             },
             {
                 id: 6,
-                title: "Cheese Omelette",
-                category: "breakfast",
-                image: "https://images.pexels.com/photos/824635/pexels-photo-824635.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                prepTime: "5 min",
-                cookTime: "8 min",
-                servings: 1,
-                description: "Fluffy omelette with melted cheese",
+                name: 'Homemade Garlic Bread',
+                image: 'https://placehold.co/600x400/d5e2d9/111813?text=Garlic+Bread',
+                time: '15 mins',
+                servings: 4,
+                category: 'Snacks/Desserts', // Can also be an appetizer
+                difficulty: 'Easy',
+                dietary: ['Vegetarian'],
                 ingredients: [
-                    "3 large eggs",
-                    "1/4 cup shredded cheese",
-                    "2 tbsp butter",
-                    "Salt and pepper",
-                    "1 tbsp chives",
-                    "1 tbsp milk"
+                    { name: 'baguette or loaf of crusty bread', quantity: 1, unit: '' }, 
+                    { name: 'unsalted butter (softened)', quantity: 0.5, unit: 'cup' }, 
+                    { name: 'garlic', quantity: 4, unit: 'cloves', desc: 'minced' }, 
+                    { name: 'fresh parsley', quantity: 2, unit: 'tbsp', desc: 'chopped' }, 
+                    { name: 'salt', quantity: 0.25, unit: 'tsp' }, 
+                    { name: 'black pepper', quantity: 1, unit: 'pinch' }
                 ],
+                ingredientPrices: {
+                    'baguette': {price: 60, unit: 'unit'}, 'crusty bread': {price: 60, unit: 'unit'}, 
+                    'unsalted butter': {price: 80, unit: 'cup'}, 'garlic': {price: 10, unit: 'cloves'}, 
+                    'fresh parsley': {price: 15, unit: 'tbsp'}, 'salt': {price: 2, unit: 'tsp'}, 
+                    'black pepper': {price: 3, unit: 'pinch'}
+                },
                 instructions: [
-                    "Beat eggs with milk, salt, and pepper",
-                    "Heat butter in non-stick pan",
-                    "Pour in egg mixture",
-                    "Let set for 2-3 minutes",
-                    "Add cheese to one half",
-                    "Fold omelette and slide onto plate"
+                    'Preheat oven to 375°F (190°C).',
+                    'In a small bowl, combine softened butter, minced garlic, chopped parsley, salt, and pepper. Mix until well combined.',
+                    'Slice the baguette/bread lengthwise or into thick slices. Spread the garlic butter generously on both sides of each slice.',
+                    'Place bread on a baking sheet. Bake for 8-12 minutes, or until golden brown and fragrant. For extra crispiness, broil for the last 1-2 minutes, watching carefully to prevent burning.',
+                    'Serve hot and enjoy!'
+                ]
+            },
+            {
+                id: 7,
+                name: 'Quinoa Stuffed Bell Peppers',
+                image: 'https://placehold.co/600x400/80a08e/f9fbfa?text=Stuffed+Peppers',
+                time: '45 mins',
+                servings: 4,
+                category: 'Lunch/Dinner',
+                difficulty: 'Medium',
+                dietary: ['Vegetarian', 'Gluten-Free'],
+                ingredients: [
+                    { name: 'bell peppers', quantity: 4, unit: '' },
+                    { name: 'cooked quinoa', quantity: 1.5, unit: 'cups' },
+                    { name: 'canned black beans', quantity: 1, unit: 'can (15 oz)' },
+                    { name: 'corn kernels', quantity: 0.5, unit: 'cup' },
+                    { name: 'diced tomatoes', quantity: 0.5, unit: 'cup' },
+                    { name: 'cheddar cheese', quantity: 0.5, unit: 'cup', optional: true, desc: 'shredded' },
+                    { name: 'cumin', quantity: 1, unit: 'tsp' },
+                    { name: 'chili powder', quantity: 1, unit: 'tsp' },
+                    { name: 'salt', quantity: 1, unit: 'to taste' },
+                    { name: 'pepper', quantity: 1, unit: 'to taste' },
+                    { name: 'fresh cilantro', quantity: 1, unit: 'for garnish' }
                 ],
-                shoppingItems: [
-                    { name: "Cheese", id: 6 },
-                    { name: "Fresh Milk", id: 5 }
+                ingredientPrices: {
+                    'bell peppers': {price: 40, unit: 'unit'}, 'quinoa': {price: 120, unit: 'cup'},
+                    'black beans': {price: 30, unit: 'can'}, 'corn kernels': {price: 25, unit: 'cup'},
+                    'diced tomatoes': {price: 35, unit: 'cup'}, 'cheddar cheese': {price: 60, unit: 'cup'},
+                    'cumin': {price: 5, unit: 'tsp'}, 'chili powder': {price: 5, unit: 'tsp'},
+                    'salt': {price: 2, unit: 'unit'}, 'pepper': {price: 3, unit: 'unit'},
+                    'fresh cilantro': {price: 10, unit: 'unit'}
+                },
+                instructions: [
+                    'Preheat oven to 375°F (190°C). Halve bell peppers lengthwise and remove seeds. Place cut-side up on a baking sheet.',
+                    'In a bowl, combine cooked quinoa, black beans, corn, diced tomatoes, cumin, chili powder, salt, and pepper.',
+                    'Spoon the mixture evenly into bell pepper halves. If using, sprinkle with shredded cheese.',
+                    'Bake for 25-30 minutes, or until peppers are tender and filling is heated through. Garnish with fresh cilantro before serving.'
+                ]
+            },
+            {
+                id: 8,
+                name: 'Avocado Toast with Poached Egg',
+                image: 'https://placehold.co/600x400/d5e2d9/111813?text=Avocado+Toast',
+                time: '15 mins',
+                servings: 1,
+                category: 'Breakfast',
+                difficulty: 'Easy',
+                dietary: ['Vegetarian'],
+                ingredients: [
+                    { name: 'ripe avocado', quantity: 1, unit: '' },
+                    { name: 'slice of whole grain bread', quantity: 1, unit: '' },
+                    { name: 'egg', quantity: 1, unit: '' },
+                    { name: 'red pepper flakes', quantity: 0.5, unit: 'tsp', optional: true },
+                    { name: 'salt', quantity: 1, unit: 'to taste' },
+                    { name: 'pepper', quantity: 1, unit: 'to taste' }
+                ],
+                ingredientPrices: {
+                    'ripe avocado': {price: 60, unit: 'unit'}, 'whole grain bread': {price: 20, unit: 'slice'},
+                    'egg': {price: 10, unit: 'unit'}, 'red pepper flakes': {price: 5, unit: 'tsp'},
+                    'salt': {price: 2, unit: 'unit'}, 'pepper': {price: 3, unit: 'unit'}
+                },
+                instructions: [
+                    'Toast the slice of bread to your desired crispness.',
+                    'While toast is cooking, mash the avocado in a small bowl with a fork. Season with salt and pepper.',
+                    'Poach the egg: Bring a pot of water to a gentle simmer. Carefully crack the egg into the simmering water. Cook for 3-4 minutes for a runny yolk.',
+                    'Spread mashed avocado on the toast. Top with the poached egg. Sprinkle with red pepper flakes (if using), and a little more salt and pepper. Serve immediately.'
                 ]
             }
         ];
 
-        // DOM Elements
-        const recipesGrid = document.getElementById('recipes-grid');
-        const cartCountEl = document.getElementById('cartCount');
-        const cartBtn = document.getElementById('cartBtn');
-        const recipeFilters = document.querySelectorAll('.recipe-filter');
-        const recipeModal = document.getElementById('recipeModal');
-        const closeModal = document.getElementById('closeModal');
-
-        // Toast Notification System
-        const toastContainer = document.getElementById('toast-container');
-        function showToast(message, type = 'info', duration = 4000) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => toast.classList.add('show'), 10);
+        // --- Utility Functions for Modals ---
+        function openModal(modalId, content) {
+            const modalWrapper = document.getElementById(modalId);
+            const modalContent = modalWrapper.querySelector('.modal-content');
+            modalContent.innerHTML = content;
+            modalWrapper.classList.remove('hidden');
             setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
-            }, duration);
+                modalWrapper.classList.remove('opacity-0');
+                modalContent.classList.remove('-translate-y-10');
+            }, 10);
+        }
+        
+        function closeModal(modalId) {
+            const modalWrapper = document.getElementById(modalId);
+            const modalContent = modalWrapper.querySelector('.modal-content'); 
+            modalWrapper.classList.add('opacity-0');
+            modalContent.classList.add('-translate-y-10');
+            setTimeout(() => {
+                modalWrapper.classList.add('hidden');
+                modalContent.innerHTML = '';
+            }, 300);
         }
 
-        // Cart functions
-        function getCart() {
-            const savedCart = localStorage.getItem('freshmartCart');
-            return savedCart ? JSON.parse(savedCart) : [];
+        // --- Cart & Storage Functions ---
+        function updateCartCountDisplay() {
+            const totalItemsInCart = cartItems.reduce((total, item) => total + item.quantity, 0);
+            cartCountEl.textContent = totalItemsInCart;
         }
 
-        function saveCart(cart) {
-            localStorage.setItem('freshmartCart', JSON.stringify(cart));
-            updateCartCount();
+        function loadCartData() {
+            cartItems = JSON.parse(localStorage.getItem('freshmartCart')) || [];
+            updateCartCountDisplay();
         }
 
-        function updateCartCount() {
-            const cart = getCart();
-            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCountEl.textContent = totalCount;
+        function saveCartData() {
+            localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
         }
 
-        // Add ingredient to cart (simplified - would need actual product data)
-        function addIngredientToCart(item) {
-            showToast(`${item.name} added to shopping list!`, 'success');
+        function loadGroceryListData() {
+            groceryList = JSON.parse(localStorage.getItem('freshmartGroceryList')) || [];
+            renderGroceryList();
         }
 
-        // Render recipes
-        function renderRecipes(recipesToShow = recipes) {
-            recipesGrid.innerHTML = '';
-            
-            recipesToShow.forEach(recipe => {
-                const recipeCard = document.createElement('div');
-                recipeCard.className = 'bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer';
-                recipeCard.innerHTML = `
-                    <img src="${recipe.image}" alt="${recipe.title}" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="font-bold text-gray-800 text-lg mb-2">${recipe.title}</h3>
-                        <p class="text-gray-600 text-sm mb-4">${recipe.description}</p>
-                        <div class="flex justify-between text-sm text-gray-500 mb-4">
-                            <span>⏱️ ${recipe.prepTime}</span>
-                            <span>🍽️ ${recipe.servings} servings</span>
+        function saveGroceryListData() {
+            localStorage.setItem('freshmartGroceryList', JSON.stringify(groceryList));
+            renderGroceryList();
+        }
+
+        // --- Recipe Rendering & Filtering ---
+        function renderRecipes(recipesToRender = allRecipes) {
+            recipesGrid.innerHTML = ''; 
+
+            if (recipesToRender.length === 0) {
+                recipesGrid.innerHTML = '<p class="text-center text-gray-500 col-span-full">No recipes found matching your criteria.</p>';
+                return;
+            }
+
+            recipesToRender.forEach(recipe => {
+                const difficultyClass = recipe.difficulty.toLowerCase().replace(/\s/g, '-');
+                const dietaryTagsHtml = recipe.dietary.map(tag => `<span class="dietary-tag">${tag}</span>`).join('');
+
+                const recipeCardHtml = `
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 flex flex-col">
+                        <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-48 object-cover">
+                        <div class="p-5 flex flex-col flex-1">
+                            <h3 class="text-xl font-bold text-[#111813] mb-2">${recipe.name}</h3>
+                            <div class="flex items-center mb-2">
+                                <span class="difficulty-tag ${difficultyClass}">${recipe.difficulty}</span>
+                                ${dietaryTagsHtml}
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3 line-clamp-3">${recipe.instructions[0] ? recipe.instructions[0].slice(0, 100) + '...' : ''}</p>
+                            <div class="flex items-center text-sm text-gray-500 mb-4 mt-auto">
+                                <span class="mr-3">⏱️ ${recipe.time}</span>
+                                <span>🍽️ ${recipe.servings} servings</span>
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-2 mt-2">
+                                <button class="read-recipe-btn recipe-card-btn bg-[#6ec88e] hover:bg-green-600 flex-1"
+                                    data-recipe-id="${recipe.id}">
+                                    Read Full Recipe
+                                </button>
+                                <button class="add-to-grocery-list-btn recipe-card-btn bg-[#eaf0ec] hover:bg-gray-300 flex-1"
+                                    data-recipe-id="${recipe.id}">
+                                    Add to Grocery List
+                                </button>
+                            </div>
                         </div>
-                        <button onclick="openRecipeModal(${recipe.id})" 
-                                class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-2 px-4 rounded transition-colors">
-                            View Recipe
-                        </button>
                     </div>
                 `;
-                recipesGrid.appendChild(recipeCard);
+                recipesGrid.insertAdjacentHTML('beforeend', recipeCardHtml);
             });
+            attachRecipeCardListeners();
         }
 
-        // Filter recipes by category
-        function filterRecipes(category) {
-            const filteredRecipes = category === 'all' ? recipes : recipes.filter(r => r.category === category);
-            renderRecipes(filteredRecipes);
-            
-            // Update active filter button
-            recipeFilters.forEach(btn => {
-                btn.classList.remove('active', 'bg-[#6ec88e]', 'text-white');
-                btn.classList.add('bg-gray-200', 'text-gray-700');
+        function filterRecipes() {
+            const searchTerm = recipeSearchInput.value.toLowerCase();
+            const selectedCategory = document.querySelector('[data-filter-group="category"].active')?.dataset.filterValue || 'All';
+            const selectedDifficulty = document.querySelector('[data-filter-group="difficulty"].active')?.dataset.filterValue || 'All';
+            const selectedDietary = document.querySelector('[data-filter-group="dietary"].active')?.dataset.filterValue || 'All';
+
+            const filtered = allRecipes.filter(recipe => {
+                const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) ||
+                                      recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm));
+                
+                const matchesCategory = selectedCategory === 'All' || recipe.category === selectedCategory;
+                const matchesDifficulty = selectedDifficulty === 'All' || recipe.difficulty === selectedDifficulty;
+                const matchesDietary = selectedDietary === 'All' || recipe.dietary.includes(selectedDietary);
+
+                return matchesSearch && matchesCategory && matchesDifficulty && matchesDietary;
             });
-            
-            const activeBtn = document.querySelector(`[data-category="${category}"]`);
-            activeBtn.classList.add('active', 'bg-[#6ec88e]', 'text-white');
-            activeBtn.classList.remove('bg-gray-200', 'text-gray-700');
+            renderRecipes(filtered);
         }
 
-        // Open recipe modal
-        function openRecipeModal(recipeId) {
-            const recipe = recipes.find(r => r.id === recipeId);
-            if (!recipe) return;
+        // --- Servings Adjustment Logic ---
+        function getIngredientDisplay(ingredient, currentServings, originalServings) {
+            const factor = currentServings / originalServings;
+            let displayQuantity = ingredient.quantity * factor;
+            let formattedQuantity = displayQuantity;
 
-            document.getElementById('modalTitle').textContent = recipe.title;
-            document.getElementById('modalImage').src = recipe.image;
-            document.getElementById('modalPrepTime').textContent = recipe.prepTime;
-            document.getElementById('modalCookTime').textContent = recipe.cookTime;
-            document.getElementById('modalServings').textContent = recipe.servings;
+            // Format fractions and decimals nicely
+            if (displayQuantity % 1 !== 0) { // If it has a decimal
+                const tolerance = 0.001; // For floating point comparison
+                if (Math.abs(displayQuantity - 0.25) < tolerance) formattedQuantity = '1/4';
+                else if (Math.abs(displayQuantity - 0.5) < tolerance) formattedQuantity = '1/2';
+                else if (Math.abs(displayQuantity - 0.75) < tolerance) formattedQuantity = '3/4';
+                else if (Math.abs(displayQuantity - (1/3)) < tolerance) formattedQuantity = '1/3';
+                else if (Math.abs(displayQuantity - (2/3)) < tolerance) formattedQuantity = '2/3';
+                else if (displayQuantity > 1 && displayQuantity % 1 < tolerance) formattedQuantity = Math.round(displayQuantity); // e.g. 2.000001 -> 2
+                else formattedQuantity = displayQuantity.toFixed(2); // Fallback for other decimals
+            } else {
+                formattedQuantity = displayQuantity;
+            }
 
-            // Ingredients
-            const ingredientsList = document.getElementById('modalIngredients');
-            ingredientsList.innerHTML = '';
+            let optionalText = ingredient.optional ? ' (optional)' : '';
+            let descText = ingredient.desc ? ` (${ingredient.desc})` : '';
+            let altText = ingredient.alternative ? ` (or ${ingredient.alternative})` : '';
+
+            // Handle "to taste" and "for garnish" which don't have quantities
+            if (ingredient.unit.includes('to taste') || ingredient.unit.includes('for garnish')) {
+                return `${ingredient.name} ${ingredient.unit}${optionalText}`;
+            }
+
+            return `${formattedQuantity}${ingredient.unit ? ' ' + ingredient.unit : ''} ${ingredient.name}${descText}${altText}${optionalText}`;
+        }
+
+
+        function updateIngredientListInModal(recipe, newServings) {
+            const ingredientsUl = document.getElementById('modal-ingredients-list');
+            if (!ingredientsUl) return; // Should not happen if modal is open
+
+            ingredientsUl.innerHTML = ''; // Clear existing list
+
             recipe.ingredients.forEach(ingredient => {
                 const li = document.createElement('li');
-                li.className = 'text-gray-700';
-                li.innerHTML = `• ${ingredient}`;
-                ingredientsList.appendChild(li);
+                li.className = 'mb-1';
+                li.textContent = getIngredientDisplay(ingredient, newServings, recipe.servings);
+                ingredientsUl.appendChild(li);
             });
+        }
 
-            // Instructions
-            const instructionsList = document.getElementById('modalInstructions');
-            instructionsList.innerHTML = '';
-            recipe.instructions.forEach((instruction, index) => {
-                const li = document.createElement('li');
-                li.className = 'text-gray-700';
-                li.innerHTML = `${index + 1}. ${instruction}`;
-                instructionsList.appendChild(li);
-            });
+        // --- Grocery List Management ---
+        function addIngredientsToGroceryList(recipeId) {
+            const recipe = allRecipes.find(r => r.id === recipeId);
+            if (!recipe) return;
 
-            // Shopping items
-            const shoppingItems = document.getElementById('shoppingItems');
-            shoppingItems.innerHTML = '';
-            recipe.shoppingItems.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center';
-                div.innerHTML = `
-                    <span class="text-gray-700">${item.name}</span>
-                    <button onclick="addIngredientToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})" 
-                            class="text-sm bg-[#6ec88e] text-white px-3 py-1 rounded hover:bg-green-500">
-                        Add to Cart
+            openModal('recipe-modal-wrapper', `
+                <div class="p-6 text-center relative">
+                    <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
-                `;
-                shoppingItems.appendChild(div);
-            });
+                    <p class="text-lg font-medium text-[#111813] mb-4">Adding ingredients from "${recipe.name}" to your grocery list...</p>
+                </div>
+            `);
 
-            recipeModal.classList.remove('hidden');
-        }
-
-        // Close recipe modal
-        function closeRecipeModal() {
-            recipeModal.classList.add('hidden');
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            renderRecipes();
-            updateCartCount();
-            
-            // Recipe filter buttons
-            recipeFilters.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterRecipes(btn.dataset.category);
-                });
-            });
-            
-            // Cart button
-            cartBtn.addEventListener('click', () => {
-                window.location.href = 'cart.html';
-            });
-
-            // Modal close events
-            closeModal.addEventListener('click', closeRecipeModal);
-            recipeModal.addEventListener('click', (e) => {
-                if (e.target === recipeModal) {
-                    closeRecipeModal();
+            recipe.ingredients.forEach(ingredient => {
+                const itemString = getIngredientDisplay(ingredient, recipe.servings, recipe.servings);
+                // Only add if not already in the list
+                if (!groceryList.some(item => item.itemString === itemString)) {
+                    groceryList.push({ 
+                        itemString: itemString, 
+                        originalIngredient: ingredient, 
+                        originalRecipeId: recipe.id 
+                    });
                 }
             });
+            saveGroceryListData(); // Save and re-render the list
+            setTimeout(() => {
+                closeModal('recipe-modal-wrapper');
+                openModal('recipe-modal-wrapper', `
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-[#111813] mb-4">Ingredients added to grocery list!</p>
+                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">OK</button>
+                    </div>
+                `);
+            }, 500); // Simulate processing time
+        }
 
-            // Show welcome message
-            showToast('🍳 Discover delicious recipes!', 'info', 3000);
+        function renderGroceryList() {
+            groceryListItemsUl.innerHTML = '';
+            if (groceryList.length === 0) {
+                groceryListItemsUl.innerHTML = '<li class="text-center text-gray-500">Your list is empty. Add ingredients from recipes!</li>';
+                groceryListCountSpan.textContent = '0 items';
+                clearGroceryListBtn.disabled = true;
+                addToCartFromGroceryBtn.disabled = true;
+            } else {
+                groceryList.forEach((item, index) => {
+                    groceryListItemsUl.insertAdjacentHTML('beforeend', `
+                        <li class="flex items-center justify-between group">
+                            <span>${item.itemString}</span>
+                            <button class="remove-grocery-item-btn text-red-500 hover:text-red-700 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200" data-index="${index}">Remove</button>
+                        </li>
+                    `);
+                });
+                groceryListCountSpan.textContent = `${groceryList.length} items`;
+                clearGroceryListBtn.disabled = false;
+                addToCartFromGroceryBtn.disabled = false;
+                // Add listeners for dynamically added remove buttons
+                document.querySelectorAll('.remove-grocery-item-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const indexToRemove = parseInt(e.currentTarget.dataset.index);
+                        groceryList.splice(indexToRemove, 1);
+                        saveGroceryListData(); // Re-render after removal
+                    });
+                });
+            }
+        }
+
+        function clearGroceryList() {
+            openModal('recipe-modal-wrapper', `
+                <div class="p-6 text-center relative">
+                    <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <p class="text-lg font-medium text-[#111813] mb-4">Are you sure you want to clear your grocery list?</p>
+                    <div class="flex justify-center gap-4">
+                        <button id="confirm-clear-btn" class="modal-confirm-button yes">Yes</button>
+                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-confirm-button no">No</button>
+                    </div>
+                </div>
+            `);
+            document.getElementById('confirm-clear-btn').onclick = () => {
+                groceryList = [];
+                saveGroceryListData();
+                closeModal('recipe-modal-wrapper');
+                openModal('recipe-modal-wrapper', `
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-[#111813] mb-4">Grocery list cleared!</p>
+                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">OK</button>
+                    </div>
+                `);
+            };
+        }
+
+        function addGroceryListToCart() {
+            if (groceryList.length === 0) {
+                openModal('recipe-modal-wrapper', `
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-red-500 mb-4">Your grocery list is empty. Nothing to add to cart.</p>
+                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">OK</button>
+                    </div>
+                `);
+                return;
+            }
+
+            openModal('recipe-modal-wrapper', `
+                <div class="p-6 text-center relative">
+                    <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    <p class="text-lg font-medium text-[#111813] mb-4">Adding grocery list items to your cart...</p>
+                </div>
+            `);
+
+            let tempGroceryCartCount = 0;
+            groceryList.forEach(item => {
+                const originalIngredient = item.originalIngredient;
+                const recipeForPrice = allRecipes.find(r => r.id === item.originalRecipeId);
+
+                let itemPrice = 25.00; // Default price
+                let itemUnit = originalIngredient.unit || 'unit';
+                let itemName = originalIngredient.name;
+                
+                // Prioritize price from ingredientPrices using cleaned name
+                if (recipeForPrice && recipeForPrice.ingredientPrices[originalIngredient.name.toLowerCase().replace(/\s\(.*\)/, '')]) {
+                    const priceInfo = recipeForPrice.ingredientPrices[originalIngredient.name.toLowerCase().replace(/\s\(.*\)/, '')];
+                    itemPrice = priceInfo.price;
+                    itemUnit = priceInfo.unit; // Use unit from ingredientPrices
+                } else if (originalIngredient.alternative) {
+                    const alternatives = originalIngredient.alternative.split('/').map(a => a.trim().toLowerCase());
+                    for (const alt of alternatives) {
+                        if (recipeForPrice && recipeForPrice.ingredientPrices[alt]) {
+                            const priceInfo = recipeForPrice.ingredientPrices[alt];
+                            itemPrice = priceInfo.price;
+                            itemUnit = priceInfo.unit;
+                            itemName = alt; // Use the alternative name if price found for it
+                            break;
+                        }
+                    }
+                }
+                
+                // For simplicity, quantity is 1 for each added grocery item.
+                // In a real scenario, you'd parse quantity from itemString.
+                const quantityToAdd = 1; 
+
+                const itemImage = recipeForPrice ? recipeForPrice.image : 'https://placehold.co/100x100/d5e2d9/111813?text=Item';
+
+                // Check if item already exists in cart by name to avoid duplicates
+                const existingCartItem = cartItems.find(cartItem => cartItem.name.toLowerCase() === itemName.toLowerCase());
+                if (existingCartItem) {
+                    existingCartItem.quantity += quantityToAdd;
+                } else {
+                    cartItems.push({
+                        id: Date.now() + Math.random(), // Unique ID for new cart item
+                        name: itemName,
+                        price: itemPrice,
+                        unit: itemUnit,
+                        image: itemImage,
+                        quantity: quantityToAdd
+                    });
+                }
+                tempGroceryCartCount++;
+            });
+
+            saveCartData();
+            updateCartCountDisplay();
+            groceryList = []; // Clear grocery list after adding to cart
+            saveGroceryListData(); // Save cleared grocery list
+
+            setTimeout(() => {
+                closeModal('recipe-modal-wrapper');
+                openModal('recipe-modal-wrapper', `
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-[#111813] mb-4">${tempGroceryCartCount} items added to your shopping cart!</p>
+                        <button onclick="window.location.href = 'cart.html'" class="modal-action-button">Go to Cart</button>
+                    </div>
+                `);
+            }, 500);
+        }
+
+
+        // --- Event Listeners ---
+
+        // Header navigation/action listeners
+        if (loginBtn) {
+            loginBtn.addEventListener("click", function() {
+                openModal('recipe-modal-wrapper', `
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4">Login</h3>
+                        <p class="text-gray-600">Redirecting to login page...</p>
+                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">OK</button>
+                    </div>
+                `);
+                // In a real application, you would navigate to the login page:
+                // window.location.href = "login.html";
+            });
+        }
+
+        if (cartBtn) {
+            cartBtn.addEventListener("click", function(event) {
+                event.preventDefault(); // Prevent default link behavior
+                window.location.href = "cart.html"; // Redirect to cart page
+            });
+        }
+
+        // Mobile menu toggle
+        if (mobileMenuButton && mobileMenu && closeMenuButton) {
+            mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+            closeMenuButton.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+        }
+
+        // Navigation links (using event delegation for common handling)
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = e.currentTarget.getAttribute('href');
+                if (href && href !== '#') {
+                    window.location.href = href;
+                } else {
+                    // For placeholder links like #, show a generic message
+                    openModal('recipe-modal-wrapper', `
+                        <div class="p-6 text-center relative">
+                            <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            <p class="text-lg font-medium text-[#111813]">This section is under development. Stay tuned!</p>
+                            <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">OK</button>
+                        </div>
+                    `);
+                }
+            });
         });
 
-        // Make functions globally available
-        window.openRecipeModal = openRecipeModal;
-        window.addIngredientToCart = addIngredientToCart;
+        // Attach listeners for dynamic recipe cards
+        function attachRecipeCardListeners() {
+            document.querySelectorAll('.read-recipe-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const recipeId = parseInt(e.currentTarget.dataset.recipeId);
+                    const recipe = allRecipes.find(r => r.id === recipeId);
+                    let currentServings = recipe.servings; // Local state for servings in modal
+
+                    if (recipe) {
+                        const renderModalContent = (servingsToDisplay) => {
+                            const ingredientsListHtml = recipe.ingredients.map(ingredient => 
+                                `<li class="mb-1">${getIngredientDisplay(ingredient, servingsToDisplay, recipe.servings)}</li>`
+                            ).join('');
+                            const instructionsListHtml = recipe.instructions.map((item, index) => 
+                                `<li class="mb-1">${index + 1}. ${item.trim()}</li>`
+                            ).join('');
+
+                            return `
+                                <div class="p-6 relative text-left max-h-[80vh] overflow-y-auto">
+                                    <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200" onclick="closeModal('recipe-modal-wrapper')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                    </button>
+                                    <h3 class="text-2xl font-bold text-[#111813] mb-4">${recipe.name}</h3>
+                                    
+                                    <div class="mb-4 flex items-center justify-between">
+                                        <h4 class="text-xl font-semibold text-[#111813]">Ingredients:</h4>
+                                        <div class="flex items-center gap-2">
+                                            <button id="decrease-servings" class="size-8 rounded-full bg-gray-200 text-[#111813] font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors duration-200">-</button>
+                                            <span id="current-servings" class="text-lg font-bold">${servingsToDisplay}</span>
+                                            <button id="increase-servings" class="size-8 rounded-full bg-gray-200 text-[#111813] font-bold flex items-center justify-center cursor-pointer hover:bg-gray-300 transition-colors duration-200">+</button>
+                                            <span>servings</span>
+                                        </div>
+                                    </div>
+                                    <ul id="modal-ingredients-list" class="list-disc pl-5 text-gray-700 mb-6">
+                                        ${ingredientsListHtml}
+                                    </ul>
+                                    
+                                    <h4 class="text-xl font-semibold text-[#111813] mb-2">Instructions:</h4>
+                                    <ol class="list-decimal pl-5 text-gray-700 mb-6">
+                                        ${instructionsListHtml}
+                                    </ol>
+                                    
+                                    <div class="text-center">
+                                        <button onclick="closeModal('recipe-modal-wrapper')" class="modal-action-button">Close</button>
+                                    </div>
+                                </div>
+                            `;
+                        };
+
+                        openModal('recipe-modal-wrapper', renderModalContent(currentServings));
+
+                        // Attach listeners to servings buttons ONLY AFTER modal content is rendered
+                        document.getElementById('decrease-servings').addEventListener('click', () => {
+                            if (currentServings > 1) {
+                                currentServings--;
+                                document.getElementById('current-servings').textContent = currentServings;
+                                updateIngredientListInModal(recipe, currentServings);
+                            }
+                        });
+
+                        document.getElementById('increase-servings').addEventListener('click', () => {
+                            currentServings++;
+                            document.getElementById('current-servings').textContent = currentServings;
+                            updateIngredientListInModal(recipe, currentServings);
+                        });
+                    }
+                });
+            });
+
+            document.querySelectorAll('.add-to-grocery-list-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const recipeId = parseInt(e.currentTarget.dataset.recipeId);
+                    addIngredientsToGroceryList(recipeId);
+                });
+            });
+        }
+
+        // Search and Filter Event Listeners
+        if (recipeSearchInput) {
+            recipeSearchInput.addEventListener('keyup', filterRecipes);
+        }
+
+        // Event delegation for filter buttons
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const filterGroup = e.currentTarget.dataset.filterGroup;
+                document.querySelectorAll(`[data-filter-group="${filterGroup}"]`).forEach(btn => btn.classList.remove('active'));
+                e.currentTarget.classList.add('active');
+                filterRecipes();
+            });
+        });
+
+        // Grocery List Collapsible Toggle
+        if (groceryListToggle && groceryListContent) {
+            groceryListToggle.addEventListener('click', () => {
+                groceryListContent.classList.toggle('expanded');
+                groceryListToggle.classList.toggle('expanded');
+            });
+        }
+
+        // Grocery List Action Buttons
+        if (clearGroceryListBtn) {
+            clearGroceryListBtn.addEventListener('click', clearGroceryList);
+        }
+        if (addToCartFromGroceryBtn) {
+            addToCartFromGroceryBtn.addEventListener('click', addGroceryListToCart);
+        }
+
+        // Event listener to close modal when clicking outside content (for recipe-modal-wrapper)
+        if (recipeModalWrapper) {
+            recipeModalWrapper.addEventListener('click', (e) => {
+                // Ensure click is directly on the wrapper, not its content
+                if (e.target === recipeModalWrapper) {
+                    closeModal('recipe-modal-wrapper');
+                }
+            });
+        }
+
+
+        // --- Initial Load ---
+        function init() {
+            loadCartData(); // Load cart for header count
+            loadGroceryListData(); // Load grocery list
+            // Set initial active state for filter buttons
+            document.querySelector('[data-filter-group="category"][data-filter-value="All"]').classList.add('active');
+            document.querySelector('[data-filter-group="difficulty"][data-filter-value="All"]').classList.add('active');
+            document.querySelector('[data-filter-group="dietary"][data-filter-value="All"]').classList.add('active');
+            renderRecipes(); // Initial render of all recipes
+        }
+        
+        init();
+    });
     </script>
+
 </body>
 </html>

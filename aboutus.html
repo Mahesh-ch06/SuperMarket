@@ -11,228 +11,902 @@
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
+        
+        /* Enhanced Mobile Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            padding: 1rem; /* Add padding for mobile */
+        }
+        
+        .modal.show {
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 15px;
+            border: 1px solid #888;
+            width: 95%;
+            max-width: 500px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* Mobile-specific adjustments */
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+                margin: 1rem;
+            }
+            
+            /* Ensure text is readable on mobile */
+            .modal-content p {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+        }
+        
+        /* Mobile menu animations */
+        #mobileMenu {
+            transform-origin: top;
+            animation: slideDown 0.2s ease-out forwards;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+        }
+        
+        /* Touch-friendly button sizing */
+        @media (max-width: 768px) {
+            button, a {
+                min-height: 44px; /* Apple's recommended touch target size */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        /* Additional mobile-friendly enhancements */
+        .touch-device button,
+        .touch-device a {
+            -webkit-tap-highlight-color: rgba(56, 161, 105, 0.3);
+        }
+
+        /* Improved scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Better mobile viewport handling */
+        body {
+            min-height: 100vh;
+            min-height: calc(var(--vh, 1vh) * 100);
+        }
+
+        /* Loading states */
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Smooth transitions for all interactive elements */
+        button, a, .modal-content {
+            transition: all 0.3s ease;
+        }
+
+        /* Enhanced focus states for accessibility */
+        button:focus,
+        a:focus {
+            outline: 2px solid #38a169;
+            outline-offset: 2px;
+        }
+
+        /* Improved modal for very small screens */
+        @media (max-width: 480px) {
+            .modal-content {
+                margin: 0.5rem;
+                padding: 1rem;
+            }
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Print styles */
+        @media print {
+            .modal, header, footer {
+                display: none !important;
+            }
+            
+            body {
+                font-size: 12pt;
+                line-height: 1.5;
+            }
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
-    <div class="relative flex min-h-screen flex-col">
-        <!-- Header -->
-        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
-            <div class="flex items-center justify-between">
-                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
-                    <div class="size-5">
-                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
-                    </div>
-                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
-                </a>
-                <nav class="hidden md:flex items-center gap-8">
-                    <a href="shop.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Shop</a>
-                    <a href="deals.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Deals</a>
-                    <a href="recipes.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Recipes</a>
-                    <a href="aboutus.html" class="text-[#6ec88e] text-sm font-bold">About</a>
-                    <a href="contactus.html" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] transition-colors">Contact</a>
-                </nav>
-                <div class="flex items-center gap-3">
-                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em]">
-                        <span>Cart (<span id="cartCount">0</span>)</span>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+        <div class="layout-container flex h-full grow flex-col">
+            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+                <div class="flex items-center justify-between">
+                    <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                        <div class="size-4">
+                            <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                        </div>
+                        <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="block md:hidden p-2 rounded-lg text-[#111813] hover:bg-[#eaf0ec]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
                     </button>
-                </div>
-            </div>
-        </header>
 
-        <!-- Hero Section -->
-        <section class="bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] py-20 px-4">
-            <div class="max-w-6xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-[#111813] mb-6">About FreshMart</h1>
-                <p class="text-xl text-gray-700 max-w-3xl mx-auto">
-                    Your trusted partner in bringing fresh, quality groceries right to your doorstep. 
-                    We're committed to making healthy eating accessible and convenient for everyone.
-                </p>
-            </div>
-        </section>
-
-        <!-- Our Story Section -->
-        <section class="py-20 px-4 bg-white">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <h2 class="text-3xl font-bold text-[#111813] mb-6">Our Story</h2>
-                        <p class="text-gray-700 mb-4">
-                            Founded in 2020, FreshMart began with a simple mission: to make fresh, quality groceries 
-                            accessible to everyone. What started as a small local initiative has grown into a trusted 
-                            platform serving thousands of families across the region.
-                        </p>
-                        <p class="text-gray-700 mb-4">
-                            We believe that everyone deserves access to fresh, nutritious food without the hassle of 
-                            long grocery store lines or limited selection. Our team works tirelessly to source the 
-                            best products from local farmers and trusted suppliers.
-                        </p>
-                        <p class="text-gray-700">
-                            Today, we're proud to offer over 1000+ products with same-day delivery, helping busy 
-                            families save time while maintaining a healthy lifestyle.
-                        </p>
-                    </div>
-                    <div>
-                        <img src="https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" 
-                             alt="Fresh vegetables" class="rounded-lg shadow-lg w-full">
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Our Values Section -->
-        <section class="py-20 px-4 bg-[#f9fbfa]">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-3xl font-bold text-center text-[#111813] mb-12">Our Values</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center p-6">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                            </svg>
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex flex-1 justify-end gap-4 sm:gap-8">
+                        <nav class="flex items-center gap-4 sm:gap-9">
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="shop.html" id="navShop">Shop</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="deals.html" id="navDeals">Deals</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
+                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169]" href="#" id="navAboutUs">About Us</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="contactus.html" id="navContactUs">Contact</a>
+                        </nav>
+                        <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
+                            <button id="profileBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                                <span class="truncate">Profile</span>
+                            </button>
+                            <button id="myOrdersBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                                <span class="truncate">My Orders</span>
+                            </button>
+                            <button id="loginLogoutBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors">
+                                <span class="truncate">Login</span>
+                            </button>
+                            <button id="cartBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors">
+                                <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
+                            </button>
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Quality First</h3>
-                        <p class="text-gray-600">We never compromise on quality. Every product is carefully selected and inspected before reaching your doorstep.</p>
                     </div>
-                    <div class="text-center p-6">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                </div>
+                
+                <!-- Mobile Navigation Drawer -->
+                <div id="mobileMenu" class="hidden absolute left-0 right-0 top-full bg-white shadow-lg z-40 px-4 py-2 border-t border-[#eaf0ec]">
+                    <nav class="flex flex-col w-full gap-2 py-2">
+                        <a class="text-[#111813] text-sm font-medium py-3 px-4 rounded-lg hover:bg-[#eaf0ec] border-b border-gray-100" href="shop.html" id="navShopMobile">Shop</a>
+                        <a class="text-[#111813] text-sm font-medium py-3 px-4 rounded-lg hover:bg-[#eaf0ec] border-b border-gray-100" href="deals.html" id="navDealsMobile">Deals</a>
+                        <a class="text-[#111813] text-sm font-medium py-3 px-4 rounded-lg hover:bg-[#eaf0ec] border-b border-gray-100" href="#" id="navRecipesMobile">Recipes</a>
+                        <a class="text-[#38a169] text-sm font-bold py-3 px-4 rounded-lg hover:bg-[#eaf0ec] border-b border-gray-100" href="#" id="navAboutUsMobile">About Us</a>
+                        <a class="text-[#111813] text-sm font-medium py-3 px-4 rounded-lg hover:bg-[#eaf0ec] border-b border-gray-100" href="contactus.html" id="navContactUsMobile">Contact</a>
+                    </nav>
+                    <div class="flex flex-col w-full gap-2 py-2 border-t border-[#eaf0ec] mt-2">
+                        <button id="profileBtnMobile" class="w-full text-left py-3 px-4 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] border-b border-gray-100">Profile</button>
+                        <button id="myOrdersBtnMobile" class="w-full text-left py-3 px-4 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec] border-b border-gray-100">My Orders</button>
+                        <button id="loginLogoutBtnMobile" class="w-full text-left py-3 px-4 rounded-lg bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] border-b border-gray-100">Login</button>
+                        <button id="cartBtnMobile" class="w-full text-left py-3 px-4 rounded-lg text-[#111813] text-sm font-bold hover:bg-[#eaf0ec]">Cart (<span id="cartCountMobile">0</span>)</button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 px-2 py-3 sm:px-4 sm:py-5 lg:px-8">
+                <div class="max-w-5xl mx-auto space-y-8 sm:space-y-12">
+                    <!-- Hero Section -->
+                    <section class="text-center py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] rounded-xl shadow-lg">
+                        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4">About FreshMart</h1>
+                        <p class="text-sm sm:text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+                            At FreshMart, we believe that everyone deserves access to fresh, high-quality groceries right at their doorstep. We're passionate about connecting you with the best produce, pantry staples, and specialty items.
+                        </p>
+                        <button id="learnMoreBtn" class="mt-6 sm:mt-8 rounded-xl h-12 px-4 sm:px-6 bg-[#38a169] text-white text-sm sm:text-lg font-bold hover:bg-[#2f855a] transition-colors shadow-md w-full sm:w-auto max-w-xs">
+                            Learn More About Our Commitment
+                        </button>
+                    </section>
+
+                    <!-- Our Story Section -->
+                    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
+                        <div class="md:order-2">
+                            <img src="https://placehold.co/600x400/b7cdbe/5e876d?text=Our+Story" alt="Our Story" class="w-full h-auto rounded-lg shadow-sm object-cover">
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Fast Delivery</h3>
-                        <p class="text-gray-600">Time is precious. We ensure your groceries reach you quickly and safely, often within hours of ordering.</p>
-                    </div>
-                    <div class="text-center p-6">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443a55.381 55.381 0 015.25 2.882V15" />
-                            </svg>
+                        <div class="md:order-1">
+                            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">Our Story</h2>
+                            <p class="text-sm sm:text-base text-gray-700 leading-relaxed mb-4">
+                                FreshMart began with a simple idea: to make healthy eating easier and more accessible for busy families and individuals. Frustrated by the lack of genuinely fresh options and convenient delivery services, our founders set out to create a better way to shop for groceries.
+                            </p>
+                            <p class="text-sm sm:text-base text-gray-700 leading-relaxed">
+                                We started small, working directly with local farms and trusted suppliers. Over time, our commitment to quality, freshness, and exceptional customer service resonated with our community, leading to the FreshMart you see today – a growing family dedicated to bringing the best to your table.
+                            </p>
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Sustainability</h3>
-                        <p class="text-gray-600">We care about our planet. Our packaging is eco-friendly and we support local farmers and sustainable practices.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+                    </section>
 
-        <!-- Team Section -->
-        <section class="py-20 px-4 bg-white">
-            <div class="max-w-6xl mx-auto">
-                <h2 class="text-3xl font-bold text-center text-[#111813] mb-12">Meet Our Team</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center">
-                        <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
-                             alt="Team member" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Sarah Johnson</h3>
-                        <p class="text-gray-600 mb-2">Founder & CEO</p>
-                        <p class="text-sm text-gray-500">Passionate about bringing fresh food to every household</p>
-                    </div>
-                    <div class="text-center">
-                        <img src="https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
-                             alt="Team member" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Michael Chen</h3>
-                        <p class="text-gray-600 mb-2">Head of Operations</p>
-                        <p class="text-sm text-gray-500">Ensures smooth delivery and quality control</p>
-                    </div>
-                    <div class="text-center">
-                        <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop" 
-                             alt="Team member" class="w-32 h-32 rounded-full mx-auto mb-4 object-cover">
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Emily Rodriguez</h3>
-                        <p class="text-gray-600 mb-2">Customer Experience Lead</p>
-                        <p class="text-sm text-gray-500">Dedicated to making your shopping experience perfect</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Stats Section -->
-        <section class="py-20 px-4 bg-[#6ec88e]">
-            <div class="max-w-6xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center text-white">
-                    <div>
-                        <div class="text-4xl font-bold mb-2">10,000+</div>
-                        <div class="text-lg">Happy Customers</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">1,000+</div>
-                        <div class="text-lg">Products Available</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">50+</div>
-                        <div class="text-lg">Local Farmers</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold mb-2">99%</div>
-                        <div class="text-lg">On-Time Delivery</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="bg-gray-50 border-t">
-            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="size-5">
-                                <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                    <!-- Our Mission & Values Section -->
+                    <section class="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8 text-center">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Our Mission & Values</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                            <div class="flex flex-col items-center p-4">
+                                <div class="text-[#38a169] mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 sm:w-12 sm:h-12">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Quality First</h3>
+                                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">We source only the freshest, highest-quality produce and products from trusted partners.</p>
                             </div>
-                            <h3 class="text-lg font-bold text-[#111813]">FreshMart</h3>
+                            <div class="flex flex-col items-center p-4">
+                                <div class="text-[#38a169] mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 sm:w-12 sm:h-12">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Unmatched Convenience</h3>
+                                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">Enjoy seamless online shopping and reliable doorstep delivery tailored to your schedule.</p>
+                            </div>
+                            <div class="flex flex-col items-center p-4 sm:col-span-2 lg:col-span-1">
+                                <div class="text-[#38a169] mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 sm:w-12 sm:h-12">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.964 48.964 0 0112 21c2.307 0 4.507-.27 6.618-.807a60.452 60.452 0 00-.49-6.347m-15.482 0A50.573 50.573 0 0012 3.477c3.429 0 6.76.617 9.913 1.858.1.348.29-.624.29-.624M12 5.952a2.25 2.25 0 012.25 2.25V15a2.25 2.25 0 01-2.25 2.25H12M12 5.952a2.25 2.25 0 00-2.25 2.25V15a2.25 2.25 0 002.25 2.25" />
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Community Focused</h3>
+                                <p class="text-sm sm:text-base text-gray-600 leading-relaxed">We support local farmers and build strong relationships within the communities we serve.</p>
+                            </div>
                         </div>
-                        <p class="text-gray-600 text-sm">Your trusted partner for fresh groceries and quality food products.</p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-[#111813] mb-4">Quick Links</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="shop.html" class="text-gray-600 hover:text-[#6ec88e]">Shop</a></li>
-                            <li><a href="deals.html" class="text-gray-600 hover:text-[#6ec88e]">Deals</a></li>
-                            <li><a href="aboutus.html" class="text-gray-600 hover:text-[#6ec88e]">About Us</a></li>
-                            <li><a href="contactus.html" class="text-gray-600 hover:text-[#6ec88e]">Contact</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-[#111813] mb-4">Customer Service</h4>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="my_orders.html" class="text-gray-600 hover:text-[#6ec88e]">My Orders</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Help Center</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Return Policy</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-[#111813] mb-4">Contact Info</h4>
-                        <ul class="space-y-2 text-sm text-gray-600">
-                            <li>📞 +91 12345 67890</li>
-                            <li>📧 support@freshmart.com</li>
-                            <li>📍 Mumbai, Maharashtra</li>
-                        </ul>
-                    </div>
+                    </section>
+
+                    <!-- Meet the Team Section -->
+                    <section class="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Meet the Team</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                            <!-- Team Member 1 -->
+                            <div class="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                                <img src="https://placehold.co/120x120/cccccc/000000?text=Team+Member" alt="Team Member 1" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mb-4 shadow-sm">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Rohan Mehta</h3>
+                                <p class="text-sm text-[#38a169]">Founder & CEO</p>
+                                <p class="text-xs text-gray-500 mt-2 leading-relaxed">Passionate about fresh produce and sustainable living.</p>
+                            </div>
+                            <!-- Team Member 2 -->
+                            <div class="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                                <img src="https://placehold.co/120x120/cccccc/000000?text=Team+Member" alt="Team Member 2" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mb-4 shadow-sm">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Priya Singh</h3>
+                                <p class="text-sm text-[#38a169]">Head of Operations</p>
+                                <p class="text-xs text-gray-500 mt-2 leading-relaxed">Ensuring every delivery is smooth and on time.</p>
+                            </div>
+                            <!-- Team Member 3 -->
+                            <div class="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                                <img src="https://placehold.co/120x120/cccccc/000000?text=Team+Member" alt="Team Member 3" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mb-4 shadow-sm">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Vikram Reddy</h3>
+                                <p class="text-sm text-[#38a169]">Lead Technologist</p>
+                                <p class="text-xs text-gray-500 mt-2 leading-relaxed">Innovating our platform for a better user experience.</p>
+                            </div>
+                            <!-- Team Member 4 -->
+                            <div class="flex flex-col items-center text-center p-4 bg-gray-50 rounded-lg">
+                                <img src="https://placehold.co/120x120/cccccc/000000?text=Team+Member" alt="Team Member 4" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mb-4 shadow-sm">
+                                <h3 class="text-base sm:text-lg font-semibold text-gray-800">Aisha Khan</h3>
+                                <p class="text-sm text-[#38a169]">Customer Relations</p>
+                                <p class="text-xs text-gray-500 mt-2 leading-relaxed">Your go-to for any questions or feedback!</p>
+                            </div>
+                        </div>
+                        <div class="text-center mt-6 sm:mt-8">
+                            <button id="joinTeamBtn" class="rounded-xl h-10 px-4 sm:px-6 bg-[#eaf0ec] text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto max-w-xs">
+                                Join Our Team!
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Why Choose FreshMart Section -->
+                    <section class="bg-white rounded-lg shadow-md p-6 sm:p-8">
+                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Why Choose FreshMart?</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="flex items-start gap-4">
+                                <div class="text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Unbeatable Freshness</h3>
+                                    <p class="text-gray-600">We work tirelessly to bring you produce that's picked at its peak and delivered swiftly to maintain maximum freshness.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.071 0-2.115.221-3.116.666V7.5m0 0h-.114C2.25 7.5 2 7.75 2 8v3.667A2.25 2.25 0 004.25 14h2.218m0-6.536l-1.5 1.5M12 6.042V19.5m0-13.458a8.967 8.967 0 016-2.285c1.071 0 2.115.221 3.116.666V7.5m0 0h.114C21.75 7.5 22 7.75 22 8v3.667a2.25 2.25 0 00-2.25 2.25H12" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Sustainable Sourcing</h3>
+                                    <p class="text-gray-600">We prioritize environmentally friendly practices and support local, sustainable agriculture whenever possible.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Diverse Product Range</h3>
+                                    <p class="text-gray-600">From everyday essentials to exotic ingredients, our wide selection caters to all your culinary needs.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Exceptional Service</h3>
+                                    <p class="text-gray-600">Our dedicated team is always ready to assist you, ensuring a smooth and pleasant shopping experience.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Customer Testimonials Section -->
+                    <section class="bg-white rounded-lg shadow-md p-6 sm:p-8">
+                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">What Our Customers Say</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                                <p class="text-gray-700 italic mb-4">"FreshMart has transformed the way I shop for groceries! The produce is always incredibly fresh, and the delivery is super reliable. Highly recommend!"</p>
+                                <p class="font-semibold text-gray-800">- Ananya Singh</p>
+                                <p class="text-sm text-gray-500">Mumbai, India</p>
+                            </div>
+                            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                                <p class="text-gray-700 italic mb-4">"As a busy professional, FreshMart saves me so much time. The quality is consistently excellent, and their customer service is top-notch. A true lifesaver!"</p>
+                                <p class="font-semibold text-gray-800">- Raj Patel</p>
+                                <p class="text-sm text-gray-500">Bengaluru, India</p>
+                            </div>
+                            <!-- Add more testimonials here -->
+                        </div>
+                    </section>
                 </div>
-                <div class="border-t mt-8 pt-8 text-center">
-                    <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
+            </main>
+
+            <footer class="flex justify-center">
+                <div class="flex max-w-[960px] flex-1 flex-col">
+                    <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
+                        <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerContactUs">Contact Us</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerTermsOfService">Terms of Service</a>
+                        </div>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
+                                    </svg>
+                                </div>
+                            </a>
+                        </div>
+                        <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
+                    </footer>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Generic Modal for alerts and messages -->
+    <div id="generalModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" id="generalModalCloseBtn">&times;</span>
+            <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
+            <button id="generalModalOkBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">OK</button>
+        </div>
     </div>
 
     <script>
-        // Update cart count
+        // --- DOM Elements ---
+        const cartCountEl = document.getElementById("cartCount");
+        const loginLogoutBtn = document.getElementById("loginLogoutBtn");
+        const profileBtn = document.getElementById("profileBtn");
+        const myOrdersBtn = document.getElementById("myOrdersBtn");
+        
+        const generalModal = document.getElementById('generalModal');
+        const generalModalMessage = document.getElementById('generalModalMessage');
+        const generalModalOkBtn = document.getElementById('generalModalOkBtn');
+        const generalModalCloseBtn = document.getElementById('generalModalCloseBtn');
+
+        // Buttons for sections in About Us
+        const learnMoreBtn = document.getElementById('learnMoreBtn');
+        const joinTeamBtn = document.getElementById('joinTeamBtn');
+
+
+        // --- Generic Modal Functions ---
+        function openGeneralModal(message) {
+            generalModalMessage.textContent = message;
+            generalModal.classList.remove('hidden');
+            setTimeout(() => generalModal.classList.add('show'), 10);
+        }
+
+        function closeGeneralModal() {
+            generalModal.classList.remove('show');
+            setTimeout(() => generalModal.classList.add('hidden'), 300);
+        }
+
+        // --- Cart Count Function (reused from index.html) ---
         function updateCartCount() {
             const savedCart = localStorage.getItem('freshmartCart');
             const cartItems = savedCart ? JSON.parse(savedCart) : [];
             const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-            document.getElementById('cartCount').textContent = totalCount;
+            cartCountEl.textContent = totalCount;
         }
 
-        // Event listeners
+        // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount();
+            updateCartCount(); // Update cart count on page load
+
+            // Mock user login state (adjust as per your actual login logic)
+            const isLoggedIn = false; // Assume logged out for this static page unless told otherwise
+            if (isLoggedIn) {
+                loginLogoutBtn.textContent = 'Logout';
+                loginLogoutBtn.classList.remove('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
+                loginLogoutBtn.classList.add('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
+            } else {
+                loginLogoutBtn.textContent = 'Login';
+                loginLogoutBtn.classList.remove('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
+                loginLogoutBtn.classList.add('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
+            }
+
+            // Header Navigation & Actions
+            loginLogoutBtn.addEventListener('click', async () => {
+                if (isLoggedIn) {
+                    // Implement logout logic here
+                    openGeneralModal("Logout functionality would be implemented here.");
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            profileBtn.addEventListener('click', () => {
+                window.location.href = 'profile.html'; // Assuming a profile page exists
+            });
+
+            myOrdersBtn.addEventListener('click', () => {
+                window.location.href = 'my_orders.html'; // Assuming a my orders page exists
+            });
+
+            document.getElementById("cartBtn").addEventListener("click", function() {
+                window.location.href = "cart.html";
+            });
+
+            document.getElementById("navShop").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "shop.html";
+            });
+            document.getElementById("navDeals").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "deals.html";
+            });
+            document.getElementById("navRecipes").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Recipes page (placeholder)!");
+            });
+            // The About Us link itself is the current page, so no navigation needed for it.
+            // document.getElementById("navAboutUs").addEventListener("click", function(event) { ... });
+
+            // Contact Us navigation
+            const contactUsLink = document.getElementById("navContactUs");
+            if (contactUsLink) {
+                contactUsLink.addEventListener("click", function(event) {
+                    event.preventDefault();
+                    window.location.href = "contactus.html";
+                });
+            }
+
+            // Footer Links
+            document.getElementById("footerContactUs").addEventListener("click", function(event) {
+                event.preventDefault();
+                window.location.href = "contactus.html"; // Changed from modal to navigation
+            });
+
+            document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Privacy Policy page!");
+            });
+
+            document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
+                event.preventDefault();
+                openGeneralModal("Navigating to Terms of Service page!");
+            });
             
-            // Cart button
-            document.getElementById('cartBtn').addEventListener('click', () => {
-                window.location.href = 'cart.html';
+            // Global Modal Close Buttons
+            generalModalOkBtn.addEventListener('click', closeGeneralModal);
+            generalModalCloseBtn.addEventListener('click', closeGeneralModal);
+
+            // Specific About Us section buttons
+            learnMoreBtn.addEventListener('click', () => {
+                openGeneralModal("This button would typically link to a more detailed page about FreshMart's mission, impact, or corporate responsibility.");
+            });
+
+            joinTeamBtn.addEventListener('click', () => {
+                openGeneralModal("This button would typically link to a Careers or 'Join Our Team' page with job openings.");
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu functionality
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuBtn && mobileMenu) {
+                mobileMenuBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Add mobile navigation event listeners
+                const mobileNavLinks = {
+                    'navShopMobile': 'shop.html',
+                    'navDealsMobile': 'deals.html',
+                    'navRecipesMobile': 'recipes.html',
+                    'navAboutUsMobile': 'aboutus.html',
+                    'navContactUsMobile': 'contactus.html'
+                };
+                
+                Object.keys(mobileNavLinks).forEach(linkId => {
+                    const element = document.getElementById(linkId);
+                    if (element) {
+                        element.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            if (mobileNavLinks[linkId] !== '#') {
+                                window.location.href = mobileNavLinks[linkId];
+                            } else {
+                                openGeneralModal("Navigating to " + linkId.replace('nav', '').replace('Mobile', '') + " page!");
+                            }
+                            mobileMenu.classList.add('hidden');
+                        });
+                    }
+                });
+                
+                // Mobile button handlers
+                const profileBtnMobile = document.getElementById('profileBtnMobile');
+                const myOrdersBtnMobile = document.getElementById('myOrdersBtnMobile');
+                const loginLogoutBtnMobile = document.getElementById('loginLogoutBtnMobile');
+                const cartBtnMobile = document.getElementById('cartBtnMobile');
+                
+                if (profileBtnMobile) {
+                    profileBtnMobile.addEventListener('click', () => {
+                        window.location.href = 'profile.html';
+                        mobileMenu.classList.add('hidden');
+                    });
+                }
+                
+                if (myOrdersBtnMobile) {
+                    myOrdersBtnMobile.addEventListener('click', () => {
+                        window.location.href = 'my_orders.html';
+                        mobileMenu.classList.add('hidden');
+                    });
+                }
+                
+                if (loginLogoutBtnMobile) {
+                    loginLogoutBtnMobile.addEventListener('click', () => {
+                        const isLoggedIn = false; // Use your actual login state logic
+                        if (isLoggedIn) {
+                            openGeneralModal("Logout functionality would be implemented here.");
+                        } else {
+                            window.location.href = 'login.html';
+                        }
+                        mobileMenu.classList.add('hidden');
+                    });
+                }
+                
+                if (cartBtnMobile) {
+                    cartBtnMobile.addEventListener('click', () => {
+                        window.location.href = 'cart.html';
+                        mobileMenu.classList.add('hidden');
+                    });
+                }
+                
+                // Sync cart count between desktop and mobile
+                const cartCount = document.getElementById('cartCount');
+                const cartCountMobile = document.getElementById('cartCountMobile');
+                if (cartCount && cartCountMobile) {
+                    const updateCartCounts = () => {
+                        cartCountMobile.textContent = cartCount.textContent;
+                    };
+                    updateCartCounts();
+                    // Observe changes to cart count
+                    const observer = new MutationObserver(updateCartCounts);
+                    observer.observe(cartCount, { childList: true, characterData: true, subtree: true });
+                }
+            }
+            
+            // Touch and scroll enhancements for mobile
+            if ('ontouchstart' in window) {
+                // Add touch-friendly classes for mobile devices
+                document.body.classList.add('touch-device');
+                
+                // Prevent zoom on double tap for buttons
+                document.addEventListener('touchend', function(e) {
+                    if (e.target.matches('button, a, [role="button"]')) {
+                        e.preventDefault();
+                        e.target.click();
+                    }
+                });
+            }
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', function() {
+                // Close mobile menu on orientation change
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+                
+                // Update viewport height for mobile browsers
+                setTimeout(() => {
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                }, 500);
+            });
+            
+            // Set initial viewport height
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
+
+        // Modal click outside to close functionality
+        window.onclick = function(event) {
+            if (event.target === generalModal) {
+                closeGeneralModal();
+            }
+        }
+
+        // Keyboard accessibility for modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && !generalModal.classList.contains('hidden')) {
+                closeGeneralModal();
+            }
+        });
+
+        // Smooth scroll behavior for internal links (if any)
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('a[href^="#"]') && e.target.getAttribute('href') !== '#') {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Add loading states for buttons that navigate to other pages
+        function addLoadingState(button) {
+            const originalText = button.textContent;
+            button.textContent = 'Loading...';
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+        }
+
+        // Performance optimization: Lazy load images when they come into view
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            // Observe all images with data-src attribute
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Add animation on scroll for better user experience
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections for scroll animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                section.style.transform = 'translateY(20px)';
+                section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(section);
+            });
+        });
+
+        // Handle form submissions (if any contact forms are added later)
+        function handleFormSubmission(formElement) {
+            formElement.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                const submitButton = formElement.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    addLoadingState(submitButton);
+                }
+                
+                // Simulate form submission
+                setTimeout(() => {
+                    openGeneralModal('Thank you for your message! We will get back to you soon.');
+                    formElement.reset();
+                }, 1000);
+            });
+        }
+
+        // Initialize tooltips for accessibility (if needed)
+        function initializeTooltips() {
+            const tooltipElements = document.querySelectorAll('[data-tooltip]');
+            tooltipElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    const tooltipText = this.getAttribute('data-tooltip');
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = tooltipText;
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        background: #333;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        z-index: 1000;
+                        pointer-events: none;
+                    `;
+                    document.body.appendChild(tooltip);
+                    
+                    const rect = this.getBoundingClientRect();
+                    tooltip.style.left = rect.left + 'px';
+                    tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+                    
+                    this._tooltip = tooltip;
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    if (this._tooltip) {
+                        document.body.removeChild(this._tooltip);
+                        this._tooltip = null;
+                    }
+                });
+            });
+        }
+
+        // Initialize all enhancements
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTooltips();
+            
+            // Add error handling for failed image loads
+            document.querySelectorAll('img').forEach(img => {
+                img.addEventListener('error', function() {
+                    this.src = 'https://placehold.co/400x300/eaf0ec/5e876d?text=Image+Not+Available';
+                });
+            });
+        });
+
+        // Progressive Web App features (if needed)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed');
+                    });
+            });
+        }
+
+        // Analytics and tracking (placeholder for future implementation)
+        function trackPageView() {
+            // Implementation for analytics tracking
+            console.log('Page view tracked: About Us');
+        }
+
+        function trackButtonClick(buttonName) {
+            // Implementation for button click tracking
+            console.log('Button clicked:', buttonName);
+        }
+
+        // Call tracking functions
+        document.addEventListener('DOMContentLoaded', () => {
+            trackPageView();
+            
+            // Track important button clicks
+            document.querySelectorAll('button, a').forEach(element => {
+                element.addEventListener('click', function() {
+                    const elementText = this.textContent.trim();
+                    if (elementText && elementText !== '') {
+                        trackButtonClick(elementText);
+                    }
+                });
             });
         });
     </script>

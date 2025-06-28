@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deals - FreshMart</title>
+    <title>FreshMart - Deals</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
@@ -11,43 +11,100 @@
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        /* Custom Toast Notification System */
-        #toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10000;
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+        #searchInput {
+            padding-left: 2.5rem;
+        }
+        /* Mobile Menu Transition */
+        #mobile-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+        .category-btn.active {
+            background-color: #6ec88e;
+            color: #111813;
+            font-weight: bold;
+        }
+        .wishlist-btn.active svg {
+            fill: #ef4444; /* red-500 */
+        }
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.3s ease-in-out;
+        }
+        /* Styles for the quantity input */
+        .product-qty {
+            -moz-appearance: textfield; /* Firefox */
+        }
+        .product-qty::-webkit-outer-spin-button,
+        .product-qty::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        /* Add-to-cart button animation styles */
+        .add-to-cart-btn.added {
+            background-color: #4CAF50; /* Green for added state */
+            transition: background-color 0.3s ease-in-out;
+        }
+        /* Strikethrough for old price */
+        .old-price {
+            text-decoration: line-through;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #6ec88e;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Styles for collapsible section */
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 1000px; /* Arbitrary large value, adjust as needed */
+            transition: max-height 0.5s ease-in;
+        }
+        .collapsible-btn svg {
+            transition: transform 0.3s ease-in-out;
+        }
+        .collapsible-btn.expanded svg {
+            transform: rotate(180deg);
+        }
+
+        /* Countdown specific styles */
+        .countdown-timer {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
             display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 1rem;
         }
-        .toast {
-            padding: 12px 20px;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            transform: translateX(100%);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            min-width: 250px;
-        }
-        .toast.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .toast.success { background-color: #22c55e; }
-        .toast.error { background-color: #ef4444; }
-        .toast.info { background-color: #3b82f6; }
-
-        .deal-badge {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        .countdown-timer span {
+            background-color: rgba(0,0,0,0.3);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
         }
     </style>
 </head>
@@ -55,43 +112,428 @@
 
     <div class="relative flex min-h-screen flex-col">
         <!-- Header -->
-        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
             <div class="flex items-center justify-between">
+                <!-- Logo -->
                 <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                     <div class="size-5">
-                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                     </div>
                     <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
                 </a>
-                <div class="flex items-center gap-3">
-                    <a href="shop.html" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em]">
-                        <span>Shop</span>
-                    </a>
-                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em]">
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-9">
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <a class="text-[#6ec88e] text-sm font-bold" href="deals.html">Deals</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="#">Recipes</a>
+                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="#">About Us</a>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <button id="loginBtn" class="hidden sm:flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold tracking-[0.015em] hover:bg-green-600">
+                        <span class="truncate">Login</span>
+                    </button>
+                    <a href="cart.html" id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-200 text-[#111813] text-sm font-bold tracking-[0.015em]">
                         <span>Cart (<span id="cartCount">0</span>)</span>
+                    </a>
+                    <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                     </button>
                 </div>
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="bg-gradient-to-r from-[#6ec88e] to-[#4ade80] py-16 px-4">
-            <div class="max-w-6xl mx-auto text-center">
-                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">🔥 Amazing Deals</h1>
-                <p class="text-xl text-white/90 mb-6">Save big on fresh groceries and quality products!</p>
-                <div class="inline-block bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
-                    <p class="text-white font-semibold">Limited Time Offers - Don't Miss Out!</p>
-                </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white z-50 shadow-lg transform translate-x-full lg:hidden">
+            <div class="p-4">
+                <button id="close-menu-button" class="float-right p-2 text-gray-700 hover:bg-gray-200 rounded-md">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <nav class="mt-12 flex flex-col gap-6">
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
+                    <a class="text-[#6ec88e] text-lg font-bold" href="deals.html">Deals</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">Recipes</a>
+                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">About Us</a>
+                </nav>
             </div>
-        </section>
+        </div>
 
-        <!-- Deals Grid -->
-        <main class="flex-1 px-4 py-12">
-            <div class="max-w-7xl mx-auto">
-                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Today's Best Deals</h2>
-                
-                <div id="deals-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <!-- Deals will be dynamically loaded here -->
+        <!-- Main Content -->
+        <main class="flex-1">
+            <div class="px-4 py-5 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Featured Deals Banner - IMPROVED -->
+                    <div class="mb-8">
+                      <div class="p-4">
+                        <div
+                          class="relative flex min-h-[350px] sm:min-h-[450px] flex-col gap-4 sm:gap-6 bg-cover bg-center bg-no-repeat rounded-xl items-center justify-center px-6 py-8 sm:px-10 text-center"
+                          style='background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.7) 100%), url("https://placehold.co/900x400/5e876d/f9fbfa?text=BIG+DEALS+ON+FRESH+PRODUCE");'
+                        >
+                          <div class="absolute top-4 left-4 bg-red-600 text-white text-xs sm:text-sm font-bold px-3 py-1 rounded-full shadow-lg rotate-[-3deg] transform origin-top-left">
+                            🔥 Limited Time Offer!
+                          </div>
+                          <h1 class="text-white text-4xl sm:text-5xl font-black leading-tight tracking-[-0.033em] mb-2 drop-shadow-md">
+                            Unbeatable Freshness Deals!
+                          </h1>
+                          <p class="text-white text-base sm:text-lg font-normal leading-normal max-w-2xl mx-auto opacity-90">
+                            Discover incredible savings on organic produce, dairy, and pantry staples. Freshness delivered to your door!
+                          </p>
+                          <div class="countdown-timer text-xl sm:text-2xl mt-4" id="deal-countdown">
+                              Time left: <span id="days">00</span>d <span id="hours">00</span>h <span id="minutes">00</span>m <span id="seconds">00</span>s
+                          </div>
+                          <button
+                            class="flex min-w-[150px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-6 bg-[#6ec88e] text-[#111813] text-lg font-bold leading-normal tracking-[0.015em] hover:bg-[#5bb87b] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            id="viewAllDealsBtn"
+                          >
+                            <span class="truncate">Shop Now!</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- New Promotional Banner -->
+                    <div class="mb-8 px-4 py-2 sm:px-0">
+                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-800 p-4 rounded-lg flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-2 shadow-md">
+                            <p class="text-base font-semibold leading-normal">
+                                🎉 Order above ₹1500 and get ₹100 OFF! Use code: <span class="font-bold text-blue-700">FREE100</span>
+                            </p>
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors">
+                                Copy Code
+                            </button>
+                        </div>
+                    </div>
+
+                    <h2 class="text-[#111813] text-2xl md:text-3xl font-bold tracking-tight mb-4 px-4 sm:px-0">Today's Hot Deals!</h2>
+                    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 sm:p-0">
+                        <!-- Deal Product Card 1: Apples -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACR44YXWYar8eIAYkSIsxvDCiI9EQmWUi6OtNlN1sEEsm0zI5pby_yHGoT8fOdH9EExxMHOV-fKRzbV1JT8H3bd5hFc6eZPMa534g9oWS0mSVj09yxwue2C8OvPod5DF7jcY10zOF0DmFXjLZehzEnyM8VG_Fx1TwU9aIGuzib8n_yGSDOhnBWZjkymyM44XlDAVHt3LB2EBDDiLTtf3I5LPp-PRsud7g_rPxmG7dA1n7FjDqldtDyKMoCZujAdFxW17VXWJVL3GcE");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Apples</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹150</span> 
+                                    <span class="text-red-500 font-bold">20% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹120 / kg</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="1" data-item-name="Apples" data-item-price="120.00" data-item-unit="kg" data-item-image="https://lh3.googleusercontent.com/aida-public/AB6AXuACR44YXWYar8eIAYkSIsxvDCiI9EQmWUi6OtNlN1sEEsm0zI5pby_yHGoT8fOdH9EExxMHOV-fKRzbV1JT8H3bd5hFc6eZPMa534g9oWS0mSVj09yxwue2C8OvPod5DF7jcY10zOF0DmFXjLZehzEnyM8VG_Fx1TwU9aIGuzib8n_yGSDOhnBWZjkymyM44XlDAVHt3LB2EBDDiLTtf3I5LPp-PRsud7g_rPxmG7dA1n7FjDqldtDyKMoCZujAdFxW17VXWJVL3GcE"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Apples" data-item-description="Fresh Gala Apples, 20% off. Perfect for snacking or baking."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Deal Product Card 2: Milk -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDgp6O0riMZiO7xiHQAtTt0eq4IJ_q2nPCG9YcMobtR0zEes1nAh6tk4YMA8wtlbwZhUv_5xfRxa5h5PC2Asp3eW27TxjfhspiAI0XbBkeGdoudmz8LB6QPDDDWtcYY3Mxhhr5TxwCFG-MD4G7qaB-V6fDWTsz29HhC8rGlWW8MygnBY35oRVZOg4_-U7skhxHdH41OqAvr6motVNGlqd1nTnAmmC5Sim-lQE6pG6C6lQSxcL7sRBcCSG83gxV1teNiDbYS0qTmEDDq");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Milk</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹70</span> 
+                                    <span class="text-red-500 font-bold">15% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹59.50 / 1L</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="2" data-item-name="Milk" data-item-price="59.50" data-item-unit="1L" data-item-image="https://lh3.googleusercontent.com/aida-public/AB6AXuDgp6O0riMZiO7xiHQAtTt0eq4IJ_q2nPCG9YcMobtR0zEes1nAh6tk4YMA8wtlbwZhUv_5xfRxa5h5PC2Asp3eW27TxjfhspiAI0XbBkeGdoudmz8LB6QPDDDWtcYY3Mxhhr5TxwCFG-MD4G7qaB-V6fDWTsz29HhC8rGlWW8MygnBY35oRVZOg4_-U7skhxHdH41OqAvr6motVNGlqd1nTnAmmC5Sim-lQE6pG6C6lQSxcL7sRBcCSG83gxV1teNiDbYS0qTmEDDq"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Milk" data-item-description="Organic Whole Milk, 15% off. Essential for your daily needs."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Deal Product Card 3: Chips -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuACOynmXRk-AOtaAN6YJ1dxh3U_KzFUMQxUxkv6aYsfvZ6YJKLNotmmkTbtquzcgNK60_72uka196QaXo3Eb2PQ_z4p0BniTyVJGh5DmqHEXTzNpa7VSu2xyDdWVxc0EqXx7LjdK0me1SRdu6c9NeJHOedwtuNOfvTcYc1O41ztlxV3Am5YwwCo2ibD7wnaHdgFVZJ97g7HmRXV_3t4ZjcemMX3CFguzThVIaXYOZNPvM-YHfTEulvIM-eoxGzk-MqaM03ClZ3B1LgR");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Chips</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹40</span> 
+                                    <span class="text-red-500 font-bold">25% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹30 / pack</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="3" data-item-name="Chips" data-item-price="30.00" data-item-unit="pack" data-item-image="https://lh3.googleusercontent.com/aida-public/AB6AXuACOynmXRk-AOtaAN6YJ1dxh3U_KzFUMQxUxkv6aYsfvZ6YJKLNotmmkTbtquzcgNK60_72uka196QaXo3Eb2PQ_z4p0BniTyVJGh5DmqHEXTzNpa7VSu2xyDdWVxc0EqXx7LjdK0me1SRdu6c9NeJHOedwtuNOfvTcYc1O41ztlxV3Am5YwwCo2ibD7wnaHdgFVZJ97g7HmRXV_3t4ZjcemMX3CFguzThVIaXYOZNPvM-YHfTEulvIM-eoxGzk-MqaM03ClZ3B1LgR"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Chips" data-item-description="Assorted Potato Chips, 25% off. Your perfect snack partner."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- Deal Product Card 4: Soda -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuApuak_2AVGPbGSOZz5lLC7e3J3mv3NNcqhDrAyyEIWIUr2MidOS0Jsg9pj03tCrQRTZSW-mwNgMjyIeTRQYV_Bw1A3gYgZBbo_GpaAu5D07cMMSLC8jl7GTo3EzJzvf-480P6omMIc62DSkzSrXfbkcHAxYy3XlTiQnAY7NAjr_zCsme87mIr7v_EZZ-iStt5VMQ7EIU78MqJL3pwnF16VQ0kzhwyRRqgdvNV6rJmJmcEbkVZTS34r0pINM1lXxRkwCOQ22bniSsL3");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Soda</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">Various Soda Flavors (Original Price: ₹60/bottle)</p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹60 for 2 bottles</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="4" data-item-name="Soda (B1G1)" data-item-price="60.00" data-item-unit="2 bottles" data-item-image="https://lh3.googleusercontent.com/aida-public/AB6AXuApuak_2AVGPbGSOZz5lLC7e3J3mv3NNcqhDrAyyEIWIUr2MidOS0Jsg9pj03tCrQRTZSW-mwNgMjyIeTRQYV_Bw1A3gYgZBbo_GpaAu5D07cMMSLC8jl7GTo3EzJzvf-480P6omMIc62DSkzSrXfbkcHAxYy3XlTiQnAY7NAjr_zCsme87mIr7v_EZZ-iStt5VMQ7EIU78MqJL3pwnF16VQ0kzhwyRRqgdvNV6rJmJmcEbkVZTS34r0pINM1lXxRkwCOQ22bniSsL3"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Soda" data-item-description="Various Soda Flavors, Buy 1 Get 1 Free. Quench your thirst with this amazing deal."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- New Deal Product Card 5: Oranges -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://placehold.co/400x400/b7cdbe/5e876d?text=Oranges");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Oranges</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹100</span> 
+                                    <span class="text-red-500 font-bold">10% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹90 / kg</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="5" data-item-name="Oranges" data-item-price="90.00" data-item-unit="kg" data-item-image="https://placehold.co/400x400/b7cdbe/5e876d?text=Oranges"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Oranges" data-item-description="Sweet & Juicy Oranges, 10% off. Boost your immunity with fresh citrus."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- New Deal Product Card 6: Greek Yogurt -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://placehold.co/400x400/b7cdbe/5e876d?text=Yogurt");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Greek Yogurt</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹80</span> 
+                                    <span class="text-red-500 font-bold">20% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹64 / cup</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="6" data-item-name="Greek Yogurt" data-item-price="64.00" data-item-unit="cup" data-item-image="https://placehold.co/400x400/b7cdbe/5e876d?text=Yogurt"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Greek Yogurt" data-item-description="Creamy Greek Yogurt, 20% off. A protein-packed snack for a healthy lifestyle."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- New Deal Product Card 7: Fresh Coriander -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://placehold.co/400x400/b7cdbe/5e876d?text=Coriander");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Fresh Coriander</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹30</span> 
+                                    <span class="text-red-500 font-bold">30% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹21 / bunch</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="7" data-item-name="Fresh Coriander" data-item-price="21.00" data-item-unit="bunch" data-item-image="https://placehold.co/400x400/b7cdbe/5e876d?text=Coriander"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Fresh Coriander" data-item-description="Fresh Coriander, 30% off. Add a burst of flavor to your dishes."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+
+                        <!-- New Deal Product Card 8: Brown Rice -->
+                        <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                            <div
+                              class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                              style='background-image: url("https://placehold.co/400x400/b7cdbe/5e876d?text=Brown+Rice");'
+                            ></div>
+                            <div class="flex flex-col flex-1 p-4">
+                              <div>
+                                <p class="text-[#111813] text-base font-bold leading-normal text-left">Organic Brown Rice</p>
+                                <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                                    <span class="old-price">₹200</span> 
+                                    <span class="text-red-500 font-bold">15% OFF</span>
+                                </p>
+                                <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹170 / kg</p>
+                              </div>
+                              <div class="flex items-center justify-between gap-2 mt-4">
+                                <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                                <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                                <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                              </div>
+                              <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                                <button
+                                  class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-id="8" data-item-name="Organic Brown Rice" data-item-price="170.00" data-item-unit="kg" data-item-image="https://placehold.co/400x400/b7cdbe/5e876d?text=Brown+Rice"
+                                >
+                                  <span class="truncate">Add to Cart</span>
+                                </button>
+                                <button
+                                  class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                                  data-item-name="Organic Brown Rice" data-item-description="Organic Brown Rice, 15% off. A healthy choice for your pantry."
+                                >
+                                  <span class="truncate">✨ Insight</span>
+                                </button>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Offers Section -->
+                    <div class="mt-8 mb-8 px-4 sm:px-0">
+                        <button id="special-offers-toggle" class="collapsible-btn w-full flex items-center justify-between bg-[#eaf0ec] hover:bg-gray-200 rounded-xl p-4 text-[#111813] text-lg font-bold leading-normal tracking-[0.015em] transition-colors">
+                            <span>🎁 Explore More Special Offers</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div id="special-offers-content" class="collapsible-content bg-white p-4 mt-2 rounded-xl shadow-md">
+                            <p class="text-gray-700 mb-4">Discover more ways to save on your favorite groceries!</p>
+                            <ul class="list-disc list-inside text-gray-600 space-y-2">
+                                <li>Spend ₹1000, get a free bag of organic spinach!</li>
+                                <li>25% off on all frozen vegetables this week.</li>
+                                <li>Loyalty program members get double points on all dairy products.</li>
+                                <li>Weekend Flash Deals: Check back every Friday!</li>
+                            </ul>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                                <div class="product-card flex flex-col gap-2 rounded-xl bg-[#f9fbfa] p-4 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+                                    <img src="https://placehold.co/100x100/d5e2d9/111813?text=Spinach" alt="Spinach" class="w-24 h-24 object-cover rounded-md mx-auto">
+                                    <p class="text-[#111813] text-base font-medium leading-normal text-center">Organic Spinach</p>
+                                    <p class="text-[#5e876d] text-sm font-normal leading-normal text-center">Free with ₹1000+ order!</p>
+                                </div>
+                                <div class="product-card flex flex-col gap-2 rounded-xl bg-[#f9fbfa] p-4 shadow-[0_0_4px_rgba(0,0,0,0.1)]">
+                                    <img src="https://placehold.co/100x100/d5e2d9/111813?text=Frozen+Veg" alt="Frozen Vegetables" class="w-24 h-24 object-cover rounded-md mx-auto">
+                                    <p class="text-[#111813] text-base font-medium leading-normal text-center">Frozen Vegetables</p>
+                                    <p class="text-[#5e876d] text-sm font-normal leading-normal text-center">Save 25% this week!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </main>
@@ -99,208 +541,501 @@
         <!-- Footer -->
         <footer class="bg-gray-50 border-t">
             <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center">
-                <div class="flex justify-center gap-x-6 sm:gap-x-12 mb-6">
-                    <a href="aboutus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
-                    <a href="contactus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
+                <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-x-12 mb-6">
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
                     <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a>
                     <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Terms of Service</a>
+                </div>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
+                            </svg>
+                        </div>
+                    </a>
+                    <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                        <div class="text-[#5e876d]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
+                            </svg>
+                        </div>
+                    </a>
                 </div>
                 <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
             </div>
         </footer>
     </div>
+    
+    <!-- Generic Modal Wrapper -->
+    <div id="modal-wrapper" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 hidden opacity-0">
+        <div id="modal-content" class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md m-auto transform -translate-y-10">
+            <!-- Modal content will be injected here -->
+        </div>
+    </div>
 
-    <!-- Toast Container -->
-    <div id="toast-container"></div>
 
-    <script>
-        // Sample deals data
-        const deals = [
-            {
-                id: 101,
-                name: "Fresh Apple Bundle",
-                originalPrice: 200,
-                dealPrice: 150,
-                discount: 25,
-                image: "https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Premium quality apples - 2kg pack",
-                unit: "2kg pack",
-                category: "fruits",
-                timeLeft: "2 days"
-            },
-            {
-                id: 102,
-                name: "Vegetable Combo",
-                originalPrice: 180,
-                dealPrice: 120,
-                discount: 33,
-                image: "https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Mixed vegetables - tomatoes, carrots, onions",
-                unit: "combo pack",
-                category: "vegetables",
-                timeLeft: "1 day"
-            },
-            {
-                id: 103,
-                name: "Dairy Special",
-                originalPrice: 300,
-                dealPrice: 220,
-                discount: 27,
-                image: "https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Fresh milk + cheese + yogurt combo",
-                unit: "combo pack",
-                category: "dairy",
-                timeLeft: "3 days"
-            },
-            {
-                id: 104,
-                name: "Bakery Delight",
-                originalPrice: 150,
-                dealPrice: 99,
-                discount: 34,
-                image: "https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Fresh bread + croissants + muffins",
-                unit: "combo pack",
-                category: "bakery",
-                timeLeft: "12 hours"
-            },
-            {
-                id: 105,
-                name: "Tropical Fruit Mix",
-                originalPrice: 250,
-                dealPrice: 175,
-                discount: 30,
-                image: "https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Bananas, oranges, and seasonal fruits",
-                unit: "3kg mix",
-                category: "fruits",
-                timeLeft: "5 days"
-            },
-            {
-                id: 106,
-                name: "Protein Pack",
-                originalPrice: 500,
-                dealPrice: 350,
-                discount: 30,
-                image: "https://images.pexels.com/photos/616354/pexels-photo-616354.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop",
-                description: "Chicken breast + fish + eggs combo",
-                unit: "combo pack",
-                category: "meat",
-                timeLeft: "1 day"
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- DATA ---
+    const dealProducts = [
+        { id: 1, name: 'Apples', price: 120.00, unit: 'kg', oldPrice: 150.00, discount: '20% OFF', category: 'Fruits', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACR44YXWYar8eIAYkSIsxvDCiI9EQmWUi6OtNlN1sEEsm0zI5pby_yHGoT8fOdH9EExxMHOV-fKRzbV1JT8H3bd5hFc6eZPMa534g9oWS0mSVj09yxwue2C8OvPod5DF7jcY10zOF0DmFXjLZehzEnyM8VG_Fx1TwU9aIGuzib8n_yGSDOhnBWZjkymyM44XlDAVHt3LB2EBDDiLTtf3I5LPp-PRsud7g_rPxmG7dA1n7FjDqldtDyKMoCZujAdFxW17VXWJVL3GcE', description: 'Fresh Gala Apples, 20% off. Perfect for snacking or baking.' },
+        { id: 2, name: 'Milk', price: 59.50, unit: '1L', oldPrice: 70.00, discount: '15% OFF', category: 'Dairy & Bakery', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDgp6O0riMZiO7xiHQAtTt0eq4IJ_q2nPCG9YcMobtR0zEes1nAh6tk4YMA8wtlbwZhUv_5xfRxa5h5PC2Asp3eW27TxjfhspiAI0XbBkeGdoudmz8LB6QPDDDWtcYY3Mxhhr5TxwCFG-MD4G7qaB-V6fDWTsz29HhC8rGlWW8MygnBY35oRVZOg4_-U7skhxHdH41OqAvr6motVNGlqd1nTnAmmC5Sim-lQE6pG6C6lQSxcL7sRBcCSG83gxV1teNiDbYS0qTmEDDq', description: 'Organic Whole Milk, 15% off. Essential for your daily needs.' },
+        { id: 3, name: 'Chips', price: 30.00, unit: 'pack', oldPrice: 40.00, discount: '25% OFF', category: 'Snacks', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACOynmXRk-AOtaAN6YJ1dxh3U_KzFUMQxUxkv6aYsfvZ6YJKLNotmmkTbtquzcgNK60_72uka196QaXo3Eb2PQ_z4p0BniTyVJGh5DmqHEXTzNpa7VSu2xyDdWVxc0EqXx7LjdK0me1SRdu6c9NeJHOedwtuNOfvTcYc1O41ztlxV3Am5YwwCo2ibD7wnaHdgFVZJ97g7HmRXV_3t4ZjcemMX3CFguzThVIaXYOZNPvM-YHfTEulvIM-eoxGzk-MqaM03ClZ3B1LgR', description: 'Assorted Potato Chips, 25% off. Your perfect snack partner.' },
+        { id: 4, name: 'Soda (B1G1)', price: 60.00, unit: '2 bottles', oldPrice: 60.00, discount: 'Buy 1 Get 1 Free', category: 'Beverages', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApuak_2AVGPbGSOZz5lLC7e3J3mv3NNcqhDrAyyEIWIUr2MidOS0Jsg9pj03tCrQRTZSW-mwNgMjyIeTRQYV_Bw1A3gYgZBbo_GpaAu5D07cMMSLC8jl7GTo3EzJzvf-480P6omMIc62DSkzSrXfbkcHAxYy3XlTiQnAY7NAjr_zCsme87mIr7v_EZZ-iStt5VMQ7EIU78MqJL3pwnF16VQ0kzhwyRRqgdvNV6rJmJmcEbkVZTS34r0pINM1lXxRkwCOQ22bniSsL3', description: 'Various Soda Flavors, Buy 1 Get 1 Free. Quench your thirst with this amazing deal.' },
+        { id: 5, name: 'Oranges', price: 90.00, unit: 'kg', oldPrice: 100.00, discount: '10% OFF', category: 'Fruits', image: 'https://placehold.co/400x400/b7cdbe/5e876d?text=Oranges', description: 'Sweet & Juicy Oranges, 10% off. Boost your immunity with fresh citrus.' },
+        { id: 6, name: 'Greek Yogurt', price: 64.00, unit: 'cup', oldPrice: 80.00, discount: '20% OFF', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/b7cdbe/5e876d?text=Yogurt', description: 'Creamy Greek Yogurt, 20% off. A protein-packed snack for a healthy lifestyle.' },
+        { id: 7, name: 'Fresh Coriander', price: 21.00, unit: 'bunch', oldPrice: 30.00, discount: '30% OFF', category: 'Vegetables', image: 'https://placehold.co/400x400/b7cdbe/5e876d?text=Coriander', description: 'Fresh Coriander, 30% off. Add a burst of flavor to your dishes.' },
+        { id: 8, name: 'Organic Brown Rice', price: 170.00, unit: 'kg', oldPrice: 200.00, discount: '15% OFF', category: 'Pantry Staples', image: 'https://placehold.co/400x400/b7cdbe/5e876d?text=Brown+Rice', description: 'Organic Brown Rice, 15% off. A healthy choice for your pantry.' }
+    ];
+    
+    // --- STATE ---
+    let cartItems = [];
+
+    // --- DOM ELEMENTS ---
+    const productGrid = document.getElementById('product-grid');
+    const cartCountEl = document.getElementById('cartCount');
+    const modalWrapper = document.getElementById('modal-wrapper');
+    const modalContent = document.getElementById('modal-content');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const closeMenuButton = document.getElementById('close-menu-button');
+    const specialOffersToggle = document.getElementById('special-offers-toggle');
+    const specialOffersContent = document.getElementById('special-offers-content');
+    const dealCountdownEl = document.getElementById('deal-countdown');
+
+    // --- Firebase Configuration ---
+    // Using the API key provided by the user.
+    // WARNING: Directly embedding API keys in client-side code is NOT recommended for production.
+    // For secure deployments, use server-side environments or environment variables.
+    const firebaseConfig = {
+        apiKey: "AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU",
+        authDomain: "portfolio-56be7.firebaseapp.com",
+        projectId: "portfolio-56be7",
+        storageBucket: "portfolio-56be7.firebasestorage.app",
+        messagingSenderId: "888511551571",
+        appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+        measurementId: "G-X3CYL9YZR1"
+    };
+
+    // --- COUNTDOWN FUNCTION ---
+    function startCountdown(targetDate) {
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            if (dealCountdownEl) {
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
             }
-        ];
 
-        // DOM Elements
-        const dealsGrid = document.getElementById('deals-grid');
-        const cartCountEl = document.getElementById('cartCount');
-        const cartBtn = document.getElementById('cartBtn');
-
-        // Toast Notification System
-        const toastContainer = document.getElementById('toast-container');
-        function showToast(message, type = 'info', duration = 4000) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
-            }, duration);
-        }
-
-        // Cart functions
-        function getCart() {
-            const savedCart = localStorage.getItem('freshmartCart');
-            return savedCart ? JSON.parse(savedCart) : [];
-        }
-
-        function saveCart(cart) {
-            localStorage.setItem('freshmartCart', JSON.stringify(cart));
-            updateCartCount();
-        }
-
-        function addToCart(deal) {
-            const cart = getCart();
-            const product = {
-                id: deal.id,
-                name: deal.name,
-                price: deal.dealPrice,
-                image: deal.image,
-                unit: deal.unit,
-                category: deal.category
-            };
-            
-            const existingItem = cart.find(item => item.id === product.id);
-            
-            if (existingItem) {
-                existingItem.quantity += 1;
-            } else {
-                cart.push({ ...product, quantity: 1 });
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                if (dealCountdownEl) {
+                    dealCountdownEl.innerHTML = '<span class="text-red-500">EXPIRED!</span>';
+                }
             }
-            
-            saveCart(cart);
-            showToast(`${deal.name} added to cart at deal price!`, 'success');
-        }
+        }, 1000);
+    }
 
-        function updateCartCount() {
-            const cart = getCart();
-            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-            cartCountEl.textContent = totalCount;
-        }
 
-        // Render deals
-        function renderDeals() {
-            dealsGrid.innerHTML = '';
-            
-            deals.forEach(deal => {
-                const dealCard = document.createElement('div');
-                dealCard.className = 'bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative';
-                dealCard.innerHTML = `
-                    <div class="relative">
-                        <img src="${deal.image}" alt="${deal.name}" class="w-full h-48 object-cover">
-                        <div class="deal-badge absolute top-3 left-3 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            ${deal.discount}% OFF
-                        </div>
-                        <div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                            ${deal.timeLeft} left
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="font-bold text-gray-800 text-lg mb-2">${deal.name}</h3>
-                        <p class="text-gray-600 text-sm mb-3">${deal.description}</p>
-                        <div class="flex items-center gap-2 mb-4">
-                            <span class="text-2xl font-bold text-[#6ec88e]">₹${deal.dealPrice}</span>
-                            <span class="text-lg text-gray-500 line-through">₹${deal.originalPrice}</span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4">Per ${deal.unit}</p>
-                        <button onclick="addToCart(${JSON.stringify(deal).replace(/"/g, '&quot;')})" 
-                                class="w-full bg-gradient-to-r from-[#6ec88e] to-[#4ade80] hover:from-[#4ade80] hover:to-[#6ec88e] text-white font-bold py-3 px-4 rounded-lg transition-all transform hover:scale-105">
-                            🛒 Grab This Deal
+    // --- RENDER FUNCTIONS ---
+    function renderProducts() {
+        productGrid.innerHTML = ''; // Clear existing products
+
+        dealProducts.forEach(product => {
+            const existingCartItem = cartItems.find(item => item.id === product.id);
+            // Default to "Add to Cart" and only change if item is already in cart
+            let cartButtonText = 'Add to Cart'; 
+            let cartButtonClass = 'bg-[#6ec88e] hover:bg-green-600';
+            let cartButtonDisabled = '';
+
+            if (existingCartItem) {
+                cartButtonText = `In Cart (${existingCartItem.quantity})`;
+                cartButtonClass = 'bg-gray-400 cursor-not-allowed';
+                cartButtonDisabled = 'disabled';
+            }
+
+            const productCard = `
+                <div class="product-card flex h-full flex-col gap-4 rounded-xl bg-white shadow-md overflow-hidden">
+                    <div
+                      class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-t-xl"
+                      style='background-image: url("${product.image}");'
+                    ></div>
+                    <div class="flex flex-col flex-1 p-4">
+                      <div>
+                        <p class="text-[#111813] text-base font-bold leading-normal text-left">${product.name}</p>
+                        <p class="text-[#5e876d] text-sm font-normal leading-normal text-left">
+                            <span class="old-price">₹${product.oldPrice.toFixed(2)}</span> 
+                            <span class="text-red-500 font-bold">${product.discount}</span>
+                        </p>
+                        <p class="text-[#111813] text-lg font-bold leading-normal text-left">Now ₹${product.price.toFixed(2)} / ${product.unit}</p>
+                      </div>
+                      <div class="flex items-center justify-between gap-2 mt-4">
+                        <button class="quantity-btn decrease-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">-</button>
+                        <input type="number" value="1" min="1" class="product-qty flex-1 text-center border border-[#d5e2d9] rounded-lg h-8 text-[#111813] text-base" />
+                        <button class="quantity-btn increase-qty flex size-8 items-center justify-center rounded-lg bg-[#eaf0ec] text-[#111813] text-lg font-bold">+</button>
+                      </div>
+                      <div class="mt-4 flex flex-col sm:flex-row gap-2">
+                        <button
+                          class="add-to-cart-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] ${cartButtonClass}"
+                          data-item-id="${product.id}" data-item-name="${product.name}" data-item-price="${product.price.toFixed(2)}"
+                          data-item-unit="${product.unit}" data-item-image="${product.image}"
+                          ${cartButtonDisabled}
+                        >
+                          <span class="truncate">${cartButtonText}</span>
                         </button>
+                        <button
+                          class="get-insight-btn flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em]"
+                          data-item-name="${product.name}" data-item-description="${product.description}"
+                        >
+                          <span class="truncate">✨ Insight</span>
+                        </button>
+                      </div>
                     </div>
-                `;
-                dealsGrid.appendChild(dealCard);
+                </div>
+            `;
+            productGrid.insertAdjacentHTML('beforeend', productCard);
+        });
+        addEventListenersToCards();
+    }
+
+    // --- MODAL FUNCTIONS ---
+    function openModal(content) {
+        modalContent.innerHTML = content;
+        modalWrapper.classList.remove('hidden');
+        setTimeout(() => {
+            modalWrapper.classList.remove('opacity-0');
+            modalContent.classList.remove('-translate-y-10');
+        }, 10);
+    }
+    
+    function closeModal() {
+        modalWrapper.classList.add('opacity-0');
+        modalContent.classList.add('-translate-y-10');
+        setTimeout(() => {
+            modalWrapper.classList.add('hidden');
+            modalContent.innerHTML = '';
+        }, 300);
+    }
+
+    // --- CART & STORAGE FUNCTIONS ---
+    function updateCartCountDisplay() {
+        const totalItemsInCart = cartItems.reduce((total, item) => total + item.quantity, 0);
+        cartCountEl.textContent = totalItemsInCart;
+    }
+
+    function saveData() {
+        localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
+    }
+
+    function loadData() {
+        cartItems = JSON.parse(localStorage.getItem('freshmartCart')) || [];
+        updateCartCountDisplay();
+    }
+
+    function addToCart(productId, quantity) {
+        const product = dealProducts.find(p => p.id === productId);
+        if (!product) return;
+
+        const existingItem = cartItems.find(item => item.id === productId);
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            // Ensure all necessary product details are stored in the cart item
+            cartItems.push({ 
+                id: product.id, 
+                name: product.name, 
+                price: product.price, 
+                unit: product.unit, 
+                image: product.image, 
+                quantity: quantity 
             });
         }
+        
+        updateCartCountDisplay();
+        saveData();
+        renderProducts(); // Re-render to update button state
+    }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', () => {
-            renderDeals();
-            updateCartCount();
-            
-            // Cart button
-            cartBtn.addEventListener('click', () => {
-                window.location.href = 'cart.html';
-            });
+    // --- EVENT LISTENERS ---
+    function addEventListenersToCards() {
+        document.querySelectorAll(".product-card").forEach(card => {
+            const decreaseBtn = card.querySelector(".decrease-qty");
+            const increaseBtn = card.querySelector(".increase-qty");
+            const qtyInput = card.querySelector(".product-qty");
+            const addToCartBtn = card.querySelector(".add-to-cart-btn");
+            const getInsightBtn = card.querySelector(".get-insight-btn");
 
-            // Show welcome message
-            showToast('🔥 Check out our amazing deals!', 'info', 3000);
+            // Only add listeners if the elements exist within this specific card
+            if (decreaseBtn) {
+                // Decrease quantity
+                decreaseBtn.addEventListener("click", function() {
+                    let currentQty = parseInt(qtyInput.value);
+                    if (currentQty > 1) {
+                        qtyInput.value = currentQty - 1;
+                    }
+                });
+            }
+
+            if (increaseBtn) {
+                // Increase quantity
+                increaseBtn.addEventListener("click", function() {
+                    let currentQty = parseInt(qtyInput.value);
+                    qtyInput.value = currentQty + 1;
+                });
+            }
+
+            if (qtyInput) {
+                // Handle direct input change for quantity
+                qtyInput.addEventListener("change", function() {
+                    let currentQty = parseInt(qtyInput.value);
+                    if (isNaN(currentQty) || currentQty < 1) {
+                        qtyInput.value = 1; // Default to 1 if invalid input
+                    }
+                });
+            }
+
+            if (addToCartBtn) {
+                // Add to Cart functionality with animation
+                addToCartBtn.addEventListener("click", function() {
+                    if (this.disabled) return; // Prevent adding if already in cart
+
+                    const itemId = parseInt(this.dataset.itemId);
+                    const itemName = this.dataset.itemName;
+                    const quantity = parseInt(qtyInput.value);
+
+                    addToCart(itemId, quantity);
+
+                    // Button animation: Change text to "X +" and then revert
+                    this.querySelector('.truncate').textContent = `${quantity} +`;
+                    this.classList.add('added'); 
+
+                    setTimeout(() => {
+                        renderProducts(); // Re-render the specific card or the whole grid to update button state
+                    }, 1000); 
+
+                    openModal(`
+                        <div class="p-6 text-center relative">
+                            <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            <p class="text-lg font-medium text-[#111813] mb-2">${quantity} x ${itemName} added to cart!</p>
+                            <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                        </div>
+                    `);
+                });
+            }
+
+            if (getInsightBtn) {
+                // Event listener for Get Insight button
+                getInsightBtn.addEventListener("click", async function() {
+                    const itemName = this.dataset.itemName;
+                    const itemDescription = this.dataset.itemDescription;
+                    
+                    openModal(`
+                        <div class="p-6 text-center relative">
+                            <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                            <div class="loading-spinner mb-4 mx-auto"></div> 
+                            <p class="text-lg font-medium text-[#111813]">Generating insight for ${itemName}...</p>
+                        </div>
+                    `);
+
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Generate a short, enticing marketing blurb (2-3 sentences) for a grocery product on sale. The product is "${itemName}". Its description/deal is: "${itemDescription}". Focus on its benefits and why it's a good deal.`;
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        // Canvas will automatically provide the API key for Gemini API calls
+                        const apiKey = typeof __api_key !== 'undefined' ? __api_key : 'AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU'; 
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        const response = await fetch(apiUrl, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                });
+                        const result = await response.json(); 
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                          const text = result.candidates[0].content.parts[0].text;
+                          openModal(`
+                            <div class="p-6 text-center relative">
+                                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">✨ ${itemName} Insight:</h3>
+                                <p class="text-gray-700">${text}</p>
+                                <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                            </div>
+                          `);
+                        } else {
+                          openModal(`
+                            <div class="p-6 text-center relative">
+                                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                                <p class="text-lg font-medium text-red-500">Sorry, could not generate insight at this time.</p>
+                                <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                            </div>
+                          `);
+                        }
+                    } catch (error) {
+                        console.error("Error calling Gemini API:", error);
+                        openModal(`
+                            <div class="p-6 text-center relative">
+                                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                                <p class="text-lg font-medium text-red-500">Failed to generate insight. Please try again.</p>
+                                <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                            </div>
+                        `);
+                    }
+                });
+            }
         });
+    }
 
-        // Make addToCart globally available
-        window.addToCart = addToCart;
-    </script>
+    modalWrapper.addEventListener('click', (e) => {
+        if (e.target === modalWrapper || e.target.closest('.modal-close-btn')) {
+            closeModal();
+        }
+    });
+    
+    // Header navigation/action listeners
+    document.getElementById("loginBtn").addEventListener("click", function() {
+        openModal(`
+            <div class="p-6 text-center relative">
+                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Login</h3>
+                <p class="text-gray-600">Redirecting to login page...</p>
+                <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+            </div>
+        `);
+        // In a real application, you would navigate to the login page:
+        // window.location.href = "login.html";
+    });
+
+    document.getElementById("cartBtn").addEventListener("click", function(event) {
+        event.preventDefault(); // Prevent default link behavior if it's an anchor tag
+        // Redirect to cart.html instead of showing modal directly for cart summary
+        window.location.href = "cart.html";
+    });
+
+    document.getElementById('viewAllDealsBtn').addEventListener('click', () => {
+        document.querySelector('h2.text-2xl').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // New: Event listener for Special Offers collapsible section
+    if (specialOffersToggle && specialOffersContent) {
+        specialOffersToggle.addEventListener('click', () => {
+            specialOffersContent.classList.toggle('expanded');
+            specialOffersToggle.classList.toggle('expanded');
+        });
+    }
+    
+    // Navigation links
+    document.querySelector('nav a[href="index.html"]').addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'index.html'; });
+    document.querySelector('nav a[href="shop.html"]').addEventListener('click', (e) => { e.preventDefault(); window.location.href = 'shop.html'; });
+    document.querySelector('nav a[href="deals.html"]').addEventListener('click', (e) => { e.preventDefault(); /* Already on this page */ });
+    
+    // Mobile menu toggle
+    if (mobileMenuButton && mobileMenu && closeMenuButton) {
+        mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
+        closeMenuButton.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
+    }
+    
+    // Copy code functionality for the promotional banner
+    const copyCodeButton = document.querySelector('.bg-blue-100 button');
+    if (copyCodeButton) {
+        copyCodeButton.addEventListener('click', function() {
+            const codeText = this.closest('.bg-blue-100').querySelector('.font-bold.text-blue-700').textContent;
+            // Use document.execCommand('copy') for better iframe compatibility
+            const textArea = document.createElement('textarea');
+            textArea.value = codeText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                openModal(`
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-[#111813] mb-2">Code "${codeText}" copied to clipboard!</p>
+                        <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                    </div>
+                `);
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                openModal(`
+                    <div class="p-6 text-center relative">
+                        <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                        <p class="text-lg font-medium text-red-500">Failed to copy code. Please copy manually: ${codeText}</p>
+                        <button onclick="closeModal()" class="mt-4 bg-[#6ec88e] text-[#111813] font-bold py-2 px-4 rounded-xl hover:bg-green-600 transition-colors">OK</button>
+                    </div>
+                `);
+            } finally {
+                document.body.removeChild(textArea);
+            }
+        });
+    }
+
+    // Contact Us navigation
+    const contactUsLink = document.getElementById("navContactUs");
+    if (contactUsLink) {
+        contactUsLink.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "contactus.html";
+        });
+    }
+
+    // Footer Contact Us
+    const footerContactUs = document.getElementById("footerContactUs");
+    if (footerContactUs) {
+        footerContactUs.addEventListener("click", function(event) {
+            event.preventDefault();
+            window.location.href = "contactus.html";
+        });
+    }
+
+    // Initial Render
+    function init() {
+        loadData();
+        renderProducts();
+        // Set a target date for the countdown (e.g., 2 days from now)
+        const twoDaysFromNow = new Date();
+        twoDaysFromNow.setDate(twoDaysFromNow.getDate() + 2);
+        startCountdown(twoDaysFromNow.getTime());
+    }
+    
+    init();
+});
+</script>
+
 </body>
 </html>
