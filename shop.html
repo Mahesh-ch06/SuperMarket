@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FreshMart - Shop</title>
+    <title>Shop - FreshMart</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
@@ -11,34 +11,86 @@
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af;
+        
+        /* Custom Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
-        #searchInput {
-            padding-left: 2.5rem;
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
         }
-        /* Mobile Menu Transition */
-        #mobile-menu {
-            transition: transform 0.3s ease-in-out;
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Product card hover effects */
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        /* Category filter styles */
+        .category-btn {
+            transition: all 0.2s ease;
         }
         .category-btn.active {
             background-color: #6ec88e;
             color: #111813;
-            font-weight: bold;
+            font-weight: 600;
         }
-        .wishlist-btn.active svg {
-            fill: #ef4444; /* red-500 */
+
+        /* AI Insight Modal */
+        .ai-modal {
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.7);
         }
-        /* Modal styles */
-        .modal {
-            transition: opacity 0.3s ease-in-out;
+        .ai-modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
         }
-        .modal-content {
-             transition: transform 0.3s ease-in-out;
+
+        /* Loading animation for AI insights */
+        .ai-loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #6ec88e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search input styling */
+        .search-input:focus {
+            border-color: #6ec88e;
+            box-shadow: 0 0 0 3px rgba(110, 200, 142, 0.1);
+            outline: none;
         }
     </style>
 </head>
@@ -46,84 +98,86 @@
 
     <div class="relative flex min-h-screen flex-col">
         <!-- Header -->
-        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
             <div class="flex items-center justify-between">
-                <!-- Logo -->
-                <a href="shop.html" class="flex items-center gap-3 text-[#111813]">
+                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                     <div class="size-5">
-                        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                     </div>
                     <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
                 </a>
-                
-                <!-- Desktop Navigation -->
-                <nav class="hidden lg:flex items-center gap-9">
-                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="index.html">Home</a>
-                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
-                    <button id="wishlist-btn-header" class="text-[#111813] text-sm font-medium hover:text-[#6ec88e] flex items-center gap-1">
-                        Wishlist (<span id="wishlist-count">0</span>)
-                    </button>
-                    <a class="text-[#111813] text-sm font-medium hover:text-[#6ec88e]" href="deals.html">Deals</a>
-                </nav>
-
-                <!-- Header Actions -->
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <a href="cart.html" id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-200 text-[#111813] text-sm font-bold tracking-[0.015em]">
+                <div class="flex items-center gap-3">
+                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
                         <span>Cart (<span id="cartCount">0</span>)</span>
-                    </a>
-                    <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                     </button>
+                    <a href="login.html" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                        <span>Login</span>
+                    </a>
                 </div>
             </div>
         </header>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="fixed top-0 right-0 h-full w-64 bg-white z-50 shadow-lg transform translate-x-full lg:hidden">
-            <div class="p-4">
-                 <button id="close-menu-button" class="float-right p-2 text-gray-700 hover:bg-gray-200 rounded-md">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                 </button>
-                <nav class="mt-12 flex flex-col gap-6">
-                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="#">Home</a>
-                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="shop.html">Shop</a>
-                    <button id="wishlist-btn-mobile" class="text-[#111813] text-lg font-medium hover:text-[#6ec88e] text-left">Wishlist</button>
-                    <a class="text-[#111813] text-lg font-medium hover:text-[#6ec88e]" href="deals.html">Deals</a>
-                </nav>
-            </div>
-        </div>
-
         <!-- Main Content -->
-        <main class="flex-1">
-            <div class="px-4 sm:px-6 lg:px-8 py-5">
-                <div class="max-w-7xl mx-auto">
+        <main class="flex-1 px-4 py-8">
+            <div class="max-w-7xl mx-auto">
+                <!-- Page Header -->
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold text-[#111813] mb-4">Fresh Groceries</h2>
+                    <p class="text-gray-600 text-lg">Discover our wide selection of fresh, quality products</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="mb-8 space-y-4">
+                    <!-- Search Bar -->
+                    <div class="max-w-md mx-auto">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Search products..." 
+                            class="search-input w-full px-4 py-3 border border-gray-300 rounded-xl transition-all"
+                        >
+                    </div>
+
                     <!-- Category Filters -->
-                    <div class="py-5">
-                        <h3 class="text-xl font-bold text-[#111813] mb-4">Categories</h3>
-                        <div id="category-filters" class="flex flex-wrap gap-2">
-                           <!-- Category buttons will be dynamically inserted here -->
-                        </div>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="category-btn active px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="all">
+                            All Products
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Fruits">
+                            Fruits
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Vegetables">
+                            Vegetables
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Dairy">
+                            Dairy
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Bakery">
+                            Bakery
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Pantry">
+                            Pantry
+                        </button>
+                        <button class="category-btn px-4 py-2 rounded-full border border-gray-300 text-sm font-medium hover:bg-gray-100 transition-colors" data-category="Beverages">
+                            Beverages
+                        </button>
                     </div>
-                    
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-4 py-5 border-t">
-                        <h2 class="text-[#111813] text-2xl md:text-3xl font-bold tracking-tight">All Products</h2>
-                        <div class="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                            <div class="relative w-full sm:w-48">
-                                <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
-                                <input type="text" id="searchInput" placeholder="Search..." class="w-full h-10 px-4 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6ec88e]">
-                            </div>
-                            <select id="sortOptions" class="h-10 px-4 text-sm bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6ec88e] w-full sm:w-auto">
-                                <option value="default">Sort by</option>
-                                <option value="price-asc">Price: Low to High</option>
-                                <option value="price-desc">Price: High to Low</option>
-                                <option value="name-asc">Name: A-Z</option>
-                                <option value="name-desc">Name: Z-A</option>
-                            </select>
-                        </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Products will be dynamically loaded here -->
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="hidden text-center py-12">
+                    <div class="text-gray-400 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
                     </div>
-                    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        <!-- Product cards will be dynamically inserted here -->
-                    </div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No products found</h3>
+                    <p class="text-gray-500">Try adjusting your search or filter criteria</p>
                 </div>
             </div>
         </main>
@@ -141,421 +195,290 @@
             </div>
         </footer>
     </div>
-    
-    <!-- Generic Modal Wrapper -->
-    <div id="modal-wrapper" class="modal fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 hidden opacity-0">
-        <div id="modal-content" class="modal-content bg-white rounded-xl shadow-xl w-full max-w-md m-auto transform -translate-y-10">
-            <!-- Modal content will be injected here -->
+
+    <!-- AI Insight Modal -->
+    <div id="aiModal" class="ai-modal fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div class="ai-modal-content bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-[#111813]">🤖 AI Product Insights</h3>
+                <button id="closeAiModal" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="aiInsightContent" class="prose prose-sm max-w-none">
+                <!-- AI insight content will be loaded here -->
+            </div>
         </div>
     </div>
 
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- DATA ---
-    const products = [
-        { id: 1, name: 'Organic Carrots', price: 120.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/F9A825/333?text=Carrots', description: 'Fresh, crunchy organic carrots, packed with beta-carotene.' },
-        { id: 2, name: 'Farm Fresh Eggs', price: 90.00, unit: 'dozen', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/F5F5F5/333?text=Eggs', description: 'Free-range eggs from happy chickens, perfect for any meal.' },
-        { id: 3, name: 'Whole Wheat Bread', price: 60.00, unit: 'loaf', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/8D6E63/FFF?text=Bread', description: 'Hearty and healthy whole wheat bread, baked fresh daily.' },
-        { id: 4, name: 'Fresh Apple Juice', price: 150.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/EF5350/FFF?text=Juice', description: '100% pure pressed apple juice with no added sugar.' },
-        { id: 5, name: 'Ripe Tomatoes', price: 80.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/D32F2F/FFF?text=Tomatoes', description: 'Juicy, ripe tomatoes, ideal for salads, sauces, and sandwiches.' },
-        { id: 6, name: 'Cheddar Cheese', price: 250.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFC107/333?text=Cheese', description: 'A sharp and creamy cheddar, aged for a full flavour.' },
-        { id: 7, name: 'Spicy Potato Chips', price: 40.00, unit: 'pack', category: 'Snacks', image: 'https://placehold.co/400x400/FF7043/FFF?text=Chips', description: 'Crispy potato chips with a fiery kick of spice.' },
-        { id: 8, name: 'Mineral Water', price: 20.00, unit: 'bottle', category: 'Beverages', image: 'https://placehold.co/400x400/4FC3F7/FFF?text=Water', description: 'Pure mineral water sourced from pristine springs.' },
-        { id: 9, name: 'Green Leaf Lettuce', price: 50.00, unit: 'head', category: 'Vegetables', image: 'https://placehold.co/400x400/66BB6A/FFF?text=Lettuce', description: 'Crisp and fresh green leaf lettuce for the perfect salad base.' },
-        { id: 10, name: 'Organic Bananas', price: 70.00, unit: 'dozen', category: 'Fruits', image: 'https://placehold.co/400x400/FFEE58/333?text=Bananas', description: 'Sweet and creamy organic bananas, rich in potassium.' },
-        { id: 11, name: 'Greek Yogurt', price: 180.00, unit: '500g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/E0E0E0/333?text=Yogurt', description: 'Thick and creamy Greek yogurt, high in protein.' },
-        { id: 12, name: 'Almond Milk', price: 220.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/D7CCC8/333?text=Almond+Milk', description: 'A delicious and dairy-free alternative to milk.' },
-        { id: 13, name: 'Fresh Salmon Fillet', price: 800.00, unit: 'kg', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFA07A/FFF?text=Salmon', description: 'Rich in Omega-3, this salmon fillet is fresh from the sea.' },
-        { id: 14, name: 'Quinoa', price: 350.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FBC02D/333?text=Quinoa', description: 'A nutritious and versatile grain, perfect for salads and sides.' },
-        { id: 15, name: 'Avocado', price: 95.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/558B2F/FFF?text=Avocado', description: 'Creamy and nutritious avocados, great for toast or guacamole.' },
-        { id: 16, name: 'Blueberries', price: 400.00, unit: '125g', category: 'Fruits', image: 'https://placehold.co/400x400/3F51B5/FFF?text=Blueberries', description: 'Sweet and juicy blueberries, packed with antioxidants.' },
-        { id: 17, name: 'Dark Chocolate', price: 300.00, unit: '100g', category: 'Snacks', image: 'https://placehold.co/400x400/4E342E/FFF?text=Chocolate', description: 'Rich, indulgent dark chocolate with 70% cocoa.' },
-        { id: 18, name: 'Oats', price: 130.00, unit: '1kg', category: 'Pantry Staples', image: 'https://placehold.co/400x400/E6D5B8/333?text=Oats', description: 'Heart-healthy rolled oats for a warm and nutritious breakfast.' },
-        { id: 19, name: 'Chicken Breast', price: 450.00, unit: 'kg', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFE0B2/333?text=Chicken', description: 'Lean and tender chicken breast, perfect for grilling or roasting.' },
-        { id: 20, name: 'Broccoli', price: 110.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/2E7D32/FFF?text=Broccoli', description: 'Fresh broccoli florets, a great source of vitamins.' },
-        { id: 21, name: 'Pasta', price: 90.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FDD835/333?text=Pasta', description: 'Classic Italian pasta, the perfect canvas for your favorite sauce.' },
-        { id: 22, name: 'Olive Oil', price: 650.00, unit: '500ml', category: 'Pantry Staples', image: 'https://placehold.co/400x400/C0CA33/333?text=Olive+Oil', description: 'Extra virgin olive oil with a rich, fruity flavor.' },
-        { id: 23, name: 'Cucumber', price: 45.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/4CAF50/FFF?text=Cucumber', description: 'Cool and refreshing cucumbers, perfect for salads and drinks.' },
-        { id: 24, name: 'Red Onion', price: 65.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/880E4F/FFF?text=Onion', description: 'Crisp red onions with a mild, sweet flavor.' },
-        { id: 25, name: 'Garlic', price: 200.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/F5F5DC/333?text=Garlic', description: 'Aromatic garlic to add a punch of flavor to any dish.' },
-        { id: 26, name: 'Red Bell Pepper', price: 70.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/EF5350/FFF?text=Red+Pepper', description: 'Sweet and crunchy red bell peppers, great for salads and stir-fries.' },
-        { id: 27, name: 'Spinach', price: 60.00, unit: '250g', category: 'Vegetables', image: 'https://placehold.co/400x400/33691E/FFF?text=Spinach', description: 'Fresh spinach leaves packed with iron and nutrients.' },
-        { id: 28, name: 'Mushrooms', price: 120.00, unit: '200g', category: 'Vegetables', image: 'https://placehold.co/400x400/8D6E63/FFF?text=Mushrooms', description: 'Fresh button mushrooms with an earthy flavor.' },
-        { id: 29, name: 'Zucchini', price: 75.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/43A047/FFF?text=Zucchini', description: 'Tender zucchini, perfect for grilling or pasta dishes.' },
-        { id: 30, name: 'Cauliflower', price: 95.00, unit: 'head', category: 'Vegetables', image: 'https://placehold.co/400x400/E0E0E0/333?text=Cauliflower', description: 'Fresh cauliflower, ideal for roasting or making cauliflower rice.' },
-        { id: 31, name: 'Oranges', price: 90.00, unit: 'kg', category: 'Fruits', image: 'https://placehold.co/400x400/FF9800/333?text=Oranges', description: 'Juicy, vitamin C-rich oranges for a refreshing snack.' },
-        { id: 32, name: 'Strawberries', price: 180.00, unit: '250g', category: 'Fruits', image: 'https://placehold.co/400x400/E57373/FFF?text=Strawberries', description: 'Sweet and juicy strawberries, perfect for desserts.' },
-        { id: 33, name: 'Green Grapes', price: 140.00, unit: '500g', category: 'Fruits', image: 'https://placehold.co/400x400/AED581/333?text=Grapes', description: 'Seedless green grapes, sweet and refreshing.' },
-        { id: 34, name: 'Watermelon', price: 130.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/F44336/FFF?text=Watermelon', description: 'Refreshing and hydrating watermelon, perfect for summer.' },
-        { id: 35, name: 'Mango', price: 120.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/FFB74D/333?text=Mango', description: 'Sweet and tropical mangoes, the king of fruits.' },
-        { id: 36, name: 'Butter', price: 160.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFECB3/333?text=Butter', description: 'Creamy unsalted butter, perfect for baking and cooking.' },
-        { id: 37, name: 'Cream Cheese', price: 180.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFF9C4/333?text=Cream+Cheese', description: 'Smooth cream cheese for spreading or making cheesecake.' },
-        { id: 38, name: 'Bagels', price: 120.00, unit: 'pack of 4', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/D7CCC8/333?text=Bagels', description: 'Fresh bagels made daily, perfect for breakfast.' },
-        { id: 39, name: 'Milk', price: 60.00, unit: '1L', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FAFAFA/333?text=Milk', description: 'Fresh whole milk from grass-fed cows.' },
-        { id: 40, name: 'Croissants', price: 90.00, unit: 'pack of 2', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFCC80/333?text=Croissants', description: 'Buttery, flaky croissants baked fresh daily.' },
-        { id: 41, name: 'Orange Juice', price: 120.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/FF9800/FFF?text=Orange+Juice', description: 'Freshly squeezed orange juice without added sugars.' },
-        { id: 42, name: 'Green Tea', price: 240.00, unit: '50 bags', category: 'Beverages', image: 'https://placehold.co/400x400/8BC34A/FFF?text=Green+Tea', description: 'Premium green tea leaves for a refreshing drink.' },
-        { id: 43, name: 'Sparkling Water', price: 50.00, unit: '750ml', category: 'Beverages', image: 'https://placehold.co/400x400/B3E5FC/333?text=Sparkling+Water', description: 'Refreshing sparkling water with a subtle fizz.' },
-        { id: 44, name: 'Coffee Beans', price: 350.00, unit: '250g', category: 'Beverages', image: 'https://placehold.co/400x400/795548/FFF?text=Coffee+Beans', description: 'Specialty arabica coffee beans for the perfect morning brew.' },
-        { id: 45, name: 'Coconut Water', price: 180.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/FFECB3/333?text=Coconut+Water', description: 'Natural coconut water, hydrating and full of electrolytes.' },
-        { id: 46, name: 'Chocolate Cookies', price: 120.00, unit: 'pack', category: 'Snacks', image: 'https://placehold.co/400x400/795548/FFF?text=Cookies', description: 'Rich chocolate cookies with chunks of Belgian chocolate.' },
-        { id: 47, name: 'Trail Mix', price: 180.00, unit: '200g', category: 'Snacks', image: 'https://placehold.co/400x400/D7CCC8/333?text=Trail+Mix', description: 'Energy-packed mix of nuts, seeds, and dried fruits.' },
-        { id: 48, name: 'Popcorn', price: 80.00, unit: '150g', category: 'Snacks', image: 'https://placehold.co/400x400/FFECB3/333?text=Popcorn', description: 'Light and fluffy popcorn, perfect for movie nights.' },
-        { id: 49, name: 'Nachos', price: 110.00, unit: 'pack', category: 'Snacks', image: 'https://placehold.co/400x400/FFD54F/333?text=Nachos', description: 'Crispy corn nachos, great with dips and salsas.' },
-        { id: 50, name: 'Granola Bars', price: 150.00, unit: 'pack of 6', category: 'Snacks', image: 'https://placehold.co/400x400/D7CCC8/333?text=Granola+Bars', description: 'Nutritious granola bars with honey and almonds.' },
-        { id: 51, name: 'Ground Beef', price: 380.00, unit: '500g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/E57373/FFF?text=Ground+Beef', description: 'Premium ground beef with 80% lean meat, perfect for burgers.' },
-        { id: 52, name: 'Shrimp', price: 550.00, unit: '500g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFE0B2/333?text=Shrimp', description: 'Fresh jumbo shrimp, deveined and ready to cook.' },
-        { id: 53, name: 'Lamb Chops', price: 680.00, unit: '450g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFAB91/333?text=Lamb+Chops', description: 'Tender lamb chops from grass-fed lambs.' },
-        { id: 54, name: 'Tuna Steak', price: 720.00, unit: '300g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/B0BEC5/FFF?text=Tuna', description: 'Premium tuna steaks, perfect for grilling.' },
-        { id: 55, name: 'Pork Tenderloin', price: 390.00, unit: '500g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFCCBC/333?text=Pork', description: 'Lean pork tenderloin for roasting or grilling.' },
-        { id: 56, name: 'Brown Rice', price: 120.00, unit: '1kg', category: 'Pantry Staples', image: 'https://placehold.co/400x400/D7CCC8/333?text=Brown+Rice', description: 'Nutritious whole grain brown rice.' },
-        { id: 57, name: 'All-Purpose Flour', price: 80.00, unit: '1kg', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FAFAFA/333?text=Flour', description: 'Versatile all-purpose flour for baking and cooking.' },
-        { id: 58, name: 'Honey', price: 260.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FFA000/333?text=Honey', description: 'Pure, raw honey from local beekeepers.' },
-        { id: 59, name: 'Canned Tomatoes', price: 85.00, unit: '400g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/E53935/FFF?text=Canned+Tomatoes', description: 'Organic whole canned tomatoes for soups and sauces.' },
-        { id: 60, name: 'Black Beans', price: 70.00, unit: '400g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/424242/FFF?text=Black+Beans', description: 'Protein-rich black beans, great for Mexican dishes.' },
-        { id: 61, name: 'Frozen Pizza', price: 270.00, unit: 'piece', category: 'Frozen Foods', image: 'https://placehold.co/400x400/FF7043/FFF?text=Pizza', description: 'Ready-to-bake margherita pizza with premium ingredients.' },
-        { id: 62, name: 'Ice Cream', price: 220.00, unit: '500ml', category: 'Frozen Foods', image: 'https://placehold.co/400x400/CFD8DC/333?text=Ice+Cream', description: 'Creamy vanilla bean ice cream made with real vanilla.' },
-        { id: 63, name: 'Frozen Peas', price: 95.00, unit: '500g', category: 'Frozen Foods', image: 'https://placehold.co/400x400/66BB6A/FFF?text=Peas', description: 'Sweet garden peas frozen at peak freshness.' },
-        { id: 64, name: 'Frozen Berries', price: 190.00, unit: '300g', category: 'Frozen Foods', image: 'https://placehold.co/400x400/9575CD/FFF?text=Berries', description: 'Mixed frozen berries, perfect for smoothies and desserts.' },
-        { id: 65, name: 'Fish Fingers', price: 260.00, unit: '400g', category: 'Frozen Foods', image: 'https://placehold.co/400x400/FFE082/333?text=Fish+Fingers', description: 'Crispy fish fingers made from sustainable cod fillets.' },
-        { id: 66, name: 'Ground Cumin', price: 85.00, unit: '50g', category: 'Herbs & Spices', image: 'https://placehold.co/400x400/D7CCC8/333?text=Cumin', description: 'Aromatic ground cumin seeds for curries and Mexican dishes.' },
-        { id: 67, name: 'Fresh Basil', price: 60.00, unit: 'bunch', category: 'Herbs & Spices', image: 'https://placehold.co/400x400/66BB6A/FFF?text=Basil', description: 'Fresh, fragrant basil leaves for Italian cooking.' },
-        { id: 68, name: 'Cinnamon Sticks', price: 120.00, unit: '50g', category: 'Herbs & Spices', image: 'https://placehold.co/400x400/8D6E63/FFF?text=Cinnamon', description: 'Aromatic cinnamon sticks for baking and warm beverages.' },
-        { id: 69, name: 'Mixed Herbs', price: 95.00, unit: '30g', category: 'Herbs & Spices', image: 'https://placehold.co/400x400/689F38/FFF?text=Mixed+Herbs', description: 'A blend of dried Mediterranean herbs for all-purpose seasoning.' },
-        { id: 70, name: 'Black Peppercorns', price: 140.00, unit: '100g', category: 'Herbs & Spices', image: 'https://placehold.co/400x400/424242/FFF?text=Pepper', description: 'Whole black peppercorns for your grinder.' },
-        { id: 71, name: 'Sweet Potatoes', price: 65.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/FF7043/FFF?text=Sweet+Potato', description: 'Nutritious sweet potatoes, great for roasting and mashing.' },
-        { id: 72, name: 'Eggplant', price: 90.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/5D4037/FFF?text=Eggplant', description: 'Glossy eggplants for roasting or making baba ganoush.' },
-        { id: 73, name: 'Cabbage', price: 55.00, unit: 'head', category: 'Vegetables', image: 'https://placehold.co/400x400/B2DFDB/333?text=Cabbage', description: 'Crisp, fresh cabbage for slaws and stir-fries.' },
-        { id: 74, name: 'Asparagus', price: 220.00, unit: 'bunch', category: 'Vegetables', image: 'https://placehold.co/400x400/8BC34A/FFF?text=Asparagus', description: 'Tender asparagus spears, perfect steamed or grilled.' },
-        { id: 75, name: 'Potatoes', price: 45.00, unit: 'kg', category: 'Vegetables', image: 'https://placehold.co/400x400/FFFDE7/333?text=Potatoes', description: 'Versatile all-purpose potatoes for boiling, mashing, or roasting.' },
-        { id: 76, name: 'Pineapple', price: 120.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/FDD835/333?text=Pineapple', description: 'Sweet and tangy pineapple, rich in tropical flavor.' },
-        { id: 77, name: 'Kiwi', price: 45.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/8BC34A/333?text=Kiwi', description: 'Sweet and tangy kiwi fruits, packed with vitamin C.' },
-        { id: 78, name: 'Pears', price: 120.00, unit: 'kg', category: 'Fruits', image: 'https://placehold.co/400x400/D4E157/333?text=Pears', description: 'Sweet, juicy pears, perfect for snacking or poaching.' },
-        { id: 79, name: 'Cherries', price: 350.00, unit: '500g', category: 'Fruits', image: 'https://placehold.co/400x400/D50000/FFF?text=Cherries', description: 'Sweet and juicy cherries, perfect for snacking.' },
-        { id: 80, name: 'Pomegranate', price: 120.00, unit: 'piece', category: 'Fruits', image: 'https://placehold.co/400x400/D32F2F/FFF?text=Pomegranate', description: 'Ruby red pomegranates, packed with antioxidant-rich seeds.' },
-        { id: 81, name: 'Mayonnaise', price: 180.00, unit: '400g', category: 'Condiments', image: 'https://placehold.co/400x400/FFECB3/333?text=Mayo', description: 'Creamy mayonnaise made with free-range eggs.' },
-        { id: 82, name: 'Tomato Ketchup', price: 150.00, unit: '500g', category: 'Condiments', image: 'https://placehold.co/400x400/E53935/FFF?text=Ketchup', description: 'Classic tomato ketchup with a tangy flavor.' },
-        { id: 83, name: 'Mustard', price: 120.00, unit: '200g', category: 'Condiments', image: 'https://placehold.co/400x400/FDD835/333?text=Mustard', description: 'Spicy Dijon mustard, perfect for sandwiches and dressings.' },
-        { id: 84, name: 'Soy Sauce', price: 95.00, unit: '250ml', category: 'Condiments', image: 'https://placehold.co/400x400/3E2723/FFF?text=Soy+Sauce', description: 'Traditional soy sauce, fermented for a rich umami flavor.' },
-        { id: 85, name: 'BBQ Sauce', price: 160.00, unit: '300ml', category: 'Condiments', image: 'https://placehold.co/400x400/5D4037/FFF?text=BBQ+Sauce', description: 'Smoky barbecue sauce with a touch of sweetness.' },
-        { id: 86, name: 'Mozzarella', price: 210.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/F5F5F5/333?text=Mozzarella', description: 'Fresh mozzarella cheese, perfect for pizzas and salads.' },
-        { id: 87, name: 'Hamburger Buns', price: 80.00, unit: 'pack of 6', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/FFE0B2/333?text=Buns', description: 'Soft hamburger buns for the perfect burger.' },
-        { id: 88, name: 'Sour Cream', price: 120.00, unit: '200ml', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/F5F5F5/333?text=Sour+Cream', description: 'Tangy sour cream for toppings and dips.' },
-        { id: 89, name: 'Feta Cheese', price: 220.00, unit: '200g', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/F5F5F5/333?text=Feta', description: 'Crumbly feta cheese with a tangy, salty flavor.' },
-        { id: 90, name: 'Ciabatta Bread', price: 95.00, unit: 'loaf', category: 'Dairy & Bakery', image: 'https://placehold.co/400x400/E6D5B8/333?text=Ciabatta', description: 'Light and airy Italian ciabatta bread.' },
-        { id: 91, name: 'Chia Seeds', price: 280.00, unit: '250g', category: 'Organic & Health', image: 'https://placehold.co/400x400/424242/FFF?text=Chia+Seeds', description: 'Nutritious chia seeds rich in omega-3 fatty acids.' },
-        { id: 92, name: 'Coconut Oil', price: 320.00, unit: '500ml', category: 'Organic & Health', image: 'https://placehold.co/400x400/FAFAFA/333?text=Coconut+Oil', description: 'Cold-pressed extra virgin coconut oil.' },
-        { id: 93, name: 'Protein Powder', price: 850.00, unit: '500g', category: 'Organic & Health', image: 'https://placehold.co/400x400/D7CCC8/333?text=Protein', description: 'Plant-based protein powder with all essential amino acids.' },
-        { id: 94, name: 'Almond Butter', price: 390.00, unit: '250g', category: 'Organic & Health', image: 'https://placehold.co/400x400/D7C4A1/333?text=Almond+Butter', description: 'Creamy almond butter made from roasted almonds.' },
-        { id: 95, name: 'Kombucha', price: 180.00, unit: 'bottle', category: 'Organic & Health', image: 'https://placehold.co/400x400/FFCC80/333?text=Kombucha', description: 'Fermented tea drink with probiotic benefits.' },
-        { id: 96, name: 'Mixed Nuts', price: 340.00, unit: '200g', category: 'Snacks', image: 'https://placehold.co/400x400/D7CCC8/333?text=Mixed+Nuts', description: 'Premium selection of roasted nuts.' },
-        { id: 97, name: 'Rice Crackers', price: 120.00, unit: '150g', category: 'Snacks', image: 'https://placehold.co/400x400/FAFAFA/333?text=Rice+Crackers', description: 'Light and crispy rice crackers with a hint of sea salt.' },
-        { id: 98, name: 'Fruit Roll', price: 80.00, unit: 'pack of 5', category: 'Snacks', image: 'https://placehold.co/400x400/FF7043/FFF?text=Fruit+Roll', description: 'Chewy fruit roll made from real fruit, no added sugars.' },
-        { id: 99, name: 'Cheese Puffs', price: 90.00, unit: '150g', category: 'Snacks', image: 'https://placehold.co/400x400/FFA726/333?text=Cheese+Puffs', description: 'Crunchy cheese puffs with real cheddar flavor.' },
-        { id: 100, name: 'Energy Balls', price: 220.00, unit: 'pack of 6', category: 'Snacks', image: 'https://placehold.co/400x400/8D6E63/FFF?text=Energy+Balls', description: 'No-bake energy balls made with dates and nuts.' },
-        { id: 101, name: 'Peanut Butter', price: 180.00, unit: '400g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/D4A76A/FFF?text=Peanut+Butter', description: 'Creamy peanut butter made from roasted peanuts.' },
-        { id: 102, name: 'Sugar', price: 60.00, unit: '1kg', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FAFAFA/333?text=Sugar', description: 'Fine white sugar for baking and sweetening.' },
-        { id: 103, name: 'Vegetable Oil', price: 140.00, unit: '1L', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FFF9C4/333?text=Vegetable+Oil', description: 'All-purpose vegetable oil for cooking and baking.' },
-        { id: 104, name: 'Baking Powder', price: 45.00, unit: '100g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/FAFAFA/333?text=Baking+Powder', description: 'Double-acting baking powder for all your baking needs.' },
-        { id: 105, name: 'Salt', price: 30.00, unit: '500g', category: 'Pantry Staples', image: 'https://placehold.co/400x400/F5F5F5/333?text=Salt', description: 'Fine table salt for cooking and seasoning.' },
-        { id: 106, name: 'Dish Soap', price: 120.00, unit: '750ml', category: 'Household', image: 'https://placehold.co/400x400/81D4FA/333?text=Dish+Soap', description: 'Effective dish soap with a fresh lemon scent.' },
-        { id: 107, name: 'Laundry Detergent', price: 280.00, unit: '2L', category: 'Household', image: 'https://placehold.co/400x400/B3E5FC/333?text=Detergent', description: 'High-efficiency laundry detergent for all fabrics.' },
-        { id: 108, name: 'Paper Towels', price: 150.00, unit: 'pack of 4', category: 'Household', image: 'https://placehold.co/400x400/ECEFF1/333?text=Paper+Towels', description: 'Absorbent and durable paper towels for everyday use.' },
-        { id: 109, name: 'Toilet Paper', price: 190.00, unit: '12 rolls', category: 'Household', image: 'https://placehold.co/400x400/F5F5F5/333?text=Toilet+Paper', description: 'Soft, 2-ply toilet paper for your bathroom needs.' },
-        { id: 110, name: 'All-Purpose Cleaner', price: 130.00, unit: '750ml', category: 'Household', image: 'https://placehold.co/400x400/80DEEA/333?text=Cleaner', description: 'Effective all-purpose cleaner that cuts through grease and grime.' },
-        { id: 111, name: 'Turkey Breast', price: 450.00, unit: '500g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFCCBC/333?text=Turkey', description: 'Lean turkey breast, perfect for roasting or sandwiches.' },
-        { id: 112, name: 'Bacon', price: 220.00, unit: '250g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/D84315/FFF?text=Bacon', description: 'Smoked bacon strips for breakfast or cooking.' },
-        { id: 113, name: 'Tilapia Fillets', price: 390.00, unit: '400g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/B0BEC5/FFF?text=Tilapia', description: 'Mild-flavored tilapia fillets, perfect for light meals.' },
-        { id: 114, name: 'Pork Chops', price: 320.00, unit: '500g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/FFCCBC/333?text=Pork+Chops', description: 'Tender pork chops for grilling or pan-frying.' },
-        { id: 115, name: 'Duck Breast', price: 560.00, unit: '300g', category: 'Meat & Fish', image: 'https://placehold.co/400x400/A1887F/FFF?text=Duck', description: 'Succulent duck breast for special dinners.' },
-        { id: 116, name: 'Lemonade', price: 85.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/FFEE58/333?text=Lemonade', description: 'Refreshing lemonade made with real lemons.' },
-        { id: 117, name: 'Iced Tea', price: 75.00, unit: '1L', category: 'Beverages', image: 'https://placehold.co/400x400/C5CAE9/333?text=Iced+Tea', description: 'Classic iced tea with a hint of lemon.' },
-        { id: 118, name: 'Hot Chocolate Mix', price: 160.00, unit: '400g', category: 'Beverages', image: 'https://placehold.co/400x400/795548/FFF?text=Hot+Chocolate', description: 'Rich hot chocolate mix made with premium cocoa.' },
-        { id: 119, name: 'Energy Drink', price: 120.00, unit: '250ml', category: 'Beverages', image: 'https://placehold.co/400x400/64B5F6/FFF?text=Energy+Drink', description: 'Energizing drink to boost your performance.' },
-        { id: 120, name: 'Mango Smoothie', price: 150.00, unit: '500ml', category: 'Beverages', image: 'https://placehold.co/400x400/FFB74D/333?text=Mango+Smoothie', description: 'Refreshing mango smoothie made with real fruits.' }
-    ];
-    
-    // --- STATE ---
-    let cartItems = [];
-    let wishlistItems = [];
-    let activeCategory = 'All';
+    <script>
+        // Product catalog with 20 diverse products
+        const products = [
+            { id: 1, name: 'Organic Carrots', price: 120.00, unit: 'kg', category: 'Vegetables', image: 'https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Fresh, crunchy organic carrots, packed with beta-carotene and vitamins.' },
+            { id: 2, name: 'Fresh Bananas', price: 80.00, unit: 'dozen', category: 'Fruits', image: 'https://images.pexels.com/photos/2872755/pexels-photo-2872755.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Sweet, ripe bananas perfect for snacking or smoothies.' },
+            { id: 3, name: 'Whole Milk', price: 65.00, unit: 'liter', category: 'Dairy', image: 'https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Fresh, creamy whole milk from local dairy farms.' },
+            { id: 4, name: 'Sourdough Bread', price: 150.00, unit: 'loaf', category: 'Bakery', image: 'https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Artisan sourdough bread with a perfect crust and tangy flavor.' },
+            { id: 5, name: 'Red Apples', price: 200.00, unit: 'kg', category: 'Fruits', image: 'https://images.pexels.com/photos/102104/pexels-photo-102104.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Crisp, sweet red apples perfect for eating fresh or baking.' },
+            { id: 6, name: 'Fresh Spinach', price: 90.00, unit: 'bunch', category: 'Vegetables', image: 'https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Nutrient-rich fresh spinach leaves, perfect for salads and cooking.' },
+            { id: 7, name: 'Greek Yogurt', price: 180.00, unit: '500g', category: 'Dairy', image: 'https://images.pexels.com/photos/1435735/pexels-photo-1435735.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Thick, creamy Greek yogurt with probiotics and high protein.' },
+            { id: 8, name: 'Basmati Rice', price: 250.00, unit: 'kg', category: 'Pantry', image: 'https://images.pexels.com/photos/723198/pexels-photo-723198.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Premium long-grain basmati rice with aromatic fragrance.' },
+            { id: 9, name: 'Orange Juice', price: 120.00, unit: 'liter', category: 'Beverages', image: 'https://images.pexels.com/photos/96974/pexels-photo-96974.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Fresh squeezed orange juice, 100% natural with no added sugar.' },
+            { id: 10, name: 'Cherry Tomatoes', price: 160.00, unit: 'kg', category: 'Vegetables', image: 'https://images.pexels.com/photos/1327838/pexels-photo-1327838.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Sweet, juicy cherry tomatoes perfect for salads and snacking.' },
+            { id: 11, name: 'Strawberries', price: 300.00, unit: 'kg', category: 'Fruits', image: 'https://images.pexels.com/photos/89778/strawberries-frisch-ripe-sweet-89778.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Fresh, sweet strawberries bursting with flavor and vitamin C.' },
+            { id: 12, name: 'Cheddar Cheese', price: 450.00, unit: '250g', category: 'Dairy', image: 'https://images.pexels.com/photos/773253/pexels-photo-773253.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Aged cheddar cheese with rich, sharp flavor perfect for sandwiches.' },
+            { id: 13, name: 'Croissants', price: 200.00, unit: '6 pack', category: 'Bakery', image: 'https://images.pexels.com/photos/2135/food-france-morning-breakfast.jpg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Buttery, flaky croissants baked fresh daily in our bakery.' },
+            { id: 14, name: 'Olive Oil', price: 800.00, unit: '500ml', category: 'Pantry', image: 'https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Extra virgin olive oil, cold-pressed for maximum flavor and nutrition.' },
+            { id: 15, name: 'Green Tea', price: 350.00, unit: '100g', category: 'Beverages', image: 'https://images.pexels.com/photos/1638280/pexels-photo-1638280.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Premium green tea leaves with antioxidants and natural caffeine.' },
+            { id: 16, name: 'Bell Peppers', price: 180.00, unit: 'kg', category: 'Vegetables', image: 'https://images.pexels.com/photos/1268101/pexels-photo-1268101.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Colorful bell peppers rich in vitamins and perfect for cooking.' },
+            { id: 17, name: 'Mangoes', price: 250.00, unit: 'kg', category: 'Fruits', image: 'https://images.pexels.com/photos/918327/pexels-photo-918327.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Sweet, tropical mangoes with rich flavor and smooth texture.' },
+            { id: 18, name: 'Butter', price: 320.00, unit: '250g', category: 'Dairy', image: 'https://images.pexels.com/photos/479643/pexels-photo-479643.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Creamy, unsalted butter made from fresh cream, perfect for baking.' },
+            { id: 19, name: 'Pasta', price: 150.00, unit: '500g', category: 'Pantry', image: 'https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Premium durum wheat pasta, perfect for Italian dishes.' },
+            { id: 20, name: 'Coffee Beans', price: 600.00, unit: '250g', category: 'Beverages', image: 'https://images.pexels.com/photos/894695/pexels-photo-894695.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop', description: 'Freshly roasted coffee beans with rich aroma and bold flavor.' }
+        ];
 
-    // --- DOM ELEMENTS ---
-    const productGrid = document.getElementById('product-grid');
-    const cartCountEl = document.getElementById('cartCount');
-    const wishlistCountEl = document.getElementById('wishlist-count');
-    const searchInput = document.getElementById('searchInput');
-    const sortOptions = document.getElementById('sortOptions');
-    const categoryFiltersContainer = document.getElementById('category-filters');
-    const modalWrapper = document.getElementById('modal-wrapper');
-    const modalContent = document.getElementById('modal-content');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const closeMenuButton = document.getElementById('close-menu-button');
+        let filteredProducts = [...products];
+        let cart = [];
 
-    // --- RENDER FUNCTIONS ---
-    function renderProducts() {
-        productGrid.innerHTML = '';
-        const searchTerm = searchInput.value.toLowerCase();
-        const sortValue = sortOptions.value;
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const cartBtn = document.getElementById('cartBtn');
+        const cartCount = document.getElementById('cartCount');
+        const noResults = document.getElementById('noResults');
+        const aiModal = document.getElementById('aiModal');
+        const closeAiModal = document.getElementById('closeAiModal');
+        const aiInsightContent = document.getElementById('aiInsightContent');
 
-        // 1. Filter by category
-        let filteredProducts = products;
-        if (activeCategory !== 'All') {
-            filteredProducts = products.filter(p => p.category === activeCategory);
+        // Toast Notification System
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
         }
 
-        // 2. Filter by search term
-        if (searchTerm) {
-            filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+        // Load cart from localStorage
+        function loadCart() {
+            const savedCart = localStorage.getItem('freshmartCart');
+            cart = savedCart ? JSON.parse(savedCart) : [];
+            updateCartCount();
         }
 
-        // 3. Sort
-        switch (sortValue) {
-            case 'price-asc': filteredProducts.sort((a, b) => a.price - b.price); break;
-            case 'price-desc': filteredProducts.sort((a, b) => b.price - a.price); break;
-            case 'name-asc': filteredProducts.sort((a, b) => a.name.localeCompare(b.name)); break;
-            case 'name-desc': filteredProducts.sort((a, b) => b.name.localeCompare(a.name)); break;
+        // Save cart to localStorage
+        function saveCart() {
+            localStorage.setItem('freshmartCart', JSON.stringify(cart));
+            updateCartCount();
         }
 
-        // 4. Render
-        const cartIds = cartItems.map(item => item.id);
-        const wishlistIds = wishlistItems.map(item => item.id);
+        // Update cart count display
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartCount.textContent = totalItems;
+        }
 
-        filteredProducts.forEach(product => {
-            const isInCart = cartIds.includes(product.id);
-            const isInWishlist = wishlistIds.includes(product.id);
-            const cartButtonDisabled = isInCart ? 'disabled' : '';
-            const cartButtonText = isInCart ? 'In Cart' : 'Add to Cart';
-            const cartButtonClass = isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#eaf0ec] hover:bg-gray-200';
-            const wishlistButtonClass = isInWishlist ? 'active' : '';
+        // Add to cart function
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
 
-            const productCard = `
-                <div class="flex flex-col rounded-xl bg-white shadow-md overflow-hidden transition-transform duration-300 hover:scale-105 group">
-                    <div class="relative w-full h-48 bg-center bg-cover" style='background-image: url("${product.image}");'>
-                        <button class="wishlist-btn absolute top-2 right-2 p-2 bg-white/70 rounded-full text-gray-700 hover:text-red-500 ${wishlistButtonClass}" data-product-id="${product.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="flex flex-col flex-1 p-4">
-                        <div class="flex-1">
-                            <p class="text-[#111813] font-medium truncate">${product.name}</p>
-                            <p class="text-[#5e876d] text-sm">₹${product.price.toFixed(2)} / ${product.unit}</p>
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+
+            saveCart();
+            showToast(`${product.name} added to cart!`, 'success');
+        }
+
+        // Get AI insight for product
+        async function getAIInsight(product) {
+            aiInsightContent.innerHTML = '<div class="flex items-center justify-center py-8"><div class="ai-loading"></div><span class="ml-3 text-gray-600">Generating AI insights...</span></div>';
+            aiModal.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/api/gemini-insight', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: `Provide detailed insights about ${product.name}. Include nutritional benefits, storage tips, usage suggestions, and quality indicators. Format the response in markdown with clear headings and bullet points.`
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.insight) {
+                    // Convert markdown-like formatting to HTML
+                    let formattedInsight = data.insight
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mb-4 text-[#111813]">$1</h1>')
+                        .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mb-3 text-[#111813]">$1</h2>')
+                        .replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium mb-2 text-[#111813]">$1</h3>')
+                        .replace(/^• (.*$)/gm, '<li class="mb-1">$1</li>')
+                        .replace(/\n\n/g, '</p><p class="mb-4">')
+                        .replace(/^(?!<[h|l])/gm, '<p class="mb-4">')
+                        .replace(/<li/g, '<ul class="list-disc list-inside mb-4 space-y-1"><li')
+                        .replace(/<\/li>(?!\s*<li)/g, '</li></ul>');
+
+                    aiInsightContent.innerHTML = `
+                        <div class="mb-4 p-4 bg-[#f9fbfa] rounded-lg">
+                            <h4 class="font-semibold text-[#111813] mb-2">Product: ${product.name}</h4>
+                            <p class="text-sm text-gray-600">${product.description}</p>
                         </div>
-                        <div class="mt-4 flex gap-2">
-                             <button class="quick-view-btn flex-1 rounded-xl h-10 px-4 text-[#111813] text-sm font-bold bg-white border border-gray-300 hover:bg-gray-100" data-product-id="${product.id}">Quick View</button>
-                             <button class="add-to-cart-btn flex-1 rounded-xl h-10 px-4 text-[#111813] text-sm font-bold ${cartButtonClass}" data-product-id="${product.id}" ${cartButtonDisabled}>
-                                <span>${cartButtonText}</span>
+                        <div class="prose prose-sm max-w-none">
+                            ${formattedInsight}
+                        </div>
+                        ${data.fallback ? '<p class="text-xs text-gray-500 mt-4 italic">Note: This is a fallback response due to API limitations.</p>' : ''}
+                    `;
+                } else {
+                    throw new Error('No insight received');
+                }
+            } catch (error) {
+                console.error('Error getting AI insight:', error);
+                aiInsightContent.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-red-500 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Unable to Generate Insights</h3>
+                        <p class="text-gray-600 mb-4">Sorry, we couldn't generate AI insights for this product at the moment. Please try again later.</p>
+                        <p class="text-sm text-red-500">Error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Render products
+        function renderProducts(productsToRender) {
+            if (productsToRender.length === 0) {
+                productsGrid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            productsGrid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+
+            productsGrid.innerHTML = productsToRender.map(product => `
+                <div class="product-card bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="relative">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+                        <div class="absolute top-2 right-2">
+                            <span class="bg-[#6ec88e] text-[#111813] text-xs font-bold px-2 py-1 rounded-full">
+                                ${product.category}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg text-[#111813] mb-2">${product.name}</h3>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">${product.description}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <span class="text-2xl font-bold text-[#111813]">₹${product.price.toFixed(2)}</span>
+                                <span class="text-gray-500 text-sm">/${product.unit}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button 
+                                onclick="addToCart(${product.id})" 
+                                class="flex-1 bg-[#6ec88e] hover:bg-green-500 text-[#111813] font-bold py-2 px-4 rounded-lg transition-colors"
+                            >
+                                Add to Cart
+                            </button>
+                            <button 
+                                onclick="getAIInsight(${JSON.stringify(product).replace(/"/g, '&quot;')})" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition-colors"
+                                title="Get AI Insights"
+                            >
+                                🤖 AI
                             </button>
                         </div>
                     </div>
                 </div>
-            `;
-            productGrid.insertAdjacentHTML('beforeend', productCard);
-        });
-        addEventListenersToCards();
-    }
+            `).join('');
+        }
 
-    function renderCategories() {
-        const categories = ['All', ...new Set(products.map(p => p.category))];
-        categoryFiltersContainer.innerHTML = '';
-        categories.forEach(category => {
-            const isActive = category === activeCategory ? 'active' : '';
-            const button = `
-                <button class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 ${isActive}" data-category="${category}">
-                    ${category}
-                </button>`;
-            categoryFiltersContainer.insertAdjacentHTML('beforeend', button);
-        });
+        // Filter products by category
+        function filterByCategory(category) {
+            if (category === 'all') {
+                filteredProducts = [...products];
+            } else {
+                filteredProducts = products.filter(product => product.category === category);
+            }
+            applySearch();
+        }
 
-        document.querySelectorAll('.category-btn').forEach(button => {
+        // Search products
+        function applySearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            let searchResults = filteredProducts;
+
+            if (searchTerm) {
+                searchResults = filteredProducts.filter(product =>
+                    product.name.toLowerCase().includes(searchTerm) ||
+                    product.description.toLowerCase().includes(searchTerm) ||
+                    product.category.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            renderProducts(searchResults);
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', applySearch);
+
+        categoryButtons.forEach(button => {
             button.addEventListener('click', () => {
-                activeCategory = button.dataset.category;
-                document.querySelector('.category-btn.active')?.classList.remove('active');
+                // Update active button
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                renderProducts();
+
+                // Filter products
+                const category = button.dataset.category;
+                filterByCategory(category);
             });
         });
-    }
 
-    // --- MODAL FUNCTIONS ---
-    function openModal(content) {
-        modalContent.innerHTML = content;
-        modalWrapper.classList.remove('hidden');
-        setTimeout(() => {
-            modalWrapper.classList.remove('opacity-0');
-            modalContent.classList.remove('-translate-y-10');
-        }, 10);
-    }
-    
-    function closeModal() {
-        modalWrapper.classList.add('opacity-0');
-        modalContent.classList.add('-translate-y-10');
-        setTimeout(() => {
-            modalWrapper.classList.add('hidden');
-            modalContent.innerHTML = '';
-        }, 300);
-    }
+        cartBtn.addEventListener('click', () => {
+            window.location.href = 'cart.html';
+        });
 
-    function showQuickView(productId) {
-        const product = products.find(p => p.id === productId);
-        if(!product) return;
-        
-        const isInCart = cartItems.some(item => item.id === productId);
-        const cartButtonDisabled = isInCart ? 'disabled' : '';
-        const cartButtonText = isInCart ? 'In Cart' : 'Add to Cart';
-        const cartButtonClass = isInCart ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#6ec88e] hover:bg-green-600';
+        closeAiModal.addEventListener('click', () => {
+            aiModal.classList.add('hidden');
+        });
 
-        const modalHTML = `
-            <div class="p-6 relative">
-                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-                <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover rounded-lg mb-4">
-                <h3 class="text-2xl font-bold text-gray-800">${product.name}</h3>
-                <p class="text-[#5e876d] text-lg font-medium mb-2">₹${product.price.toFixed(2)} / ${product.unit}</p>
-                <p class="text-gray-600 mb-6">${product.description}</p>
-                <button class="add-to-cart-btn-modal w-full rounded-xl h-12 px-4 text-white text-base font-bold ${cartButtonClass}" data-product-id="${product.id}" ${cartButtonDisabled}>
-                    ${cartButtonText}
-                </button>
-            </div>`;
-        openModal(modalHTML);
-    }
-    
-    function showWishlist() {
-        let modalHTML = `
-            <div class="p-6 relative">
-                <button class="modal-close-btn absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">Your Wishlist</h3>
-                <div id="wishlist-items-container" class="space-y-4 max-h-96 overflow-y-auto">
-        `;
-        
-        if (wishlistItems.length === 0) {
-            modalHTML += `<p class="text-gray-500">You haven't added any items to your wishlist yet.</p>`;
-        } else {
-            wishlistItems.forEach(item => {
-                modalHTML += `
-                    <div class="flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-md object-cover">
-                            <div>
-                                <p class="font-medium text-gray-800">${item.name}</p>
-                                <p class="text-sm text-gray-500">₹${item.price.toFixed(2)}</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                             <button class="add-from-wishlist-btn text-xs font-bold bg-[#6ec88e] text-black py-1 px-2 rounded-md hover:bg-green-600" data-product-id="${item.id}">Add to Cart</button>
-                             <button class="remove-from-wishlist-btn text-xs font-bold bg-red-100 text-red-600 py-1 px-2 rounded-md hover:bg-red-200" data-product-id="${item.id}">Remove</button>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+        // Close modal when clicking outside
+        aiModal.addEventListener('click', (e) => {
+            if (e.target === aiModal) {
+                aiModal.classList.add('hidden');
+            }
+        });
 
-        modalHTML += `</div></div>`;
-        openModal(modalHTML);
-    }
-    
-    // --- CART, WISHLIST & STORAGE FUNCTIONS ---
-    function updateCounts() {
-        cartCountEl.textContent = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-        wishlistCountEl.textContent = wishlistItems.length;
-    }
-
-    function saveData() {
-        localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
-        localStorage.setItem('freshmartWishlist', JSON.stringify(wishlistItems));
-    }
-
-    function loadData() {
-        cartItems = JSON.parse(localStorage.getItem('freshmartCart')) || [];
-        wishlistItems = JSON.parse(localStorage.getItem('freshmartWishlist')) || [];
-        updateCounts();
-    }
-
-    function addToCart(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) return;
-
-        const existingItem = cartItems.find(item => item.id === productId);
-        if (existingItem) {
-            existingItem.quantity++;
-        } else {
-            cartItems.push({ ...product, quantity: 1 });
-        }
-        
-        updateCounts();
-        saveData();
-        renderProducts(); // Re-render to update button state
-    }
-
-    function toggleWishlist(productId) {
-        const product = products.find(p => p.id === productId);
-        if (!product) return;
-        
-        const itemIndex = wishlistItems.findIndex(item => item.id === productId);
-        if (itemIndex > -1) {
-            wishlistItems.splice(itemIndex, 1); // Remove from wishlist
-        } else {
-            wishlistItems.push(product); // Add to wishlist
-        }
-        
-        updateCounts();
-        saveData();
-        renderProducts();
-    }
-
-    // --- EVENT LISTENERS ---
-    function addEventListenersToCards() {
-        document.querySelectorAll(".add-to-cart-btn").forEach(b => b.addEventListener("click", (e) => addToCart(parseInt(e.currentTarget.dataset.productId))));
-        document.querySelectorAll(".wishlist-btn").forEach(b => b.addEventListener("click", (e) => toggleWishlist(parseInt(e.currentTarget.dataset.productId))));
-        document.querySelectorAll(".quick-view-btn").forEach(b => b.addEventListener("click", (e) => showQuickView(parseInt(e.currentTarget.dataset.productId))));
-    }
-
-    modalWrapper.addEventListener('click', (e) => {
-        if (e.target === modalWrapper || e.target.closest('.modal-close-btn')) {
-            closeModal();
-        }
-        if (e.target.closest('.add-to-cart-btn-modal')) {
-            addToCart(parseInt(e.target.closest('.add-to-cart-btn-modal').dataset.productId));
-            closeModal();
-        }
-        if (e.target.closest('.add-from-wishlist-btn')) {
-             const btn = e.target.closest('.add-from-wishlist-btn');
-             addToCart(parseInt(btn.dataset.productId));
-             btn.textContent = 'Added!';
-             btn.disabled = true;
-        }
-        if (e.target.closest('.remove-from-wishlist-btn')) {
-             const productId = parseInt(e.target.closest('.remove-from-wishlist-btn').dataset.productId);
-             toggleWishlist(productId);
-             showWishlist(); // Re-render wishlist modal
-        }
-    });
-    
-    document.getElementById('wishlist-btn-header').addEventListener('click', showWishlist);
-    document.getElementById('wishlist-btn-mobile').addEventListener('click', showWishlist);
-    searchInput.addEventListener('input', renderProducts);
-    sortOptions.addEventListener('change', renderProducts);
-
-    mobileMenuButton.addEventListener('click', () => mobileMenu.classList.remove('translate-x-full'));
-    closeMenuButton.addEventListener('click', () => mobileMenu.classList.add('translate-x-full'));
-    
-    // --- INITIALIZATION ---
-    function init() {
-        loadData();
-        renderCategories();
-        renderProducts();
-    }
-    
-    init();
-});
-</script>
-
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCart();
+            renderProducts(products);
+            showToast('Welcome to FreshMart! 🛒', 'success', 3000);
+        });
+    </script>
 </body>
 </html>
