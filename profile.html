@@ -606,7 +606,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, startAfter, limit, Timestamp, doc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, orderBy, startAfter, limit, Timestamp, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
         // --- Firebase Configuration ---
         // This configuration is for demonstration purposes.
@@ -884,9 +884,9 @@
             if (!currentUser) return;
             try {
                 const docRef = doc(db, `users/${currentUser.uid}/preferences/settings`);
-                const docSnap = await getDocs(docRef); 
-                if (docSnap.docs.length > 0) { 
-                    const preferences = docSnap.docs[0].data(); 
+                const docSnap = await getDoc(docRef); 
+                if (docSnap.exists()) { 
+                    const preferences = docSnap.data(); 
                     emailNotificationsToggle.checked = preferences.emailNotifications || false;
                     smsNotificationsToggle.checked = preferences.smsNotifications || false;
                     promotionalNotificationsToggle.checked = preferences.promotionalNotifications || false; // New
