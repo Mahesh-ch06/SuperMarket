@@ -11,10 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --primary-green: #6ec88e;
+            --primary-green-dark: #5bb377;
+            --primary-green-light: #8ed4a6;
+            --accent-orange: #ff8c42;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --text-dark: #1f2937;
+            --text-light: #6b7280;
+            --bg-light: #f9fafb;
             --glass-bg: rgba(255, 255, 255, 0.25);
             --glass-border: rgba(255, 255, 255, 0.18);
         }
@@ -26,15 +31,26 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
-            overflow-x: hidden;
+            color: var(--text-dark);
         }
 
-        /* Glass Morphism Effects */
-        .glass {
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-morphism {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -42,248 +58,313 @@
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .glass-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.5);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Gradient Text */
-        .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .gradient-text-secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Floating Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-10px) rotate(1deg); }
-            66% { transform: translateY(5px) rotate(-1deg); }
-        }
-
-        .float-animation {
+        .floating-animation {
             animation: float 6s ease-in-out infinite;
         }
 
-        /* Pulse Animation */
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.4); }
-            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(1deg); }
+            66% { transform: translateY(-5px) rotate(-1deg); }
         }
 
-        .pulse-glow {
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-        }
-
-        /* Recipe Card Styles */
         .recipe-card {
-            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-origin: center;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .recipe-image {
+            transition: transform 0.6s ease;
             overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .recipe-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 1;
-        }
-
-        .recipe-card:hover::before {
-            opacity: 1;
-        }
-
-        .recipe-card img {
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .recipe-card:hover img {
+        .recipe-card:hover .recipe-image img {
             transform: scale(1.1);
         }
 
-        /* Filter Buttons */
-        .filter-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
+        .category-btn {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .filter-btn:hover,
-        .filter-btn.active {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
         }
 
-        /* Search Bar */
+        .category-btn:hover::before {
+            left: 100%;
+        }
+
+        .category-btn.active {
+            background: var(--primary-green);
+            color: white;
+            transform: scale(1.05);
+        }
+
         .search-container {
             position: relative;
-            max-width: 500px;
-            margin: 0 auto;
         }
 
         .search-input {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            placeholder-color: rgba(255, 255, 255, 0.7);
-        }
-
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            outline: none;
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(110, 200, 142, 0.2);
         }
 
-        /* Difficulty Badges */
-        .difficulty-easy {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        .star-rating {
+            display: flex;
+            gap: 2px;
         }
 
-        .difficulty-medium {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        .star {
+            color: #fbbf24;
+            font-size: 1rem;
         }
 
-        .difficulty-hard {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        .difficulty-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* Time Badge */
-        .time-badge {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        .difficulty-easy { background: #dcfce7; color: #166534; }
+        .difficulty-medium { background: #fef3c7; color: #92400e; }
+        .difficulty-hard { background: #fee2e2; color: #dc2626; }
+
+        .tag {
+            background: rgba(110, 200, 142, 0.1);
+            color: var(--primary-green-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid rgba(110, 200, 142, 0.3);
         }
 
-        /* Servings Badge */
-        .servings-badge {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            color: #333;
+        .favorite-btn {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.active {
+            color: #ef4444;
+            animation: heartBeat 0.6s ease;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
         }
 
         /* Modal Styles */
         .modal {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: white;
+            margin: auto;
+            padding: 0;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 900px;
             max-height: 90vh;
             overflow-y: auto;
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         }
 
-        /* Ingredient List */
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+        }
+
+        .nutrition-item {
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border-radius: 12px;
+            border: 1px solid #bae6fd;
+        }
+
         .ingredient-item {
-            background: rgba(102, 126, 234, 0.1);
-            border-left: 4px solid #667eea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
             transition: all 0.3s ease;
         }
 
         .ingredient-item:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateX(5px);
+            background: #f1f5f9;
+            transform: translateX(4px);
         }
 
-        /* Steps List */
-        .step-item {
-            background: rgba(240, 147, 251, 0.1);
-            border-left: 4px solid #f093fb;
+        .add-to-cart-btn {
+            background: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .step-item:hover {
-            background: rgba(240, 147, 251, 0.2);
-            transform: translateX(5px);
+        .add-to-cart-btn:hover {
+            background: var(--primary-green-dark);
+            transform: scale(1.05);
         }
+
+        .step-number {
+            background: var(--primary-green);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--primary-green);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            min-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left-color: #22c55e; }
+        .toast.error { border-left-color: #ef4444; }
+        .toast.info { border-left-color: #3b82f6; }
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .modal-content {
+                width: 98%;
+                margin: 10px auto;
+                max-height: 95vh;
+            }
+
+            .nutrition-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
             .recipe-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
-            
-            .filter-buttons {
+
+            .category-filters {
                 flex-wrap: wrap;
-                gap: 10px;
+                gap: 8px;
             }
-            
-            .filter-btn {
-                font-size: 14px;
+
+            .category-btn {
+                font-size: 0.875rem;
                 padding: 8px 16px;
-            }
-            
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .hero-subtitle {
-                font-size: 1.1rem;
             }
         }
 
         /* Loading Animation */
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-green);
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
         }
 
@@ -292,186 +373,125 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Toast Notifications */
-        .toast {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
         }
 
-        .toast.show {
-            transform: translateX(0);
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        .toast.success {
-            border-left: 4px solid #43e97b;
+        /* Header Styles */
+        .header-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .toast.error {
-            border-left: 4px solid #ff6b6b;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        .toast.info {
-            border-left: 4px solid #4facfe;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
         }
 
-        /* Favorite Button */
-        .favorite-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-green);
+            border-radius: 4px;
         }
 
-        .favorite-btn:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: scale(1.1);
-        }
-
-        .favorite-btn.favorited {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        /* Rating Stars */
-        .rating-stars {
-            display: flex;
-            gap: 2px;
-        }
-
-        .star {
-            color: #ffd700;
-            font-size: 16px;
-        }
-
-        /* Category Icons */
-        .category-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-        }
-
-        /* Nutrition Info */
-        .nutrition-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 15px;
-        }
-
-        .nutrition-item {
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .nutrition-item:hover {
-            background: rgba(102, 126, 234, 0.2);
-            transform: translateY(-3px);
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-green-dark);
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="glass fixed top-0 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3 text-white hover:text-gray-200 transition-colors">
-                <div class="w-8 h-8">
+    <header class="header-glass sticky top-0 z-50 px-4 sm:px-10 py-4">
+        <div class="flex items-center justify-between max-w-7xl mx-auto">
+            <a href="index.html" class="flex items-center gap-3 text-white">
+                <div class="size-8">
                     <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
                     </svg>
                 </div>
                 <h1 class="text-xl font-bold tracking-tight">FreshMart</h1>
             </a>
-
-            <!-- Desktop Navigation -->
-            <nav class="hidden md:flex items-center gap-8">
-                <a href="index.html" class="text-white/80 hover:text-white transition-colors">Home</a>
-                <a href="shop.html" class="text-white/80 hover:text-white transition-colors">Shop</a>
-                <a href="deals.html" class="text-white/80 hover:text-white transition-colors">Deals</a>
-                <a href="recipes.html" class="text-white font-semibold">Recipes</a>
-                <a href="aboutus.html" class="text-white/80 hover:text-white transition-colors">About</a>
-                <a href="contactus.html" class="text-white/80 hover:text-white transition-colors">Contact</a>
-            </nav>
-
-            <!-- Action Buttons -->
-            <div class="flex items-center gap-3">
-                <button id="cartBtn" class="glass-card px-4 py-2 text-white font-medium rounded-xl hover:bg-white/20 transition-all">
-                    Cart (<span id="cartCount">0</span>)
+            <div class="flex items-center gap-4">
+                <button id="cart-btn" class="glass-morphism px-4 py-2 rounded-full text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all duration-300">
+                    🛒 Cart (<span id="cart-count">0</span>)
                 </button>
-                <button id="loginBtn" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl font-medium transition-all">
-                    Login
-                </button>
+                <a href="shop.html" class="glass-morphism px-6 py-2 rounded-full text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all duration-300">
+                    Shop
+                </a>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+    <section class="py-20 px-4">
         <div class="max-w-7xl mx-auto text-center">
-            <div class="float-animation mb-8">
-                <h1 class="hero-title text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            <div class="floating-animation">
+                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6" style="font-family: 'Playfair Display', serif;">
                     Delicious
-                    <span class="gradient-text-secondary block">Recipes</span>
+                    <span class="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+                        Recipes
+                    </span>
                 </h1>
-                <p class="hero-subtitle text-xl sm:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-                    Discover amazing recipes made with fresh ingredients from FreshMart. From quick weeknight dinners to gourmet weekend treats.
-                </p>
             </div>
-
+            <p class="text-xl text-white text-opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Discover amazing recipes and get all the fresh ingredients delivered to your doorstep
+            </p>
+            
             <!-- Search Bar -->
-            <div class="search-container mb-12">
-                <div class="relative">
+            <div class="search-container max-w-2xl mx-auto mb-12">
+                <div class="glass-morphism rounded-full p-2 flex items-center">
                     <input 
                         type="text" 
-                        id="searchInput"
-                        placeholder="Search recipes by name, ingredient, or cuisine..."
-                        class="search-input w-full px-6 py-4 rounded-2xl text-lg font-medium placeholder-white/70 focus:outline-none"
+                        id="search-input" 
+                        placeholder="Search recipes, ingredients, or cuisines..." 
+                        class="search-input flex-1 bg-transparent text-white placeholder-white placeholder-opacity-70 px-6 py-3 outline-none text-lg"
                     >
-                    <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors">
+                    <button class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </button>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Filter Buttons -->
-            <div class="filter-buttons flex flex-wrap justify-center gap-4 mb-16">
-                <button class="filter-btn active px-6 py-3 rounded-xl font-medium transition-all" data-category="all">
+    <!-- Category Filters -->
+    <section class="px-4 mb-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="category-filters flex justify-center gap-4 flex-wrap">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium active" data-category="all">
                     All Recipes
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="breakfast">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="breakfast">
                     🍳 Breakfast
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="lunch">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="lunch">
                     🥗 Lunch
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="dinner">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="dinner">
                     🍽️ Dinner
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="dessert">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="dessert">
                     🍰 Desserts
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="snacks">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="snack">
                     🍿 Snacks
                 </button>
-                <button class="filter-btn px-6 py-3 rounded-xl font-medium transition-all" data-category="beverages">
+                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="beverage">
                     🥤 Beverages
                 </button>
             </div>
@@ -479,82 +499,39 @@
     </section>
 
     <!-- Recipes Grid -->
-    <section class="px-4 sm:px-6 lg:px-8 pb-20">
+    <section class="px-4 pb-20">
         <div class="max-w-7xl mx-auto">
-            <!-- Loading Spinner -->
-            <div id="loadingSpinner" class="flex justify-center items-center py-20">
-                <div class="loading-spinner"></div>
+            <div id="recipes-grid" class="recipe-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Recipes will be dynamically loaded here -->
             </div>
-
-            <!-- Recipes Grid -->
-            <div id="recipesGrid" class="recipe-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 hidden">
-                <!-- Recipe cards will be dynamically inserted here -->
+            
+            <!-- Loading State -->
+            <div id="loading" class="text-center py-12 hidden">
+                <div class="loading mx-auto mb-4"></div>
+                <p class="text-white text-opacity-80">Loading delicious recipes...</p>
             </div>
-
+            
             <!-- No Results -->
-            <div id="noResults" class="text-center py-20 hidden">
-                <div class="glass-card p-12 rounded-3xl max-w-md mx-auto">
-                    <div class="text-6xl mb-6">🔍</div>
-                    <h3 class="text-2xl font-bold text-white mb-4">No Recipes Found</h3>
-                    <p class="text-white/80">Try adjusting your search or filter criteria</p>
-                </div>
+            <div id="no-results" class="text-center py-12 hidden">
+                <div class="text-6xl mb-4">🔍</div>
+                <h3 class="text-2xl font-bold text-white mb-2">No recipes found</h3>
+                <p class="text-white text-opacity-80">Try adjusting your search or filters</p>
             </div>
         </div>
     </section>
 
     <!-- Recipe Modal -->
-    <div id="recipeModal" class="modal fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
-        <div class="modal-content bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div id="modalContent">
-                <!-- Modal content will be dynamically inserted here -->
+    <div id="recipe-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">&times;</button>
+            <div id="modal-content">
+                <!-- Modal content will be dynamically loaded here -->
             </div>
         </div>
     </div>
 
     <!-- Toast Container -->
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-4"></div>
-
-    <!-- Footer -->
-    <footer class="glass mt-20 px-4 sm:px-6 lg:px-8 py-12">
-        <div class="max-w-7xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-8 h-8">
-                            <svg viewBox="0 0 48 48" fill="white" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-white">FreshMart Recipes</h3>
-                    </div>
-                    <p class="text-white/80 leading-relaxed">
-                        Discover delicious recipes using fresh ingredients from FreshMart. From quick meals to gourmet dishes, we've got you covered.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="shop.html" class="text-white/80 hover:text-white transition-colors">Shop Ingredients</a></li>
-                        <li><a href="deals.html" class="text-white/80 hover:text-white transition-colors">Special Offers</a></li>
-                        <li><a href="aboutus.html" class="text-white/80 hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="contactus.html" class="text-white/80 hover:text-white transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-white mb-4">Recipe Categories</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-white/80 hover:text-white transition-colors">Breakfast</a></li>
-                        <li><a href="#" class="text-white/80 hover:text-white transition-colors">Lunch & Dinner</a></li>
-                        <li><a href="#" class="text-white/80 hover:text-white transition-colors">Desserts</a></li>
-                        <li><a href="#" class="text-white/80 hover:text-white transition-colors">Healthy Options</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-white/20 pt-8 text-center">
-                <p class="text-white/60">© 2025 FreshMart. All rights reserved. Made with ❤️ for food lovers.</p>
-            </div>
-        </div>
-    </footer>
+    <div id="toast-container" class="toast-container"></div>
 
     <script>
         // Recipe Data
@@ -564,382 +541,335 @@
                 name: "Mediterranean Quinoa Bowl",
                 category: "lunch",
                 difficulty: "easy",
-                time: 25,
+                time: "25 mins",
                 servings: 4,
                 rating: 4.8,
                 image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "A healthy and colorful quinoa bowl packed with Mediterranean flavors, fresh vegetables, and a tangy lemon dressing.",
+                tags: ["healthy", "vegetarian", "gluten-free", "mediterranean"],
+                description: "A nutritious and colorful bowl packed with fresh vegetables, quinoa, and a tangy lemon dressing.",
                 ingredients: [
-                    "1 cup quinoa",
-                    "2 cups vegetable broth",
-                    "1 cucumber, diced",
-                    "2 tomatoes, chopped",
-                    "1/2 red onion, sliced",
-                    "1/2 cup kalamata olives",
-                    "1/2 cup feta cheese, crumbled",
-                    "1/4 cup fresh parsley",
-                    "3 tbsp olive oil",
-                    "2 tbsp lemon juice",
-                    "1 tsp oregano",
-                    "Salt and pepper to taste"
+                    { name: "Quinoa", amount: "1 cup", price: 120, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Cherry Tomatoes", amount: "200g", price: 80, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Cucumber", amount: "1 large", price: 40, image: "https://images.pexels.com/photos/2329440/pexels-photo-2329440.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Red Onion", amount: "1 medium", price: 30, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Feta Cheese", amount: "150g", price: 200, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Olive Oil", amount: "3 tbsp", price: 150, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Lemon", amount: "2 pieces", price: 60, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Fresh Herbs", amount: "1 bunch", price: 50, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
-                    "Rinse quinoa and cook in vegetable broth according to package instructions.",
-                    "Let quinoa cool to room temperature.",
-                    "Prepare all vegetables and herbs.",
-                    "Whisk together olive oil, lemon juice, oregano, salt, and pepper for dressing.",
+                    "Rinse quinoa thoroughly and cook according to package instructions. Let cool.",
+                    "Dice cucumber, halve cherry tomatoes, and thinly slice red onion.",
+                    "Whisk together olive oil, lemon juice, salt, and pepper for dressing.",
                     "Combine quinoa with vegetables in a large bowl.",
-                    "Add feta cheese and olives.",
-                    "Drizzle with dressing and toss gently.",
-                    "Garnish with fresh parsley and serve."
+                    "Add crumbled feta cheese and fresh herbs.",
+                    "Drizzle with dressing and toss gently to combine.",
+                    "Serve immediately or chill for 30 minutes for better flavor."
                 ],
                 nutrition: {
                     calories: 320,
                     protein: "12g",
                     carbs: "45g",
-                    fat: "12g",
-                    fiber: "6g"
-                },
-                tags: ["healthy", "vegetarian", "gluten-free", "mediterranean"]
+                    fat: "11g",
+                    fiber: "6g",
+                    sodium: "380mg"
+                }
             },
             {
                 id: 2,
                 name: "Chocolate Avocado Smoothie",
-                category: "beverages",
+                category: "beverage",
                 difficulty: "easy",
-                time: 5,
+                time: "5 mins",
                 servings: 2,
                 rating: 4.6,
                 image: "https://images.pexels.com/photos/775032/pexels-photo-775032.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "A creamy, healthy chocolate smoothie made with avocado for extra nutrition and richness.",
+                tags: ["healthy", "vegan", "smoothie", "chocolate"],
+                description: "A creamy, rich smoothie that tastes like a chocolate milkshake but is packed with nutrients.",
                 ingredients: [
-                    "1 ripe avocado",
-                    "2 bananas, frozen",
-                    "2 tbsp cocoa powder",
-                    "1 cup almond milk",
-                    "2 tbsp honey or maple syrup",
-                    "1 tsp vanilla extract",
-                    "1/2 cup ice cubes",
-                    "Pinch of salt"
+                    { name: "Ripe Avocado", amount: "1 large", price: 80, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Banana", amount: "1 large", price: 40, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Cocoa Powder", amount: "3 tbsp", price: 120, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Almond Milk", amount: "1 cup", price: 150, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Maple Syrup", amount: "2 tbsp", price: 200, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Vanilla Extract", amount: "1 tsp", price: 100, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Ice Cubes", amount: "1 cup", price: 0, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
                     "Add all ingredients to a high-speed blender.",
-                    "Blend until smooth and creamy, about 60 seconds.",
+                    "Blend on high for 60-90 seconds until completely smooth.",
                     "Taste and adjust sweetness if needed.",
-                    "Add more ice for thicker consistency.",
+                    "Add more ice for thicker consistency or more milk for thinner.",
                     "Pour into glasses and serve immediately.",
                     "Garnish with cocoa powder or chocolate shavings if desired."
                 ],
                 nutrition: {
                     calories: 280,
                     protein: "6g",
-                    carbs: "42g",
-                    fat: "12g",
-                    fiber: "10g"
-                },
-                tags: ["healthy", "vegan", "gluten-free", "quick"]
+                    carbs: "35g",
+                    fat: "15g",
+                    fiber: "12g",
+                    sodium: "120mg"
+                }
             },
             {
                 id: 3,
                 name: "Spicy Thai Basil Chicken",
                 category: "dinner",
                 difficulty: "medium",
-                time: 30,
+                time: "30 mins",
                 servings: 4,
                 rating: 4.9,
                 image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "Authentic Thai stir-fry with ground chicken, holy basil, and aromatic spices served over jasmine rice.",
+                tags: ["spicy", "thai", "chicken", "asian"],
+                description: "Authentic Thai stir-fry with aromatic basil, chilies, and tender chicken in a savory sauce.",
                 ingredients: [
-                    "1 lb ground chicken",
-                    "3 cloves garlic, minced",
-                    "2 Thai chilies, sliced",
-                    "1 cup Thai holy basil leaves",
-                    "2 tbsp vegetable oil",
-                    "2 tbsp fish sauce",
-                    "1 tbsp soy sauce",
-                    "1 tbsp oyster sauce",
-                    "1 tsp sugar",
-                    "4 eggs",
-                    "Jasmine rice for serving"
+                    { name: "Chicken Breast", amount: "500g", price: 300, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Thai Basil", amount: "1 bunch", price: 80, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Thai Chilies", amount: "5-6 pieces", price: 40, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Garlic", amount: "6 cloves", price: 30, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Onion", amount: "1 medium", price: 40, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Fish Sauce", amount: "3 tbsp", price: 120, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Soy Sauce", amount: "2 tbsp", price: 80, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Vegetable Oil", amount: "3 tbsp", price: 60, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Jasmine Rice", amount: "2 cups", price: 100, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
-                    "Heat oil in a wok over high heat.",
-                    "Add garlic and chilies, stir-fry for 30 seconds.",
-                    "Add ground chicken and cook until browned.",
-                    "Add fish sauce, soy sauce, oyster sauce, and sugar.",
-                    "Stir-fry until chicken is cooked through.",
-                    "Add basil leaves and toss until wilted.",
-                    "Fry eggs sunny-side up in a separate pan.",
-                    "Serve over jasmine rice with fried egg on top."
+                    "Slice chicken breast into thin strips and season with salt and pepper.",
+                    "Heat oil in a wok or large skillet over high heat.",
+                    "Add minced garlic and chilies, stir-fry for 30 seconds.",
+                    "Add chicken and cook until no longer pink, about 5-7 minutes.",
+                    "Add sliced onion and cook for 2 minutes.",
+                    "Stir in fish sauce and soy sauce, mix well.",
+                    "Add Thai basil leaves and stir until wilted.",
+                    "Serve immediately over steamed jasmine rice."
                 ],
                 nutrition: {
                     calories: 420,
-                    protein: "32g",
+                    protein: "35g",
                     carbs: "28g",
                     fat: "18g",
-                    fiber: "2g"
-                },
-                tags: ["spicy", "thai", "protein-rich", "authentic"]
+                    fiber: "2g",
+                    sodium: "980mg"
+                }
             },
             {
                 id: 4,
                 name: "Classic Blueberry Pancakes",
                 category: "breakfast",
                 difficulty: "easy",
-                time: 20,
+                time: "20 mins",
                 servings: 4,
                 rating: 4.7,
                 image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "Fluffy, golden pancakes bursting with fresh blueberries, perfect for a weekend breakfast.",
+                tags: ["breakfast", "pancakes", "blueberry", "classic"],
+                description: "Fluffy, golden pancakes bursting with fresh blueberries - the perfect weekend breakfast.",
                 ingredients: [
-                    "2 cups all-purpose flour",
-                    "2 tbsp sugar",
-                    "2 tsp baking powder",
-                    "1 tsp salt",
-                    "2 eggs",
-                    "1 3/4 cups milk",
-                    "1/4 cup melted butter",
-                    "1 cup fresh blueberries",
-                    "Butter for cooking",
-                    "Maple syrup for serving"
+                    { name: "All-Purpose Flour", amount: "2 cups", price: 80, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Fresh Blueberries", amount: "1 cup", price: 200, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Milk", amount: "1.5 cups", price: 60, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Eggs", amount: "2 large", price: 40, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Sugar", amount: "2 tbsp", price: 30, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Baking Powder", amount: "2 tsp", price: 50, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Butter", amount: "4 tbsp", price: 120, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Vanilla Extract", amount: "1 tsp", price: 100, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Salt", amount: "1/2 tsp", price: 20, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
-                    "Mix flour, sugar, baking powder, and salt in a large bowl.",
-                    "Whisk eggs, milk, and melted butter in another bowl.",
-                    "Pour wet ingredients into dry ingredients and mix until just combined.",
-                    "Gently fold in blueberries.",
-                    "Heat butter in a griddle over medium heat.",
-                    "Pour 1/4 cup batter for each pancake.",
-                    "Cook until bubbles form on surface, then flip.",
-                    "Cook until golden brown and serve with maple syrup."
+                    "In a large bowl, whisk together flour, sugar, baking powder, and salt.",
+                    "In another bowl, beat eggs, then add milk, melted butter, and vanilla.",
+                    "Pour wet ingredients into dry ingredients and stir until just combined.",
+                    "Gently fold in blueberries, being careful not to overmix.",
+                    "Heat a griddle or large skillet over medium heat and lightly grease.",
+                    "Pour 1/4 cup batter for each pancake onto the griddle.",
+                    "Cook until bubbles form on surface, then flip and cook until golden.",
+                    "Serve hot with maple syrup and additional blueberries."
                 ],
                 nutrition: {
                     calories: 380,
                     protein: "12g",
                     carbs: "58g",
                     fat: "12g",
-                    fiber: "3g"
-                },
-                tags: ["breakfast", "comfort-food", "family-friendly", "weekend"]
+                    fiber: "3g",
+                    sodium: "420mg"
+                }
             },
             {
                 id: 5,
                 name: "Chocolate Lava Cake",
                 category: "dessert",
-                difficulty: "medium",
-                time: 25,
-                servings: 4,
+                difficulty: "hard",
+                time: "45 mins",
+                servings: 6,
                 rating: 4.9,
-                image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "Decadent individual chocolate cakes with a molten center, served warm with vanilla ice cream.",
+                image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
+                tags: ["chocolate", "dessert", "indulgent", "warm"],
+                description: "Decadent individual chocolate cakes with a molten center that flows like lava when cut.",
                 ingredients: [
-                    "4 oz dark chocolate, chopped",
-                    "4 tbsp butter",
-                    "2 large eggs",
-                    "2 tbsp granulated sugar",
-                    "2 tbsp all-purpose flour",
-                    "Pinch of salt",
-                    "Butter for ramekins",
-                    "Cocoa powder for dusting",
-                    "Vanilla ice cream for serving"
+                    { name: "Dark Chocolate", amount: "200g", price: 300, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Butter", amount: "6 tbsp", price: 150, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Eggs", amount: "2 large", price: 40, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Egg Yolks", amount: "2 pieces", price: 30, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Sugar", amount: "1/4 cup", price: 40, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "All-Purpose Flour", amount: "2 tbsp", price: 30, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Vanilla Ice Cream", amount: "1 pint", price: 200, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Powdered Sugar", amount: "2 tbsp", price: 50, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
-                    "Preheat oven to 425°F (220°C).",
-                    "Butter four 6-oz ramekins and dust with cocoa powder.",
-                    "Melt chocolate and butter in a double boiler.",
-                    "Whisk eggs and sugar until thick and pale.",
-                    "Fold in melted chocolate mixture.",
-                    "Sift in flour and salt, fold gently.",
-                    "Divide batter among ramekins.",
-                    "Bake for 12-14 minutes until edges are firm.",
-                    "Let cool for 1 minute, then invert onto plates.",
-                    "Serve immediately with vanilla ice cream."
+                    "Preheat oven to 425°F (220°C). Butter 6 ramekins and dust with cocoa powder.",
+                    "Melt chocolate and butter in a double boiler until smooth.",
+                    "In a bowl, whisk together eggs, egg yolks, and sugar until thick.",
+                    "Stir in the melted chocolate mixture and flour until just combined.",
+                    "Divide batter evenly among prepared ramekins.",
+                    "Bake for 12-14 minutes until edges are firm but centers jiggle slightly.",
+                    "Let cool for 1 minute, then run a knife around edges to loosen.",
+                    "Invert onto plates, dust with powdered sugar, and serve with ice cream."
                 ],
                 nutrition: {
-                    calories: 320,
-                    protein: "6g",
-                    carbs: "28g",
-                    fat: "22g",
-                    fiber: "3g"
-                },
-                tags: ["dessert", "chocolate", "romantic", "indulgent"]
+                    calories: 520,
+                    protein: "8g",
+                    carbs: "45g",
+                    fat: "35g",
+                    fiber: "4g",
+                    sodium: "180mg"
+                }
             },
             {
                 id: 6,
-                name: "Crispy Baked Sweet Potato Fries",
-                category: "snacks",
+                name: "Crispy Sweet Potato Fries",
+                category: "snack",
                 difficulty: "easy",
-                time: 35,
+                time: "35 mins",
                 servings: 4,
                 rating: 4.5,
                 image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                description: "Perfectly seasoned sweet potato fries that are crispy outside and tender inside, baked not fried.",
+                tags: ["healthy", "crispy", "sweet potato", "baked"],
+                description: "Perfectly seasoned and crispy sweet potato fries that are baked, not fried, for a healthier option.",
                 ingredients: [
-                    "3 large sweet potatoes",
-                    "3 tbsp olive oil",
-                    "1 tsp paprika",
-                    "1/2 tsp garlic powder",
-                    "1/2 tsp onion powder",
-                    "1/4 tsp cayenne pepper",
-                    "1 tsp salt",
-                    "1/2 tsp black pepper",
-                    "2 tbsp cornstarch"
+                    { name: "Sweet Potatoes", amount: "3 large", price: 120, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Olive Oil", amount: "3 tbsp", price: 150, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Paprika", amount: "1 tsp", price: 60, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Garlic Powder", amount: "1 tsp", price: 80, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Salt", amount: "1 tsp", price: 20, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Black Pepper", amount: "1/2 tsp", price: 40, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
+                    { name: "Cornstarch", amount: "2 tbsp", price: 50, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
                 ],
                 instructions: [
-                    "Preheat oven to 425°F (220°C).",
-                    "Wash and cut sweet potatoes into fry-shaped pieces.",
-                    "Soak cut potatoes in cold water for 30 minutes.",
-                    "Pat completely dry with paper towels.",
-                    "Toss with cornstarch, then olive oil and all seasonings.",
-                    "Arrange in single layer on baking sheet.",
-                    "Bake for 15 minutes, flip, then bake 15-20 minutes more.",
-                    "Serve immediately while crispy."
+                    "Preheat oven to 425°F (220°C). Line a baking sheet with parchment paper.",
+                    "Wash and peel sweet potatoes, then cut into 1/2-inch thick fries.",
+                    "Soak cut fries in cold water for 30 minutes to remove excess starch.",
+                    "Pat fries completely dry with paper towels.",
+                    "Toss fries with cornstarch, then add olive oil and seasonings.",
+                    "Arrange in a single layer on the baking sheet, not overlapping.",
+                    "Bake for 25-30 minutes, flipping halfway through.",
+                    "Serve immediately while hot and crispy."
                 ],
                 nutrition: {
                     calories: 180,
                     protein: "3g",
                     carbs: "32g",
                     fat: "5g",
-                    fiber: "5g"
-                },
-                tags: ["healthy", "vegan", "gluten-free", "side-dish"]
+                    fiber: "5g",
+                    sodium: "390mg"
+                }
             }
         ];
 
         // Global Variables
-        let filteredRecipes = [...recipes];
+        let currentRecipes = [...recipes];
         let favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+        let cart = JSON.parse(localStorage.getItem('freshmartCart') || '[]');
 
         // DOM Elements
-        const recipesGrid = document.getElementById('recipesGrid');
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const noResults = document.getElementById('noResults');
-        const searchInput = document.getElementById('searchInput');
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const recipeModal = document.getElementById('recipeModal');
-        const modalContent = document.getElementById('modalContent');
-        const toastContainer = document.getElementById('toastContainer');
-        const cartBtn = document.getElementById('cartBtn');
-        const loginBtn = document.getElementById('loginBtn');
-        const cartCount = document.getElementById('cartCount');
+        const recipesGrid = document.getElementById('recipes-grid');
+        const searchInput = document.getElementById('search-input');
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const modal = document.getElementById('recipe-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModal = document.getElementById('close-modal');
+        const cartBtn = document.getElementById('cart-btn');
+        const cartCount = document.getElementById('cart-count');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('no-results');
 
         // Toast Notification System
-        function showToast(message, type = 'info', duration = 4000) {
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${type} p-4 rounded-xl shadow-lg mb-4`;
+            toast.className = `toast ${type}`;
             toast.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0">
+                    <div class="text-2xl">
                         ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
                     </div>
-                    <p class="text-gray-800 font-medium">${message}</p>
+                    <div>
+                        <p class="font-semibold text-gray-900">${message}</p>
+                    </div>
                 </div>
             `;
             
             toastContainer.appendChild(toast);
-            
             setTimeout(() => toast.classList.add('show'), 100);
             
             setTimeout(() => {
                 toast.classList.remove('show');
                 setTimeout(() => toast.remove(), 300);
-            }, duration);
+            }, 3000);
         }
 
         // Update Cart Count
         function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('freshmartCart') || '[]');
             const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
             cartCount.textContent = totalItems;
         }
 
-        // Render Recipes
-        function renderRecipes(recipesToRender) {
-            loadingSpinner.classList.add('hidden');
+        // Add to Cart Function
+        function addToCart(ingredient) {
+            const existingItem = cart.find(item => item.name === ingredient.name);
             
-            if (recipesToRender.length === 0) {
-                recipesGrid.classList.add('hidden');
-                noResults.classList.remove('hidden');
-                return;
+            if (existingItem) {
+                existingItem.quantity = (existingItem.quantity || 1) + 1;
+            } else {
+                cart.push({
+                    id: Date.now() + Math.random(),
+                    name: ingredient.name,
+                    price: ingredient.price,
+                    quantity: 1,
+                    unit: ingredient.amount,
+                    image: ingredient.image
+                });
             }
-
-            noResults.classList.add('hidden');
-            recipesGrid.classList.remove('hidden');
-
-            recipesGrid.innerHTML = recipesToRender.map(recipe => `
-                <div class="recipe-card glass-card rounded-3xl overflow-hidden relative" data-recipe-id="${recipe.id}">
-                    <!-- Favorite Button -->
-                    <button class="favorite-btn ${favorites.includes(recipe.id) ? 'favorited' : ''}" onclick="toggleFavorite(${recipe.id})">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="${favorites.includes(recipe.id) ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-
-                    <!-- Recipe Image -->
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-full object-cover">
-                        <div class="absolute top-4 left-4 flex gap-2">
-                            <span class="difficulty-${recipe.difficulty} px-3 py-1 rounded-full text-xs font-bold text-white">
-                                ${recipe.difficulty.toUpperCase()}
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 left-4 flex gap-2">
-                            <span class="time-badge px-3 py-1 rounded-full text-xs font-bold text-white">
-                                ⏱️ ${recipe.time}min
-                            </span>
-                            <span class="servings-badge px-3 py-1 rounded-full text-xs font-bold">
-                                👥 ${recipe.servings}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Recipe Content -->
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xl font-bold text-white leading-tight">${recipe.name}</h3>
-                            <div class="rating-stars">
-                                ${generateStars(recipe.rating)}
-                            </div>
-                        </div>
-                        
-                        <p class="text-white/80 text-sm mb-4 line-clamp-2">${recipe.description}</p>
-                        
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            ${recipe.tags.slice(0, 3).map(tag => `
-                                <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full">#${tag}</span>
-                            `).join('')}
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div class="nutrition-info text-xs text-white/70">
-                                <span>${recipe.nutrition.calories} cal</span>
-                                <span class="mx-2">•</span>
-                                <span>${recipe.nutrition.protein} protein</span>
-                            </div>
-                            <button onclick="openRecipeModal(${recipe.id})" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all">
-                                View Recipe
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            
+            localStorage.setItem('freshmartCart', JSON.stringify(cart));
+            updateCartCount();
+            showToast(`${ingredient.name} added to cart!`);
         }
 
-        // Generate Star Rating
-        function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating % 1 !== 0;
-            let stars = '';
+        // Add All Ingredients to Cart
+        function addAllIngredientsToCart(recipe) {
+            let addedCount = 0;
             
-            for (let i = 0; i < fullStars; i++) {
-                stars += '<span class="star">★</span>';
-            }
+            recipe.ingredients.forEach(ingredient => {
+                const existingItem = cart.find(item => item.name === ingredient.name);
+                
+                if (existingItem) {
+                    existingItem.quantity = (existingItem.quantity || 1) + 1;
+                } else {
+                    cart.push({
+                        id: Date.now() + Math.random() + addedCount,
+                        name: ingredient.name,
+                        price: ingredient.price,
+                        quantity: 1,
+                        unit: ingredient.amount,
+                        image: ingredient.image
+                    });
+                }
+                addedCount++;
+            });
             
-            if (hasHalfStar) {
-                stars += '<span class="star">☆</span>';
-            }
-            
-            return stars;
+            localStorage.setItem('freshmartCart', JSON.stringify(cart));
+            updateCartCount();
+            showToast(`All ingredients for ${recipe.name} added to cart!`);
         }
 
         // Toggle Favorite
@@ -947,14 +877,97 @@
             const index = favorites.indexOf(recipeId);
             if (index > -1) {
                 favorites.splice(index, 1);
-                showToast('Recipe removed from favorites', 'info');
+                showToast('Recipe removed from favorites');
             } else {
                 favorites.push(recipeId);
-                showToast('Recipe added to favorites!', 'success');
+                showToast('Recipe added to favorites!');
             }
-            
             localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
-            renderRecipes(filteredRecipes);
+            renderRecipes(currentRecipes);
+        }
+
+        // Render Recipes
+        function renderRecipes(recipesToRender) {
+            if (recipesToRender.length === 0) {
+                recipesGrid.classList.add('hidden');
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            recipesGrid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+
+            recipesGrid.innerHTML = recipesToRender.map(recipe => {
+                const isFavorite = favorites.includes(recipe.id);
+                const totalPrice = recipe.ingredients.reduce((sum, ing) => sum + ing.price, 0);
+                
+                return `
+                    <div class="recipe-card glass-morphism rounded-2xl overflow-hidden fade-in">
+                        <div class="recipe-image relative">
+                            <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-48 object-cover">
+                            <button 
+                                class="favorite-btn absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-80 rounded-full flex items-center justify-center ${isFavorite ? 'active' : ''}"
+                                onclick="toggleFavorite(${recipe.id})"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="${isFavorite ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                </svg>
+                            </button>
+                            <div class="absolute bottom-4 left-4">
+                                <span class="difficulty-badge difficulty-${recipe.difficulty}">${recipe.difficulty}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-white">${recipe.name}</h3>
+                                <div class="star-rating">
+                                    ${Array.from({length: 5}, (_, i) => 
+                                        `<span class="star ${i < Math.floor(recipe.rating) ? 'text-yellow-400' : 'text-gray-300'}">★</span>`
+                                    ).join('')}
+                                    <span class="text-white text-sm ml-1">${recipe.rating}</span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-white text-opacity-80 text-sm mb-4 line-clamp-2">${recipe.description}</p>
+                            
+                            <div class="flex items-center gap-4 mb-4 text-white text-opacity-70 text-sm">
+                                <span>⏱️ ${recipe.time}</span>
+                                <span>👥 ${recipe.servings} servings</span>
+                                <span>💰 ₹${totalPrice}</span>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${recipe.tags.slice(0, 3).map(tag => 
+                                    `<span class="tag">${tag}</span>`
+                                ).join('')}
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <button 
+                                    class="flex-1 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300"
+                                    onclick="openRecipeModal(${recipe.id})"
+                                >
+                                    View Recipe
+                                </button>
+                                <button 
+                                    class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300"
+                                    onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})"
+                                >
+                                    🛒 Add All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Trigger fade-in animation
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    el.classList.add('visible');
+                });
+            }, 100);
         }
 
         // Open Recipe Modal
@@ -962,274 +975,218 @@
             const recipe = recipes.find(r => r.id === recipeId);
             if (!recipe) return;
 
+            const totalPrice = recipe.ingredients.reduce((sum, ing) => sum + ing.price, 0);
+            
             modalContent.innerHTML = `
                 <div class="relative">
-                    <!-- Close Button -->
-                    <button onclick="closeRecipeModal()" class="absolute top-6 right-6 z-10 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 transition-all">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-
-                    <!-- Recipe Header -->
-                    <div class="relative h-64 sm:h-80 overflow-hidden rounded-t-3xl">
-                        <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                        <div class="absolute bottom-6 left-6 right-6">
-                            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-2">${recipe.name}</h2>
-                            <div class="flex items-center gap-4 text-white/90">
-                                <span class="flex items-center gap-1">
-                                    ⏱️ ${recipe.time} min
-                                </span>
-                                <span class="flex items-center gap-1">
-                                    👥 ${recipe.servings} servings
-                                </span>
-                                <span class="flex items-center gap-1">
-                                    📊 ${recipe.difficulty}
-                                </span>
-                                <div class="rating-stars">
-                                    ${generateStars(recipe.rating)}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Recipe Content -->
-                    <div class="p-6 sm:p-8">
-                        <!-- Description -->
-                        <p class="text-gray-700 text-lg leading-relaxed mb-8">${recipe.description}</p>
-
-                        <!-- Nutrition Info -->
-                        <div class="mb-8">
-                            <h3 class="text-2xl font-bold text-gray-900 mb-4">Nutrition Information</h3>
-                            <div class="nutrition-grid">
-                                <div class="nutrition-item">
-                                    <div class="text-2xl font-bold text-blue-600">${recipe.nutrition.calories}</div>
-                                    <div class="text-sm text-gray-600">Calories</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="text-2xl font-bold text-green-600">${recipe.nutrition.protein}</div>
-                                    <div class="text-sm text-gray-600">Protein</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="text-2xl font-bold text-orange-600">${recipe.nutrition.carbs}</div>
-                                    <div class="text-sm text-gray-600">Carbs</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="text-2xl font-bold text-purple-600">${recipe.nutrition.fat}</div>
-                                    <div class="text-sm text-gray-600">Fat</div>
-                                </div>
-                                <div class="nutrition-item">
-                                    <div class="text-2xl font-bold text-red-600">${recipe.nutrition.fiber}</div>
-                                    <div class="text-sm text-gray-600">Fiber</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <!-- Ingredients -->
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-6">Ingredients</h3>
-                                <div class="space-y-3">
-                                    ${recipe.ingredients.map(ingredient => `
-                                        <div class="ingredient-item p-4 rounded-lg">
-                                            <span class="text-gray-800">${ingredient}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-
-                            <!-- Instructions -->
-                            <div>
-                                <h3 class="text-2xl font-bold text-gray-900 mb-6">Instructions</h3>
-                                <div class="space-y-4">
-                                    ${recipe.instructions.map((step, index) => `
-                                        <div class="step-item p-4 rounded-lg">
-                                            <div class="flex gap-4">
-                                                <span class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center font-bold text-sm">
-                                                    ${index + 1}
-                                                </span>
-                                                <span class="text-gray-800">${step}</span>
-                                            </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tags -->
-                        <div class="mt-8">
-                            <h3 class="text-xl font-bold text-gray-900 mb-4">Tags</h3>
-                            <div class="flex flex-wrap gap-2">
-                                ${recipe.tags.map(tag => `
-                                    <span class="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium">
-                                        #${tag}
-                                    </span>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                            <button onclick="toggleFavorite(${recipe.id}); renderRecipes(filteredRecipes);" class="flex-1 ${favorites.includes(recipe.id) ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-500 hover:bg-gray-600'} text-white py-3 px-6 rounded-xl font-medium transition-all">
-                                ${favorites.includes(recipe.id) ? '❤️ Remove from Favorites' : '🤍 Add to Favorites'}
-                            </button>
-                            <button onclick="addIngredientsToCart(${recipe.id})" class="flex-1 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white py-3 px-6 rounded-xl font-medium transition-all">
-                                🛒 Add Ingredients to Cart
-                            </button>
-                            <button onclick="shareRecipe(${recipe.id})" class="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-3 px-6 rounded-xl font-medium transition-all">
-                                📤 Share Recipe
-                            </button>
+                    <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-64 md:h-80 object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 text-white">
+                        <h1 class="text-3xl md:text-4xl font-bold mb-2" style="font-family: 'Playfair Display', serif;">${recipe.name}</h1>
+                        <div class="flex items-center gap-4 text-sm">
+                            <span>⏱️ ${recipe.time}</span>
+                            <span>👥 ${recipe.servings} servings</span>
+                            <span class="difficulty-badge difficulty-${recipe.difficulty}">${recipe.difficulty}</span>
                         </div>
                     </div>
                 </div>
+                
+                <div class="p-6 md:p-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Left Column -->
+                        <div>
+                            <div class="mb-6">
+                                <h2 class="text-2xl font-bold mb-3">Description</h2>
+                                <p class="text-gray-600 leading-relaxed">${recipe.description}</p>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h2 class="text-2xl font-bold">Ingredients</h2>
+                                    <div class="text-right">
+                                        <p class="text-sm text-gray-600">Total Cost</p>
+                                        <p class="text-xl font-bold text-green-600">₹${totalPrice}</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    ${recipe.ingredients.map(ingredient => `
+                                        <div class="ingredient-item">
+                                            <div class="flex items-center gap-3">
+                                                <img src="${ingredient.image}" alt="${ingredient.name}" class="w-10 h-10 rounded object-cover">
+                                                <div>
+                                                    <p class="font-medium">${ingredient.name}</p>
+                                                    <p class="text-sm text-gray-500">${ingredient.amount} - ₹${ingredient.price}</p>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                class="add-to-cart-btn"
+                                                onclick="addToCart(${JSON.stringify(ingredient).replace(/"/g, '&quot;')})"
+                                            >
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button 
+                                    class="w-full mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300"
+                                    onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})"
+                                >
+                                    🛒 Add All Ingredients to Cart (₹${totalPrice})
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column -->
+                        <div>
+                            <div class="mb-6">
+                                <h2 class="text-2xl font-bold mb-4">Instructions</h2>
+                                <div class="space-y-4">
+                                    ${recipe.instructions.map((step, index) => `
+                                        <div class="flex gap-4">
+                                            <div class="step-number">${index + 1}</div>
+                                            <p class="text-gray-700 leading-relaxed">${step}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <h2 class="text-2xl font-bold mb-4">Nutrition Information</h2>
+                                <div class="nutrition-grid">
+                                    ${Object.entries(recipe.nutrition).map(([key, value]) => `
+                                        <div class="nutrition-item">
+                                            <p class="text-2xl font-bold text-blue-600">${value}</p>
+                                            <p class="text-sm font-medium text-gray-600 capitalize">${key}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h2 class="text-2xl font-bold mb-4">Tags</h2>
+                                <div class="flex flex-wrap gap-2">
+                                    ${recipe.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Share Button -->
+                    <div class="mt-8 pt-6 border-t text-center">
+                        <button 
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300"
+                            onclick="shareRecipe('${recipe.name}')"
+                        >
+                            📤 Share Recipe
+                        </button>
+                    </div>
+                </div>
             `;
-
-            recipeModal.classList.remove('hidden');
+            
+            modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
-        // Close Recipe Modal
+        // Close Modal
         function closeRecipeModal() {
-            recipeModal.classList.add('hidden');
+            modal.classList.remove('show');
             document.body.style.overflow = 'auto';
         }
 
-        // Add Ingredients to Cart
-        function addIngredientsToCart(recipeId) {
-            const recipe = recipes.find(r => r.id === recipeId);
-            if (!recipe) return;
-
-            // Simulate adding ingredients to cart
-            const cart = JSON.parse(localStorage.getItem('freshmartCart') || '[]');
-            
-            // Add some sample ingredients (in a real app, you'd have a proper ingredient database)
-            const sampleIngredients = [
-                { id: Date.now() + 1, name: "Fresh Vegetables", price: 5.99, quantity: 1, image: "https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop" },
-                { id: Date.now() + 2, name: "Organic Herbs", price: 3.49, quantity: 1, image: "https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop" },
-                { id: Date.now() + 3, name: "Premium Spices", price: 7.99, quantity: 1, image: "https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop" }
-            ];
-
-            sampleIngredients.forEach(ingredient => {
-                const existingItem = cart.find(item => item.name === ingredient.name);
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    cart.push(ingredient);
-                }
-            });
-
-            localStorage.setItem('freshmartCart', JSON.stringify(cart));
-            updateCartCount();
-            showToast(`Ingredients for "${recipe.name}" added to cart!`, 'success');
-        }
-
         // Share Recipe
-        function shareRecipe(recipeId) {
-            const recipe = recipes.find(r => r.id === recipeId);
-            if (!recipe) return;
-
+        function shareRecipe(recipeName) {
             if (navigator.share) {
                 navigator.share({
-                    title: recipe.name,
-                    text: recipe.description,
+                    title: `${recipeName} - FreshMart Recipe`,
+                    text: `Check out this amazing recipe: ${recipeName}`,
                     url: window.location.href
                 });
             } else {
-                // Fallback: copy to clipboard
-                const shareText = `Check out this amazing recipe: ${recipe.name}\n${recipe.description}\n${window.location.href}`;
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showToast('Recipe link copied to clipboard!', 'success');
-                });
+                navigator.clipboard.writeText(window.location.href);
+                showToast('Recipe link copied to clipboard!');
             }
         }
 
         // Filter Recipes
-        function filterRecipes(category) {
-            if (category === 'all') {
-                filteredRecipes = [...recipes];
-            } else {
-                filteredRecipes = recipes.filter(recipe => recipe.category === category);
-            }
-            
-            // Apply search filter if active
+        function filterRecipes() {
             const searchTerm = searchInput.value.toLowerCase();
-            if (searchTerm) {
-                filteredRecipes = filteredRecipes.filter(recipe =>
-                    recipe.name.toLowerCase().includes(searchTerm) ||
-                    recipe.description.toLowerCase().includes(searchTerm) ||
-                    recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(searchTerm)) ||
-                    recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-                );
-            }
+            const activeCategory = document.querySelector('.category-btn.active').dataset.category;
             
-            renderRecipes(filteredRecipes);
-        }
-
-        // Search Recipes
-        function searchRecipes() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+            currentRecipes = recipes.filter(recipe => {
+                const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) ||
+                                    recipe.description.toLowerCase().includes(searchTerm) ||
+                                    recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                                    recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm));
+                
+                const matchesCategory = activeCategory === 'all' || recipe.category === activeCategory;
+                
+                return matchesSearch && matchesCategory;
+            });
             
-            let searchResults = activeCategory === 'all' ? [...recipes] : recipes.filter(recipe => recipe.category === activeCategory);
-            
-            if (searchTerm) {
-                searchResults = searchResults.filter(recipe =>
-                    recipe.name.toLowerCase().includes(searchTerm) ||
-                    recipe.description.toLowerCase().includes(searchTerm) ||
-                    recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(searchTerm)) ||
-                    recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-                );
-            }
-            
-            filteredRecipes = searchResults;
-            renderRecipes(filteredRecipes);
+            renderRecipes(currentRecipes);
         }
 
         // Event Listeners
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                filterRecipes(button.dataset.category);
+        searchInput.addEventListener('input', filterRecipes);
+
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterRecipes();
             });
         });
 
-        searchInput.addEventListener('input', searchRecipes);
-
-        // Close modal when clicking outside
-        recipeModal.addEventListener('click', (e) => {
-            if (e.target === recipeModal) {
-                closeRecipeModal();
-            }
+        closeModal.addEventListener('click', closeRecipeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeRecipeModal();
         });
 
-        // Navigation
         cartBtn.addEventListener('click', () => {
             window.location.href = 'cart.html';
         });
 
-        loginBtn.addEventListener('click', () => {
-            window.location.href = 'login.html';
-        });
+        // Global Functions
+        window.toggleFavorite = toggleFavorite;
+        window.openRecipeModal = openRecipeModal;
+        window.addToCart = addToCart;
+        window.addAllIngredientsToCart = addAllIngredientsToCart;
+        window.shareRecipe = shareRecipe;
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             updateCartCount();
+            renderRecipes(currentRecipes);
             
-            // Simulate loading
-            setTimeout(() => {
-                renderRecipes(filteredRecipes);
-                showToast('Welcome to FreshMart Recipes! 👨‍🍳', 'success', 3000);
-            }, 1000);
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
         });
 
-        // Make functions global for onclick handlers
-        window.toggleFavorite = toggleFavorite;
-        window.openRecipeModal = openRecipeModal;
-        window.closeRecipeModal = closeRecipeModal;
-        window.addIngredientsToCart = addIngredientsToCart;
-        window.shareRecipe = shareRecipe;
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeRecipeModal();
+            }
+            if (e.key === '/' && !modal.classList.contains('show')) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
     </script>
 </body>
 </html>
