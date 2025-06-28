@@ -1,300 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CodeCafe - Phone Login</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 400px;
-      margin: 30px auto;
-      padding: 20px;
-      background: #f8f9fa;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    input[type="text"] {
-      width: calc(100% - 24px);
-      padding: 12px;
-      margin: 8px 0 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-      box-sizing: border-box;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 10px;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    button:disabled {
-      background-color: #6c757d;
-      cursor: not-allowed;
-    }
-    #recaptcha-container {
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: center;
-      min-height: 78px;
-    }
-    #backBtn {
-      background-color: #6c757d;
-    }
-    #backBtn:hover {
-      background-color: #5a6268;
-    }
-    .debug-info {
-      background: #e9ecef;
-      padding: 10px;
-      border-radius: 4px;
-      margin: 10px 0;
-      font-size: 0.9rem;
-      color: #495057;
-    }
-    /* Toast message style */
-    #toast {
-      visibility: hidden;
-      min-width: 250px;
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      border-radius: 4px;
-      padding: 14px;
-      position: fixed;
-      z-index: 1;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%);
-      font-size: 1rem;
-    }
-    #toast.show {
-      visibility: visible;
-      animation: fadein 0.5s, fadeout 0.5s 2.5s;
-    }
-    #toast.error {
-      background-color: #dc3545;
-    }
-    @keyframes fadein {
-      from { bottom: 0; opacity: 0; }
-      to { bottom: 30px; opacity: 1; }
-    }
-    @keyframes fadeout {
-      from { bottom: 30px; opacity: 1; }
-      to { bottom: 0; opacity: 0; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Authentication - FreshMart</title>
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
+    <style>
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+
+        /* Custom Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #6ec88e;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Input focus styles */
+        .form-input:focus {
+            border-color: #6ec88e;
+            box-shadow: 0 0 0 3px rgba(110, 200, 142, 0.1);
+            outline: none;
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 25px 25px, rgba(110, 200, 142, 0.1) 2px, transparent 0),
+                radial-gradient(circle at 75px 75px, rgba(110, 200, 142, 0.05) 2px, transparent 0);
+            background-size: 100px 100px;
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            font-weight: 600;
+            margin: 0 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #6ec88e;
+            color: white;
+        }
+
+        .step.completed {
+            background: #22c55e;
+            color: white;
+        }
+
+        .step-line {
+            width: 40px;
+            height: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .step-line.completed {
+            background: #22c55e;
+        }
+
+        /* Debug info styling */
+        .debug-info {
+            background: #f3f4f6;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        /* reCAPTCHA container styling */
+        #recaptcha-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 78px;
+        }
+
+        /* Form animations */
+        .form-step {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .form-step.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
-<body>
+<body class="bg-[#f9fbfa] bg-pattern min-h-screen">
 
-  <h2>Login with Phone Number</h2>
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-[#eaf0ec] px-4 sm:px-10 py-3">
+        <div class="flex items-center justify-between max-w-6xl mx-auto">
+            <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                <div class="size-5">
+                    <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
+                    </svg>
+                </div>
+                <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+            </a>
+            <a href="login.html" class="text-sm text-gray-600 hover:text-[#6ec88e] transition-colors">
+                ← Back to Login
+            </a>
+        </div>
+    </header>
 
-  <div class="debug-info" id="debugInfo">
-    Initializing Firebase...
-  </div>
+    <!-- Main Content -->
+    <main class="flex-1 flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-md">
+            <!-- Welcome Section -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-[#111813] mb-2">Phone Verification</h2>
+                <p class="text-gray-600">Sign in with your phone number</p>
+            </div>
 
-  <label for="phoneNumber">Phone Number (+91):</label>
-  <input type="text" id="phoneNumber" maxlength="10" placeholder="7013295712" value="7013295712" />
+            <!-- Auth Container -->
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div id="step1" class="step active">1</div>
+                    <div class="step-line" id="line1"></div>
+                    <div id="step2" class="step">2</div>
+                </div>
 
-  <div id="recaptcha-container"></div>
+                <!-- Debug Info -->
+                <div class="debug-info" id="debugInfo">
+                    Initializing Firebase...
+                </div>
 
-  <button id="sendOtpBtn" disabled>Send OTP</button>
+                <!-- Step 1: Phone Number Input -->
+                <div id="phoneStep" class="form-step active">
+                    <h3 class="text-xl font-semibold text-[#111813] mb-6 text-center">Enter Your Phone Number</h3>
+                    
+                    <form id="phoneForm" class="space-y-6">
+                        <div>
+                            <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-2">
+                                Phone Number
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-sm">+91</span>
+                                </div>
+                                <input 
+                                    type="tel" 
+                                    id="phoneNumber" 
+                                    maxlength="10" 
+                                    placeholder="Enter 10-digit mobile number"
+                                    value="7013295712"
+                                    class="form-input w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent transition-all"
+                                    pattern="[6-9][0-9]{9}"
+                                    required
+                                >
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Enter a valid Indian mobile number (starting with 6-9)</p>
+                            <p id="phoneError" class="text-red-500 text-xs mt-1 hidden"></p>
+                        </div>
 
-  <input type="text" id="otp" maxlength="6" placeholder="Enter OTP" />
+                        <!-- reCAPTCHA Container -->
+                        <div id="recaptcha-container"></div>
 
-  <button id="verifyOtpBtn" disabled>Verify OTP</button>
+                        <button 
+                            type="submit" 
+                            id="sendOtpBtn"
+                            disabled
+                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span>Send OTP</span>
+                        </button>
+                    </form>
+                </div>
 
-  <button id="backBtn">Back</button>
+                <!-- Step 2: OTP Verification -->
+                <div id="otpStep" class="form-step hidden">
+                    <h3 class="text-xl font-semibold text-[#111813] mb-6 text-center">Verify OTP</h3>
+                    
+                    <div class="text-center mb-6">
+                        <p class="text-gray-600 mb-2">We've sent a 6-digit code to</p>
+                        <p class="font-semibold text-[#111813]" id="displayPhoneNumber">+91 XXXXXXXXXX</p>
+                        <button id="changeNumberBtn" class="text-sm text-[#6ec88e] hover:text-green-600 mt-2">
+                            Change number
+                        </button>
+                    </div>
 
-  <div id="toast"></div>
+                    <form id="otpForm" class="space-y-6">
+                        <div>
+                            <label for="otp" class="block text-sm font-medium text-gray-700 mb-2">
+                                Enter OTP
+                            </label>
+                            <input 
+                                type="text" 
+                                id="otp" 
+                                maxlength="6" 
+                                placeholder="Enter 6-digit OTP"
+                                class="form-input w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent transition-all text-center text-lg tracking-widest"
+                                pattern="[0-9]{6}"
+                                required
+                            >
+                            <p id="otpError" class="text-red-500 text-xs mt-1 hidden"></p>
+                        </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import {
-      getAuth,
-      RecaptchaVerifier,
-      signInWithPhoneNumber
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+                        <div class="text-center">
+                            <p class="text-sm text-gray-600 mb-2">Didn't receive the code?</p>
+                            <button type="button" id="resendOtpBtn" class="text-sm text-[#6ec88e] hover:text-green-600 font-medium disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                                Resend OTP (<span id="countdown">30</span>s)
+                            </button>
+                        </div>
 
-    // Debug helper
-    function updateDebugInfo(message) {
-      document.getElementById('debugInfo').textContent = message;
-      console.log(message);
-    }
+                        <button 
+                            type="submit" 
+                            id="verifyOtpBtn"
+                            disabled
+                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span>Verify & Sign In</span>
+                        </button>
+                    </form>
+                </div>
 
-    // Toast popup helper
-    function showToast(msg, isError = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.className = isError ? 'show error' : 'show';
-      setTimeout(() => {
-        toast.className = toast.className.replace('show', '').replace('error', '');
-      }, 3000);
-    }
+                <!-- Back Button -->
+                <div class="mt-6 text-center">
+                    <button 
+                        id="backBtn"
+                        class="text-gray-600 hover:text-[#6ec88e] font-medium transition-colors"
+                    >
+                        ← Back to Login Options
+                    </button>
+                </div>
+            </div>
 
-    try {
-      // Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-  authDomain: "portfolio-56be7.firebaseapp.com",
-  projectId: "portfolio-56be7",
-  storageBucket: "portfolio-56be7.firebasestorage.app",
-  messagingSenderId: "888511551571",
-  appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-  measurementId: "G-X3CYL9YZR1"
-};
+            <!-- Footer Text -->
+            <p class="text-center text-sm text-gray-500 mt-8">
+                By continuing, you agree to our 
+                <a href="#" class="text-[#6ec88e] hover:text-green-600">Terms of Service</a> 
+                and 
+                <a href="#" class="text-[#6ec88e] hover:text-green-600">Privacy Policy</a>
+            </p>
+        </div>
+    </main>
 
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      updateDebugInfo("Firebase initialized successfully");
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
 
-      let recaptchaVerifier = null;
-      let confirmationResult = null;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+            getAuth,
+            RecaptchaVerifier,
+            signInWithPhoneNumber
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
-      // Initialize reCAPTCHA
-      function initRecaptcha() {
-        try {
-          if (recaptchaVerifier) {
-            recaptchaVerifier.clear();
-          }
-          
-          recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            'size': 'normal',
-            'callback': (response) => {
-              updateDebugInfo('reCAPTCHA solved - ready to send OTP');
-              document.getElementById('sendOtpBtn').disabled = false;
-            },
-            'expired-callback': () => {
-              updateDebugInfo('reCAPTCHA expired - please verify again');
-              document.getElementById('sendOtpBtn').disabled = true;
-              showToast("reCAPTCHA expired, please verify again.", true);
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+            authDomain: "portfolio-56be7.firebaseapp.com",
+            projectId: "portfolio-56be7",
+            storageBucket: "portfolio-56be7.firebasestorage.app",
+            messagingSenderId: "888511551571",
+            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+            measurementId: "G-X3CYL9YZR1"
+        };
+
+        // Initialize Firebase
+        let app, auth, recaptchaVerifier, confirmationResult;
+        let countdownTimer = null;
+
+        // DOM Elements
+        const debugInfo = document.getElementById('debugInfo');
+        const phoneStep = document.getElementById('phoneStep');
+        const otpStep = document.getElementById('otpStep');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const line1 = document.getElementById('line1');
+        const phoneForm = document.getElementById('phoneForm');
+        const otpForm = document.getElementById('otpForm');
+        const phoneNumber = document.getElementById('phoneNumber');
+        const otp = document.getElementById('otp');
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+        const resendOtpBtn = document.getElementById('resendOtpBtn');
+        const changeNumberBtn = document.getElementById('changeNumberBtn');
+        const backBtn = document.getElementById('backBtn');
+        const displayPhoneNumber = document.getElementById('displayPhoneNumber');
+
+        // Toast Notification System
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
+
+        // Debug helper
+        function updateDebugInfo(message) {
+            debugInfo.textContent = message;
+            console.log(message);
+        }
+
+        // Loading state
+        function setLoading(button, isLoading, originalText) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <div class="spinner mr-2"></div>
+                    <span>Processing...</span>
+                `;
+            } else {
+                button.disabled = false;
+                button.innerHTML = `<span>${originalText}</span>`;
             }
-          });
-
-          recaptchaVerifier.render().then(widgetId => {
-            updateDebugInfo('reCAPTCHA widget rendered successfully');
-            window.recaptchaWidgetId = widgetId;
-          }).catch(error => {
-            updateDebugInfo('reCAPTCHA render error: ' + error.message);
-            showToast('reCAPTCHA failed to load: ' + error.message, true);
-          });
-
-        } catch (error) {
-          updateDebugInfo('reCAPTCHA setup error: ' + error.message);
-          showToast('reCAPTCHA setup failed: ' + error.message, true);
-        }
-      }
-
-      // Wait for DOM to be ready, then initialize reCAPTCHA
-      setTimeout(initRecaptcha, 100);
-
-      // Validate Indian phone number (10 digits, starts with 6-9)
-      function isValidIndianPhone(phone) {
-        return /^[6-9]\d{9}$/.test(phone);
-      }
-
-      // Send OTP
-      document.getElementById("sendOtpBtn").addEventListener("click", async () => {
-        const phoneInput = document.getElementById("phoneNumber");
-        const phone = phoneInput.value.trim();
-
-        if (!isValidIndianPhone(phone)) {
-          showToast("Please enter a valid 10-digit Indian mobile number starting with 6-9.", true);
-          phoneInput.focus();
-          return;
         }
 
-        if (!recaptchaVerifier) {
-          showToast("reCAPTCHA not ready. Please refresh the page.", true);
-          return;
+        // Error handling
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
         }
 
-        const fullPhoneNumber = "+91" + phone;
-        updateDebugInfo(`Sending OTP to ${fullPhoneNumber}...`);
+        function clearError(fieldId) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+            }
+        }
 
-        try {
-          document.getElementById("sendOtpBtn").disabled = true;
-          const result = await signInWithPhoneNumber(auth, fullPhoneNumber, recaptchaVerifier);
-          confirmationResult = result;
-          updateDebugInfo("OTP sent successfully!");
-          showToast("OTP sent successfully!");
-          document.getElementById("verifyOtpBtn").disabled = false;
-        } catch (error) {
-          updateDebugInfo("OTP send error: " + error.message);
-          showToast("Error sending OTP: " + error.message, true);
-          document.getElementById("sendOtpBtn").disabled = false;
-          
-          // Reset reCAPTCHA on error
-          if (window.grecaptcha && window.recaptchaWidgetId !== undefined) {
+        // Phone number validation
+        function isValidIndianPhone(phone) {
+            return /^[6-9]\d{9}$/.test(phone);
+        }
+
+        // Step navigation
+        function goToStep(stepNumber) {
+            if (stepNumber === 1) {
+                phoneStep.classList.remove('hidden');
+                phoneStep.classList.add('active');
+                otpStep.classList.add('hidden');
+                otpStep.classList.remove('active');
+                
+                step1.classList.add('active');
+                step1.classList.remove('completed');
+                step2.classList.remove('active');
+                line1.classList.remove('completed');
+            } else if (stepNumber === 2) {
+                phoneStep.classList.add('hidden');
+                phoneStep.classList.remove('active');
+                otpStep.classList.remove('hidden');
+                otpStep.classList.add('active');
+                
+                step1.classList.remove('active');
+                step1.classList.add('completed');
+                step2.classList.add('active');
+                line1.classList.add('completed');
+            }
+        }
+
+        // Countdown timer
+        function startCountdown() {
+            let seconds = 30;
+            resendOtpBtn.disabled = true;
+            
+            countdownTimer = setInterval(() => {
+                document.getElementById('countdown').textContent = seconds;
+                seconds--;
+                
+                if (seconds < 0) {
+                    clearInterval(countdownTimer);
+                    resendOtpBtn.disabled = false;
+                    resendOtpBtn.innerHTML = 'Resend OTP';
+                }
+            }, 1000);
+        }
+
+        // Initialize Firebase and reCAPTCHA
+        async function initializeFirebase() {
             try {
-              grecaptcha.reset(window.recaptchaWidgetId);
-            } catch (e) {
-              console.log("Failed to reset reCAPTCHA:", e);
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                updateDebugInfo("Firebase initialized successfully");
+                
+                // Initialize reCAPTCHA
+                setTimeout(initRecaptcha, 100);
+                
+            } catch (error) {
+                updateDebugInfo("Firebase initialization error: " + error.message);
+                showToast('Failed to initialize authentication system', 'error');
             }
-          }
-        }
-      });
-
-      // Verify OTP
-      document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
-        const otpInput = document.getElementById("otp");
-        const otp = otpInput.value.trim();
-
-        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-          showToast("Please enter a valid 6-digit OTP.", true);
-          otpInput.focus();
-          return;
         }
 
-        if (!confirmationResult) {
-          showToast("Please send OTP first.", true);
-          return;
+        // Initialize reCAPTCHA
+        function initRecaptcha() {
+            try {
+                if (recaptchaVerifier) {
+                    recaptchaVerifier.clear();
+                }
+                
+                recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+                    'size': 'normal',
+                    'callback': (response) => {
+                        updateDebugInfo('reCAPTCHA solved - ready to send OTP');
+                        sendOtpBtn.disabled = false;
+                    },
+                    'expired-callback': () => {
+                        updateDebugInfo('reCAPTCHA expired - please verify again');
+                        sendOtpBtn.disabled = true;
+                        showToast("reCAPTCHA expired, please verify again", 'error');
+                    }
+                });
+
+                recaptchaVerifier.render().then(widgetId => {
+                    updateDebugInfo('reCAPTCHA widget rendered successfully');
+                    window.recaptchaWidgetId = widgetId;
+                }).catch(error => {
+                    updateDebugInfo('reCAPTCHA render error: ' + error.message);
+                    showToast('reCAPTCHA failed to load: ' + error.message, 'error');
+                });
+
+            } catch (error) {
+                updateDebugInfo('reCAPTCHA setup error: ' + error.message);
+                showToast('reCAPTCHA setup failed: ' + error.message, 'error');
+            }
         }
 
-        updateDebugInfo("Verifying OTP...");
+        // Send OTP
+        async function sendOTP() {
+            const phone = phoneNumber.value.trim();
+            clearError('phone');
 
-        try {
-          document.getElementById("verifyOtpBtn").disabled = true;
-          const result = await confirmationResult.confirm(otp);
-          updateDebugInfo("Phone login successful!");
-          showToast("Phone login successful!");
-          
-          // Redirect after success
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1500);
-          
-        } catch (error) {
-          updateDebugInfo("OTP verification error: " + error.message);
-          showToast("Incorrect OTP or verification failed!", true);
-          document.getElementById("verifyOtpBtn").disabled = false;
+            if (!isValidIndianPhone(phone)) {
+                showError('phone', 'Please enter a valid 10-digit Indian mobile number starting with 6-9');
+                phoneNumber.focus();
+                return;
+            }
+
+            if (!recaptchaVerifier) {
+                showToast("reCAPTCHA not ready. Please refresh the page.", 'error');
+                return;
+            }
+
+            const fullPhoneNumber = "+91" + phone;
+            updateDebugInfo(`Sending OTP to ${fullPhoneNumber}...`);
+            setLoading(sendOtpBtn, true, 'Send OTP');
+
+            try {
+                const result = await signInWithPhoneNumber(auth, fullPhoneNumber, recaptchaVerifier);
+                confirmationResult = result;
+                
+                updateDebugInfo("OTP sent successfully!");
+                showToast("OTP sent successfully!", 'success');
+                
+                // Update display and move to step 2
+                displayPhoneNumber.textContent = `+91 ${phone}`;
+                goToStep(2);
+                startCountdown();
+                verifyOtpBtn.disabled = false;
+                otp.focus();
+                
+            } catch (error) {
+                updateDebugInfo("OTP send error: " + error.message);
+                showToast("Error sending OTP: " + error.message, 'error');
+                
+                // Reset reCAPTCHA on error
+                if (window.grecaptcha && window.recaptchaWidgetId !== undefined) {
+                    try {
+                        grecaptcha.reset(window.recaptchaWidgetId);
+                        sendOtpBtn.disabled = true;
+                    } catch (e) {
+                        console.log("Failed to reset reCAPTCHA:", e);
+                    }
+                }
+            } finally {
+                setLoading(sendOtpBtn, false, 'Send OTP');
+            }
         }
-      });
 
-      // Back button
-      document.getElementById("backBtn").addEventListener("click", () => {
-        window.location.href = "https://mahesh06.me/demo2/";
-      });
+        // Verify OTP
+        async function verifyOTP() {
+            const otpValue = otp.value.trim();
+            clearError('otp');
 
-    } catch (error) {
-      updateDebugInfo("Fatal error: " + error.message);
-      showToast("App initialization failed: " + error.message, true);
-    }
-  </script>
+            if (otpValue.length !== 6 || !/^\d{6}$/.test(otpValue)) {
+                showError('otp', 'Please enter a valid 6-digit OTP');
+                otp.focus();
+                return;
+            }
 
+            if (!confirmationResult) {
+                showToast("Please send OTP first", 'error');
+                goToStep(1);
+                return;
+            }
+
+            updateDebugInfo("Verifying OTP...");
+            setLoading(verifyOtpBtn, true, 'Verify & Sign In');
+
+            try {
+                const result = await confirmationResult.confirm(otpValue);
+                updateDebugInfo("Phone login successful!");
+                showToast("Phone verification successful! Welcome to FreshMart!", 'success');
+                
+                // Redirect after success
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1500);
+                
+            } catch (error) {
+                updateDebugInfo("OTP verification error: " + error.message);
+                showError('otp', 'Incorrect OTP. Please try again.');
+                showToast("Incorrect OTP or verification failed!", 'error');
+                otp.value = '';
+                otp.focus();
+            } finally {
+                setLoading(verifyOtpBtn, false, 'Verify & Sign In');
+            }
+        }
+
+        // Event Listeners
+        phoneForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendOTP();
+        });
+
+        otpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            verifyOTP();
+        });
+
+        // Phone number input formatting
+        phoneNumber.addEventListener('input', (e) => {
+            clearError('phone');
+            // Remove any non-digit characters
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // OTP input formatting
+        otp.addEventListener('input', (e) => {
+            clearError('otp');
+            // Remove any non-digit characters
+            e.target.value = e.target.value.replace(/\D/g, '');
+            
+            // Auto-submit when 6 digits are entered
+            if (e.target.value.length === 6) {
+                setTimeout(() => verifyOTP(), 500);
+            }
+        });
+
+        // Resend OTP
+        resendOtpBtn.addEventListener('click', () => {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+            goToStep(1);
+            initRecaptcha();
+            showToast("Please complete reCAPTCHA verification again", 'info');
+        });
+
+        // Change number
+        changeNumberBtn.addEventListener('click', () => {
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+            goToStep(1);
+            phoneNumber.focus();
+        });
+
+        // Back button
+        backBtn.addEventListener('click', () => {
+            window.location.href = "login.html";
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFirebase();
+            showToast('Enter your phone number to get started', 'info', 3000);
+        });
+    </script>
 </body>
 </html>
