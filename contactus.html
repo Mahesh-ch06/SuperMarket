@@ -14,9 +14,10 @@
 
     <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
         <div class="layout-container flex h-full grow flex-col">
-            <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+            <!-- Enhanced Header -->
+            <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-lg border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10 shadow-sm">
                 <div class="flex items-center justify-between">
-                    <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <a href="index.html" class="flex items-center gap-3 text-[#111813] hover:opacity-80 transition-opacity">
                         <div class="size-4">
                             <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                         </div>
@@ -24,34 +25,34 @@
                     </a>
                     <div class="flex flex-1 justify-end gap-4 sm:gap-8">
                         <nav class="hidden sm:flex items-center gap-4 sm:gap-9">
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="shop.html" id="navShop">Shop</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="deals.html" id="navDeals">Deals</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="#" id="navRecipes">Recipes</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="aboutus.html" id="navAboutUs">About Us</a>
-                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169] touch-button" href="#" id="navContactUs">Contact Us</a> <!-- Active link styling -->
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="shop.html" id="navShop">Shop</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="deals.html" id="navDeals">Deals</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="recipes.html" id="navRecipes">Recipes</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="aboutus.html" id="navAboutUs">About Us</a>
+                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#2f855a] transition-colors touch-button" href="#" id="navContactUs">Contact Us</a>
                         </nav>
                         <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
                             <button
                                 id="profileBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-all touch-button"
                             >
                                 <span class="truncate">Profile</span>
                             </button>
                             <button
                                 id="myOrdersBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-all touch-button"
                             >
                                 <span class="truncate">My Orders</span>
                             </button>
                             <button
                                 id="loginLogoutBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors touch-button"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-all touch-button"
                             >
                                 <span class="truncate">Login</span>
                             </button>
                             <button
                                 id="cartBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-all touch-button"
                             >
                                 <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
                             </button>
@@ -60,181 +61,365 @@
                 </header>
 
             <main class="flex-1 px-4 py-5 sm:px-6 lg:px-8">
-                <div class="max-w-5xl mx-auto space-y-8 sm:space-y-12">
-                    <!-- Hero Section -->
-                    <section class="hero-section text-center py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] rounded-xl shadow-lg">
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4">Get in Touch with FreshMart</h1>
-                        <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
-                            We're here to help! Whether you have a question, feedback, or need assistance, feel free to reach out to us.
-                        </p>
+                <div class="max-w-6xl mx-auto space-y-8 sm:space-y-16">
+                    <!-- Enhanced Hero Section -->
+                    <section class="hero-section text-center py-16 sm:py-20 px-6 sm:px-8 rounded-2xl shadow-2xl">
+                        <div class="hero-content">
+                            <div class="mb-6">
+                                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-10 h-10">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">Get in Touch with <span class="text-yellow-300">FreshMart</span></h1>
+                            <p class="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed">
+                                We're here to help! Whether you have a question, feedback, or need assistance, our dedicated team is ready to provide you with exceptional customer service.
+                            </p>
+                            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="#contact-form" class="inline-flex items-center justify-center px-8 py-3 bg-white text-[#38a169] font-bold rounded-xl hover:bg-gray-100 transition-all shadow-lg">
+                                    Send Message
+                                </a>
+                                <a href="tel:+911234567890" class="inline-flex items-center justify-center px-8 py-3 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 transition-all border border-white/30">
+                                    Call Now
+                                </a>
+                            </div>
+                        </div>
                     </section>
 
-                    <!-- Contact Form Section - Updated with new form content -->
-                    <section class="contact-form-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Send Us a Message</h2>
+                    <!-- Quick Contact Stats -->
+                    <section class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                        <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <div class="w-16 h-16 bg-[#38a169] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">24/7 Support</h3>
+                            <p class="text-gray-600">Round-the-clock customer assistance</p>
+                        </div>
+                        <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <div class="w-16 h-16 bg-[#38a169] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Quick Response</h3>
+                            <p class="text-gray-600">We reply within 2 hours</p>
+                        </div>
+                        <div class="text-center p-6 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all">
+                            <div class="w-16 h-16 bg-[#38a169] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800 mb-2">Expert Team</h3>
+                            <p class="text-gray-600">Knowledgeable support staff</p>
+                        </div>
+                    </section>
+
+                    <!-- Enhanced Contact Form Section -->
+                    <section id="contact-form" class="contact-form-section rounded-2xl shadow-xl p-6 sm:p-8 lg:p-12">
+                        <div class="text-center mb-8 sm:mb-12">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Send Us a Message</h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.</p>
+                        </div>
+                        
                         <form id="contactForm"
                             action="https://api.web3forms.com/submit"
                             method="POST"
-                            class="space-y-4 sm:space-y-6 max-w-2xl mx-auto">
+                            class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
 
-                            <!-- Web3Forms Access Key -->
+                            <!-- Web3Forms Configuration -->
                             <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8" />
-
-                            <!-- Optional: Email Subject, Sender Name, Redirect -->
                             <input type="hidden" name="subject" value="New Contact Message from FreshMart" />
                             <input type="hidden" name="from_name" value="FreshMart Contact Form" />
                             <input type="hidden" name="redirect" value="https://web3forms.com/success" />
-
-                            <!-- Spam Protection -->
                             <input type="checkbox" name="botcheck" class="hidden" style="display:none;" />
 
-                            <!-- hCaptcha -->
-                            <div class="h-captcha" data-captcha="true"></div>
+                            <!-- Enhanced Form Fields -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="form-group">
+                                    <label for="fullName" class="form-label">Full Name *</label>
+                                    <input type="text" id="fullName" name="Full Name" required
+                                            class="form-input-field w-full" 
+                                            placeholder="Enter your full name" />
+                                </div>
 
-                            <!-- Full Name -->
-                            <div>
-                                <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="fullName" name="Full Name" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
+                                <div class="form-group">
+                                    <label for="emailAddress" class="form-label">Email Address *</label>
+                                    <input type="email" id="emailAddress" name="email" required
+                                            class="form-input-field w-full" 
+                                            placeholder="Enter your email address" />
+                                </div>
                             </div>
 
-                            <!-- Email -->
-                            <div>
-                                <label for="emailAddress" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="emailAddress" name="email" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
-                            </div>
-
-                            <!-- Phone -->
-                            <div>
-                                <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
+                            <div class="form-group">
+                                <label for="phoneNumber" class="form-label">Phone Number *</label>
                                 <input type="tel" id="phoneNumber" name="Phone Number" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
+                                        class="form-input-field w-full" 
+                                        placeholder="Enter your phone number" />
                             </div>
 
-                            <!-- Message -->
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700">Your Message</label>
-                                <textarea id="message" name="message" rows="5" required
-                                            class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                            <div class="form-group">
+                                <label for="subject" class="form-label">Subject</label>
+                                <select id="subject" name="Subject" class="form-input-field w-full">
+                                    <option value="">Select a subject</option>
+                                    <option value="General Inquiry">General Inquiry</option>
+                                    <option value="Order Support">Order Support</option>
+                                    <option value="Product Question">Product Question</option>
+                                    <option value="Delivery Issue">Delivery Issue</option>
+                                    <option value="Account Help">Account Help</option>
+                                    <option value="Feedback">Feedback</option>
+                                    <option value="Partnership">Partnership</option>
+                                    <option value="Other">Other</option>
+                                </select>
                             </div>
 
-                            <!-- Submit Button -->
+                            <div class="form-group">
+                                <label for="message" class="form-label">Your Message *</label>
+                                <textarea id="message" name="message" rows="6" required
+                                            class="form-input-field w-full resize-none" 
+                                            placeholder="Tell us how we can help you..."></textarea>
+                            </div>
+
+                            <!-- hCaptcha -->
+                            <div class="flex justify-center">
+                                <div class="h-captcha" data-captcha="true"></div>
+                            </div>
+
+                            <!-- Enhanced Submit Button -->
                             <div class="text-center">
-                                <button type="submit"
-                                        class="bg-[#38a169] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#2f855a] transition shadow-md touch-button">
-                                    Send Message
+                                <button type="submit" class="submit-btn">
+                                    <span>Send Message</span>
                                 </button>
+                                <p class="text-sm text-gray-500 mt-4">We typically respond within 2 hours during business hours</p>
                             </div>
                         </form>
                     </section>
 
-                    <!-- Other Contact Information Section -->
-                    <section class="contact-info-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Other Ways to Reach Us</h2>
-                        <div class="contact-info-grid grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
+                    <!-- Enhanced Contact Information Section -->
+                    <section class="contact-info-section bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-12">
+                        <div class="text-center mb-8 sm:mb-12">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Other Ways to Reach Us</h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Choose the method that works best for you</p>
+                        </div>
+                        
+                        <div class="contact-info-grid grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 max-w-5xl mx-auto">
+                            <!-- Email Contact -->
+                            <div class="contact-info-card flex items-start gap-6 p-6 sm:p-8 rounded-xl shadow-lg">
+                                <div class="contact-icon text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">For general inquiries, send us an email:</p>
-                                    <a href="mailto:support@freshmart.com" class="text-[#38a169] hover:underline touch-button">support@freshmart.com</a>
+                                <div class="flex-1">
+                                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Email Support</h3>
+                                    <p class="text-base sm:text-lg text-gray-700 mb-4">For general inquiries and detailed questions</p>
+                                    <div class="space-y-2">
+                                        <a href="mailto:support@freshmart.com" class="block text-[#38a169] hover:text-[#2f855a] font-semibold text-lg transition-colors">support@freshmart.com</a>
+                                        <a href="mailto:orders@freshmart.com" class="block text-[#38a169] hover:text-[#2f855a] font-semibold text-lg transition-colors">orders@freshmart.com</a>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-3">Response time: Within 2 hours</p>
                                 </div>
                             </div>
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
+
+                            <!-- Phone Contact -->
+                            <div class="contact-info-card flex items-start gap-6 p-6 sm:p-8 rounded-xl shadow-lg">
+                                <div class="contact-icon text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.106l-1.412-.353a1.125 1.125 0 01-.924-.924L19.5 7.5c0-.97-.622-1.836-1.5-2.292a46.055 46.055 0 00-2.105-.913m-12.896 0A39.065 39.065 0 0012 3.75c1.897 0 3.755.409 5.55 1.147M5.412 10.5V11m0 0h8.25m-8.25 0l1.121-2.153M12 11V9" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">Reach our customer support hotline:</p>
-                                    <a href="tel:+911234567890" class="text-[#38a169] hover:underline touch-button">+91 12345 67890</a>
-                                    <p class="text-xs sm:text-sm text-gray-500">Mon-Fri, 9 AM - 6 PM IST</p>
+                                <div class="flex-1">
+                                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Phone Support</h3>
+                                    <p class="text-base sm:text-lg text-gray-700 mb-4">Speak directly with our support team</p>
+                                    <div class="space-y-2">
+                                        <a href="tel:+911234567890" class="block text-[#38a169] hover:text-[#2f855a] font-semibold text-lg transition-colors">+91 12345 67890</a>
+                                        <a href="tel:+911800123456" class="block text-[#38a169] hover:text-[#2f855a] font-semibold text-lg transition-colors">1800-123-456 (Toll Free)</a>
+                                    </div>
+                                    <p class="text-sm text-gray-500 mt-3">Available: Mon-Sun, 8 AM - 10 PM IST</p>
                                 </div>
                             </div>
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm md:col-span-2">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
+
+                            <!-- Live Chat -->
+                            <div class="contact-info-card flex items-start gap-6 p-6 sm:p-8 rounded-xl shadow-lg">
+                                <div class="contact-icon text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Live Chat</h3>
+                                    <p class="text-base sm:text-lg text-gray-700 mb-4">Get instant help from our chat support</p>
+                                    <button class="bg-[#38a169] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#2f855a] transition-colors">
+                                        Start Chat
+                                    </button>
+                                    <p class="text-sm text-gray-500 mt-3">Average response: Under 1 minute</p>
+                                </div>
+                            </div>
+
+                            <!-- Office Location -->
+                            <div class="contact-info-card flex items-start gap-6 p-6 sm:p-8 rounded-xl shadow-lg">
+                                <div class="contact-icon text-[#38a169] flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 sm:w-10 sm:h-10">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                                     </svg>
                                 </div>
                                 <div class="flex-1">
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Our Office</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">Visit us at our headquarters:</p>
-                                    <address class="not-italic text-sm sm:text-base text-gray-700">
-                                        FreshMart Headquarters<br>
+                                    <h3 class="text-xl sm:text-2xl font-bold text-gray-800 mb-3">Visit Our Office</h3>
+                                    <p class="text-base sm:text-lg text-gray-700 mb-4">Come see us in person</p>
+                                    <address class="not-italic text-base text-gray-700 leading-relaxed">
+                                        <strong>FreshMart Headquarters</strong><br>
                                         123 Green Lane, Fresh Foods District<br>
-                                        Mumbai, Maharashtra, 400001<br>
+                                        Bandra West, Mumbai<br>
+                                        Maharashtra, 400050<br>
                                         India
                                     </address>
                                     <div class="mt-4">
-                                        <!-- Placeholder for a map or external link -->
-                                        <img src="https://placehold.co/400x200/cccccc/000000?text=Map+Placeholder" alt="Map Location" class="w-full rounded-md shadow-sm">
+                                        <div class="map-placeholder w-full h-48 rounded-lg mb-3 cursor-pointer">
+                                            <img src="https://images.pexels.com/photos/1486222/pexels-photo-1486222.jpeg?auto=compress&cs=tinysrgb&w=400&h=200&fit=crop" alt="Office Location" class="w-full h-full object-cover rounded-lg">
+                                        </div>
                                         <a href="https://maps.google.com/?q=FreshMart+Mumbai" target="_blank" rel="noopener noreferrer"
-                                           class="inline-block mt-2 text-[#38a169] hover:underline text-sm touch-button">View on Google Maps</a>
+                                           class="inline-flex items-center gap-2 text-[#38a169] hover:text-[#2f855a] font-semibold transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                            View on Google Maps
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </section>
+
+                    <!-- FAQ Section -->
+                    <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-12">
+                        <div class="text-center mb-8 sm:mb-12">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Quick answers to common questions</p>
+                        </div>
+                        
+                        <div class="max-w-4xl mx-auto space-y-4">
+                            <details class="group bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors">
+                                <summary class="font-semibold text-lg cursor-pointer flex items-center justify-between">
+                                    What are your delivery hours?
+                                    <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </summary>
+                                <p class="mt-4 text-gray-600">We deliver from 8 AM to 10 PM, Monday through Sunday. Same-day delivery is available for orders placed before 6 PM.</p>
+                            </details>
+                            
+                            <details class="group bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors">
+                                <summary class="font-semibold text-lg cursor-pointer flex items-center justify-between">
+                                    How can I track my order?
+                                    <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </summary>
+                                <p class="mt-4 text-gray-600">You can track your order in real-time through our website or mobile app. You'll also receive SMS and email updates at every step.</p>
+                            </details>
+                            
+                            <details class="group bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors">
+                                <summary class="font-semibold text-lg cursor-pointer flex items-center justify-between">
+                                    What is your return policy?
+                                    <svg class="w-5 h-5 transform group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </summary>
+                                <p class="mt-4 text-gray-600">We offer a 100% satisfaction guarantee. If you're not happy with your order, contact us within 24 hours for a full refund or replacement.</p>
+                            </details>
+                        </div>
+                    </section>
                 </div>
             </main>
 
-            <footer class="flex justify-center">
-                <div class="flex max-w-[960px] flex-1 flex-col">
-                    <footer class="flex flex-col gap-6 px-5 py-8 sm:py-10 text-center @container">
-                        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 @[480px]:flex-row @[480px]:justify-around">
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerContactUs">Contact Us</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerTermsOfService">Terms of Service</a>
-                        </div>
-                        <div class="flex flex-wrap justify-center gap-4">
-                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
-                                    </svg>
+            <!-- Enhanced Footer -->
+            <footer class="enhanced-footer py-12 sm:py-16">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 sm:gap-12">
+                        <!-- Company Info -->
+                        <div class="md:col-span-2">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="size-8">
+                                    <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                                 </div>
-                            </a>
-                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
+                                <h3 class="text-2xl font-bold">FreshMart</h3>
+                            </div>
+                            <p class="text-gray-300 text-lg leading-relaxed mb-6">Your trusted partner for fresh groceries and quality food products. Delivering freshness to your doorstep since 2020.</p>
+                            <div class="flex gap-4">
+                                <a href="https://twitter.com/freshmart" target="_blank" rel="noopener noreferrer" class="social-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Z"></path>
+                                    </svg>
+                                </a>
+                                <a href="https://facebook.com/freshmart" target="_blank" rel="noopener noreferrer" class="social-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
                                         <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
                                     </svg>
-                                </div>
-                            </a>
-                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
+                                </a>
+                                <a href="https://instagram.com/freshmart" target="_blank" rel="noopener noreferrer" class="social-link">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
+                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40Z"></path>
                                     </svg>
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
-                        <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
-                    </footer>
+                        
+                        <!-- Quick Links -->
+                        <div>
+                            <h4 class="text-lg font-bold mb-6">Quick Links</h4>
+                            <ul class="space-y-3">
+                                <li><a href="#" class="footer-link text-gray-300 hover:text-white transition-colors" id="footerContactUs">Contact Us</a></li>
+                                <li><a href="#" class="footer-link text-gray-300 hover:text-white transition-colors" id="footerPrivacyPolicy">Privacy Policy</a></li>
+                                <li><a href="#" class="footer-link text-gray-300 hover:text-white transition-colors" id="footerTermsOfService">Terms of Service</a></li>
+                                <li><a href="aboutus.html" class="footer-link text-gray-300 hover:text-white transition-colors">About Us</a></li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Contact Info -->
+                        <div>
+                            <h4 class="text-lg font-bold mb-6">Contact Info</h4>
+                            <ul class="space-y-3 text-gray-300">
+                                <li class="flex items-center gap-3">
+                                    <span>📞</span>
+                                    <a href="tel:+911234567890" class="hover:text-white transition-colors">+91 12345 67890</a>
+                                </li>
+                                <li class="flex items-center gap-3">
+                                    <span>📧</span>
+                                    <a href="mailto:support@freshmart.com" class="hover:text-white transition-colors">support@freshmart.com</a>
+                                </li>
+                                <li class="flex items-start gap-3">
+                                    <span>📍</span>
+                                    <span>Mumbai, Maharashtra</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="border-t border-gray-600 mt-12 pt-8 text-center">
+                        <p class="text-gray-400">© 2025 FreshMart. All rights reserved. Made with ❤️ for fresh food lovers.</p>
+                    </div>
                 </div>
             </footer>
         </div>
     </div>
 
-    <!-- Generic Modal for alerts and messages -->
+    <!-- Enhanced Modal -->
     <div id="generalModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button" id="generalModalCloseBtn">&times;</span>
-            <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
-            <button id="generalModalOkBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors touch-button">OK</button>
+            <div id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-6"></div>
+            <button id="generalModalOkBtn" class="submit-btn">OK</button>
         </div>
     </div>
 
-    <!-- Web3Forms Script (Required for hCaptcha) -->
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Web3Forms Script -->
     <script src="https://web3forms.com/client/script.js" async defer></script>
     <script src="js/common.js"></script>
     <script src="js/contact.js"></script>
