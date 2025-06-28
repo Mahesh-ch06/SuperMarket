@@ -187,13 +187,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import { 
-        getFirestore, 
-        collection, 
-        addDoc, 
-        serverTimestamp,
-        Timestamp 
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
     // --- Firebase Configuration ---
     const firebaseConfig = {
@@ -209,7 +202,6 @@
     // --- Initialize Firebase ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
     let currentUser = null; // To store the authenticated user
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -314,6 +306,18 @@
             }
         }
 
+        // --- localStorage Order Management ---
+        function generateOrderId() {
+            return 'ORD-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        function saveOrderToLocalStorage(orderData) {
+            const existingOrders = JSON.parse(localStorage.getItem('freshmartOrders') || '[]');
+            existingOrders.unshift(orderData); // Add new order at the beginning
+            localStorage.setItem('freshmartOrders', JSON.stringify(existingOrders));
+            return orderData.id;
+        }
+
         async function proceedToCheckout() {
             console.log('🛒 Checkout initiated');
             console.log('Current user:', currentUser);
@@ -346,8 +350,10 @@
                     const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
                     console.log('Grand total:', grandTotal);
                     
-                    // Create comprehensive order data
+                    // Create comprehensive order data for localStorage
+                    const orderId = generateOrderId();
                     const orderData = {
+                        id: orderId,
                         userId: currentUser.uid,
                         userName: currentUser.displayName || currentUser.email || 'Guest User',
                         userEmail: currentUser.email || 'No email provided',
@@ -361,7 +367,7 @@
                             subtotal: parseFloat((item.price * item.quantity).toFixed(2))
                         })),
                         totalAmount: parseFloat(grandTotal.toFixed(2)),
-                        orderDate: serverTimestamp(), // Use server timestamp for consistency
+                        orderDate: new Date().toISOString(),
                         status: 'Pending',
                         paymentStatus: 'Pending',
                         deliveryAddress: {
@@ -372,18 +378,18 @@
                             country: 'India'
                         },
                         orderNotes: '',
-                        estimatedDelivery: Timestamp.fromDate(new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)), // 2 days from now
-                        createdAt: serverTimestamp(),
-                        updatedAt: serverTimestamp()
+                        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
                     };
 
                     console.log('📦 Order data prepared:', orderData);
 
-                    // Add order to Firestore
-                    console.log('🔥 Adding order to Firestore...');
-                    const docRef = await addDoc(collection(db, "orders"), orderData);
+                    // Save order to localStorage
+                    console.log('💾 Saving order to localStorage...');
+                    const savedOrderId = saveOrderToLocalStorage(orderData);
                     
-                    console.log('✅ Order placed successfully with ID:', docRef.id);
+                    console.log('✅ Order placed successfully with ID:', savedOrderId);
                     
                     showToast('🎉 Order placed successfully!', 'success', 4000);
                     showToast('📧 Order confirmation sent to your email!', 'info', 3000);
@@ -403,11 +409,6 @@
 
                 } catch (error) {
                     console.error("❌ Error placing order:", error);
-                    console.error("Error details:", {
-                        code: error.code,
-                        message: error.message,
-                        stack: error.stack
-                    });
                     showToast(`❌ Failed to place order: ${error.message}`, 'error', 6000);
                 } finally {
                     setButtonLoading(checkoutBtn, false, 'Proceed to Checkout');

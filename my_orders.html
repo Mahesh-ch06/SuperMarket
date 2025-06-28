@@ -240,7 +240,6 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, orderBy, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
     // --- Firebase Configuration ---
     const firebaseConfig = {
@@ -256,7 +255,6 @@
     // --- Initialize Firebase ---
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
     let currentUser = null;
     let allOrders = [];
 
@@ -282,9 +280,9 @@
     }
 
     // --- Helper Functions ---
-    function formatDate(timestamp) {
-        if (!timestamp) return 'N/A';
-        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
         return date.toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'short',
@@ -307,7 +305,25 @@
     }
 
     function generateOrderId(fullId) {
-        return fullId.substring(0, 8).toUpperCase();
+        return fullId.substring(4, 12).toUpperCase(); // Remove 'ORD-' prefix and show 8 chars
+    }
+
+    // --- localStorage Order Management ---
+    function getOrdersFromLocalStorage(userId) {
+        const allOrders = JSON.parse(localStorage.getItem('freshmartOrders') || '[]');
+        return allOrders.filter(order => order.userId === userId);
+    }
+
+    function updateOrderInLocalStorage(orderId, updates) {
+        const allOrders = JSON.parse(localStorage.getItem('freshmartOrders') || '[]');
+        const orderIndex = allOrders.findIndex(order => order.id === orderId);
+        
+        if (orderIndex !== -1) {
+            allOrders[orderIndex] = { ...allOrders[orderIndex], ...updates, updatedAt: new Date().toISOString() };
+            localStorage.setItem('freshmartOrders', JSON.stringify(allOrders));
+            return true;
+        }
+        return false;
     }
 
     // --- Fetch and Render Orders ---
@@ -315,22 +331,13 @@
         try {
             showLoading(true);
             
-            // Query Firestore for orders belonging to the current user
-            const ordersQuery = query(
-                collection(db, "orders"), 
-                where("userId", "==", userId)
-            );
-            const querySnapshot = await getDocs(ordersQuery);
-
-            allOrders = [];
-            querySnapshot.forEach((doc) => {
-                allOrders.push({ id: doc.id, ...doc.data() });
-            });
+            // Get orders from localStorage
+            allOrders = getOrdersFromLocalStorage(userId);
 
             // Sort orders by date in descending order (most recent first)
             allOrders.sort((a, b) => {
-                const dateA = a.orderDate?.toDate ? a.orderDate.toDate() : new Date(a.orderDate);
-                const dateB = b.orderDate?.toDate ? b.orderDate.toDate() : new Date(b.orderDate);
+                const dateA = new Date(a.orderDate);
+                const dateB = new Date(b.orderDate);
                 return dateB - dateA;
             });
 
@@ -414,6 +421,17 @@
                                 <h4 class="font-semibold text-gray-900 mb-3">Order Items</h4>
                                 <div class="order-items space-y-2">
                                     ${itemsHtml}
+                                </div>
+                                
+                                <!-- Delivery Information -->
+                                <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                                    <h5 class="font-semibold text-gray-900 mb-2">Delivery Information</h5>
+                                    <div class="text-sm text-gray-600 space-y-1">
+                                        <p><strong>Address:</strong> ${order.deliveryAddress.street}, ${order.deliveryAddress.city}</p>
+                                        <p><strong>State:</strong> ${order.deliveryAddress.state} - ${order.deliveryAddress.pincode}</p>
+                                        <p><strong>Estimated Delivery:</strong> ${formatDate(order.estimatedDelivery)}</p>
+                                        <p><strong>Payment Status:</strong> <span class="font-medium">${order.paymentStatus}</span></p>
+                                    </div>
                                 </div>
                                 
                                 <!-- Order Actions -->
@@ -506,11 +524,13 @@
                 const orderId = e.currentTarget.dataset.orderId;
                 if (confirm('Are you sure you want to cancel this order?')) {
                     try {
-                        await updateDoc(doc(db, "orders", orderId), {
-                            status: "Cancelled"
-                        });
-                        showToast('Order cancelled successfully!', 'success');
-                        fetchAndRenderOrders(currentUser.uid);
+                        const success = updateOrderInLocalStorage(orderId, { status: "Cancelled" });
+                        if (success) {
+                            showToast('Order cancelled successfully!', 'success');
+                            fetchAndRenderOrders(currentUser.uid);
+                        } else {
+                            showToast('Failed to cancel order. Please try again.', 'error');
+                        }
                     } catch (error) {
                         console.error("Error cancelling order:", error);
                         showToast('Failed to cancel order. Please try again.', 'error');
