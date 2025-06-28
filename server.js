@@ -35,8 +35,8 @@ app.get('/', (req, res) => {
 app.post('/api/gemini-insight', async (req, res) => {
     console.log('Received request for AI insight:', req.body);
     
-    // Use a fallback API key if environment variable is not set
-    const geminiApiKey = process.env.GEMINI_API_KEY || 'AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM';
+    // Use your specific API key
+    const geminiApiKey = process.env.GEMINI_API_KEY || 'AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU';
 
     if (!geminiApiKey) {
         console.error("GEMINI_API_KEY is not set in environment variables.");
@@ -50,7 +50,7 @@ app.post('/api/gemini-insight', async (req, res) => {
     }
 
     try {
-        console.log('Initializing Gemini AI...');
+        console.log('Initializing Gemini AI with your API key...');
         const genAI = new GoogleGenerativeAI(geminiApiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -64,9 +64,23 @@ app.post('/api/gemini-insight', async (req, res) => {
     } catch (error) {
         console.error('Error calling Gemini API:', error);
         
+        // Provide more detailed error information
+        let errorMessage = 'Failed to generate AI insight';
+        if (error.message.includes('API_KEY_INVALID')) {
+            errorMessage = 'Invalid API key provided';
+        } else if (error.message.includes('QUOTA_EXCEEDED')) {
+            errorMessage = 'API quota exceeded';
+        } else if (error.message.includes('PERMISSION_DENIED')) {
+            errorMessage = 'Permission denied - check API key permissions';
+        }
+        
         // Provide a fallback response if API fails
         const fallbackInsight = generateFallbackInsight(prompt);
-        res.json({ insight: fallbackInsight });
+        res.json({ 
+            insight: fallbackInsight,
+            error: errorMessage,
+            fallback: true 
+        });
     }
 });
 
@@ -101,7 +115,11 @@ function generateFallbackInsight(prompt) {
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
+    res.json({ 
+        status: 'Server is running', 
+        timestamp: new Date().toISOString(),
+        geminiApiConfigured: !!process.env.GEMINI_API_KEY
+    });
 });
 
 // --- Firebase Config Endpoint (Optional but Recommended for Full Security) ---
@@ -134,5 +152,6 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log('📁 Serving static files from:', __dirname);
     console.log('🤖 AI Insights endpoint: /api/gemini-insight');
+    console.log('🔑 Gemini API Key configured:', !!process.env.GEMINI_API_KEY);
     console.log('❤️  Health check: /api/health');
 });
