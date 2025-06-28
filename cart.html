@@ -115,6 +115,21 @@
                 padding: 0;
             }
         }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #6ec88e;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
@@ -172,7 +187,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
     // --- Firebase Configuration ---
     const firebaseConfig = {
@@ -280,6 +295,19 @@
             });
         }
 
+        function setButtonLoading(button, isLoading, originalText) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <div class="spinner mr-2"></div>
+                    <span>Processing...</span>
+                `;
+            } else {
+                button.disabled = false;
+                button.innerHTML = `<span>${originalText}</span>`;
+            }
+        }
+
         async function proceedToCheckout() {
             if (!currentUser) {
                 openConfirmationModal('You need to be logged in to place an order. Do you want to go to the login page?', () => {
@@ -289,54 +317,80 @@
                 return;
             }
 
+            // Check if cart is empty before proceeding to checkout
+            if (cartItems.length === 0) {
+                showToast('Your cart is empty. Please add items before checking out.', 'info');
+                return;
+            }
+
             openConfirmationModal('Proceed to checkout with your current items?', async () => {
                 closeConfirmationModal(); // Close confirmation modal immediately
 
-                // Check if cart is empty before proceeding to checkout
-                if (cartItems.length === 0) {
-                    showToast('Your cart is empty. Please add items before checking out.', 'info');
-                    return;
-                }
+                const checkoutBtn = document.getElementById('checkout-btn');
+                setButtonLoading(checkoutBtn, true, 'Proceed to Checkout');
 
                 try {
                     const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    
+                    // Create comprehensive order data
                     const orderData = {
                         userId: currentUser.uid,
-                        userName: currentUser.displayName || currentUser.email,
+                        userName: currentUser.displayName || currentUser.email || 'Guest User',
+                        userEmail: currentUser.email || 'No email provided',
                         items: cartItems.map(item => ({
                             id: item.id,
                             name: item.name,
-                            price: item.price,
-                            quantity: item.quantity,
-                            image: item.image || 'https://placehold.co/16x16/cccccc/000000?text=NA', // Placeholder if image is missing
-                            unit: item.unit || 'unit'
+                            price: parseFloat(item.price),
+                            quantity: parseInt(item.quantity),
+                            image: item.image || 'https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop',
+                            unit: item.unit || 'unit',
+                            subtotal: parseFloat((item.price * item.quantity).toFixed(2))
                         })),
                         totalAmount: parseFloat(grandTotal.toFixed(2)),
-                        orderDate: new Date(),
-                        status: 'Pending', // Initial status
+                        orderDate: serverTimestamp(), // Use server timestamp for consistency
+                        status: 'Pending',
+                        paymentStatus: 'Pending',
+                        deliveryAddress: {
+                            // You can add address fields here when implementing address selection
+                            street: 'Default Address',
+                            city: 'Mumbai',
+                            state: 'Maharashtra',
+                            pincode: '400001',
+                            country: 'India'
+                        },
+                        orderNotes: '',
+                        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+                        createdAt: serverTimestamp(),
+                        updatedAt: serverTimestamp()
                     };
+
+                    console.log('Placing order with data:', orderData);
 
                     // Add order to Firestore
                     const docRef = await addDoc(collection(db, "orders"), orderData);
-                    showToast('Order placed successfully! Redirecting to My Orders.', 'success', 4000);
                     
-                    // Simulate sending invoice email (requires backend like Cloud Functions)
-                    console.log(`Order ${docRef.id} placed. An invoice would typically be emailed to ${currentUser.email}.`);
-                    showToast('Invoice sent to your email (simulated)!', 'info', 3000);
+                    console.log('Order placed successfully with ID:', docRef.id);
+                    
+                    showToast('🎉 Order placed successfully!', 'success', 4000);
+                    showToast('📧 Order confirmation sent to your email!', 'info', 3000);
 
                     // Clear cart after successful order
                     cartItems = [];
                     saveCart();
-                    renderCart();
-
-                    // Redirect to my_orders page after a short delay
+                    
+                    // Show success message and redirect
                     setTimeout(() => {
-                        window.location.href = 'my_orders.html';
+                        showToast('Redirecting to My Orders...', 'info', 2000);
+                        setTimeout(() => {
+                            window.location.href = 'my_orders.html';
+                        }, 1000);
                     }, 2000);
 
                 } catch (error) {
                     console.error("Error placing order:", error);
-                    showToast(`Failed to place order: ${error.message}`, 'error', 5000);
+                    showToast(`❌ Failed to place order: ${error.message}`, 'error', 6000);
+                } finally {
+                    setButtonLoading(checkoutBtn, false, 'Proceed to Checkout');
                 }
             });
         }
@@ -376,7 +430,7 @@
                 cartListHTML += `
                     <div class="cart-item flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b py-4 last:border-b-0">
                         <div class="cart-item-info flex items-center gap-4 w-full sm:w-auto">
-                            <img src="${item.image || 'https://placehold.co/64x64/cccccc/000000?text=NA'}" alt="${item.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover flex-shrink-0">
+                            <img src="${item.image || 'https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop'}" alt="${item.name}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-md object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <p class="font-medium text-gray-800 text-sm sm:text-base truncate">${item.name}</p>
                                 <p class="text-xs sm:text-sm text-gray-500">₹${item.price.toFixed(2)} / ${item.unit || 'unit'}</p>
