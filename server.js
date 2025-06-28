@@ -35,8 +35,7 @@ app.get('/', (req, res) => {
 app.post('/api/gemini-insight', async (req, res) => {
     console.log('Received request for AI insight:', req.body);
     
-    // Use your specific API key
-    const geminiApiKey = process.env.GEMINI_API_KEY || 'AIzaSyAh-dYWPJLkbgMVcNyS82vewkU6bL7O3XU';
+    const geminiApiKey = process.env.GEMINI_API_KEY;
 
     if (!geminiApiKey) {
         console.error("GEMINI_API_KEY is not set in environment variables.");
@@ -50,7 +49,7 @@ app.post('/api/gemini-insight', async (req, res) => {
     }
 
     try {
-        console.log('Initializing Gemini AI with your API key...');
+        console.log('Initializing Gemini AI...');
         const genAI = new GoogleGenerativeAI(geminiApiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -113,25 +112,16 @@ function generateFallbackInsight(prompt) {
 *Note: This is general product information. For specific nutritional details, please consult product packaging.*`;
 }
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'Server is running', 
-        timestamp: new Date().toISOString(),
-        geminiApiConfigured: !!process.env.GEMINI_API_KEY
-    });
-});
-
-// --- Firebase Config Endpoint (Optional but Recommended for Full Security) ---
+// --- Firebase Config Endpoint (Secure) ---
 app.get('/api/firebase-config', (req, res) => {
     const firebaseConfig = {
-        apiKey: process.env.FIREBASE_API_KEY || "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-        authDomain: process.env.FIREBASE_AUTH_DOMAIN || "portfolio-56be7.firebaseapp.com",
-        projectId: process.env.FIREBASE_PROJECT_ID || "portfolio-56be7",
-        storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "portfolio-56be7.firebasestorage.app",
-        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || "888511551571",
-        appId: process.env.FIREBASE_APP_ID || "1:888511551571:web:11e809e995377e9a4ccea6",
-        measurementId: process.env.FIREBASE_MEASUREMENT_ID || "G-X3CYL9YZR1",
+        apiKey: process.env.FIREBASE_API_KEY,
+        authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.FIREBASE_APP_ID,
+        measurementId: process.env.FIREBASE_MEASUREMENT_ID,
     };
     
     // Filter out undefined values in case some env vars are not set
@@ -139,6 +129,47 @@ app.get('/api/firebase-config', (req, res) => {
         Object.entries(firebaseConfig).filter(([_, v]) => v !== undefined)
     );
     res.json(cleanedConfig);
+});
+
+// --- Contact Configuration Endpoint ---
+app.get('/api/contact-config', (req, res) => {
+    const contactConfig = {
+        web3formsAccessKey: process.env.WEB3FORMS_ACCESS_KEY,
+        contactEmail: process.env.CONTACT_EMAIL,
+        businessPhone: process.env.BUSINESS_PHONE,
+        businessName: process.env.BUSINESS_NAME,
+        businessAddress: {
+            street: process.env.BUSINESS_ADDRESS_STREET,
+            city: process.env.BUSINESS_ADDRESS_CITY,
+            state: process.env.BUSINESS_ADDRESS_STATE,
+            pincode: process.env.BUSINESS_ADDRESS_PINCODE,
+            country: process.env.BUSINESS_ADDRESS_COUNTRY
+        },
+        socialMedia: {
+            twitter: process.env.SOCIAL_TWITTER,
+            facebook: process.env.SOCIAL_FACEBOOK,
+            instagram: process.env.SOCIAL_INSTAGRAM,
+            linkedin: process.env.SOCIAL_LINKEDIN
+        },
+        googleMapsEmbedUrl: process.env.GOOGLE_MAPS_EMBED_URL
+    };
+    
+    // Filter out undefined values
+    const cleanedConfig = Object.fromEntries(
+        Object.entries(contactConfig).filter(([_, v]) => v !== undefined)
+    );
+    res.json(cleanedConfig);
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        status: 'Server is running', 
+        timestamp: new Date().toISOString(),
+        geminiApiConfigured: !!process.env.GEMINI_API_KEY,
+        firebaseConfigured: !!process.env.FIREBASE_API_KEY,
+        web3formsConfigured: !!process.env.WEB3FORMS_ACCESS_KEY
+    });
 });
 
 // Error handling middleware
@@ -152,6 +183,11 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log('📁 Serving static files from:', __dirname);
     console.log('🤖 AI Insights endpoint: /api/gemini-insight');
-    console.log('🔑 Gemini API Key configured:', !!process.env.GEMINI_API_KEY);
+    console.log('🔥 Firebase Config endpoint: /api/firebase-config');
+    console.log('📞 Contact Config endpoint: /api/contact-config');
+    console.log('🔑 Environment variables configured:');
+    console.log('   - Gemini API:', !!process.env.GEMINI_API_KEY);
+    console.log('   - Firebase:', !!process.env.FIREBASE_API_KEY);
+    console.log('   - Web3Forms:', !!process.env.WEB3FORMS_ACCESS_KEY);
     console.log('❤️  Health check: /api/health');
 });

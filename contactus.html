@@ -5,29 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - FreshMart</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
-    <!-- Keep the more comprehensive Tailwind CSS plugins -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <!-- Keep the more comprehensive font link -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
     <style>
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        /* Custom styles for the modal - copied from other FreshMart pages for consistency */
+
+        /* Custom Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Modal styles */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1000;
             left: 0;
             top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0; /* For fade in/out transition */
+            opacity: 0;
             transition: opacity 0.3s ease-in-out;
         }
         .modal.show {
@@ -38,15 +66,15 @@
             margin: auto;
             padding: 20px;
             border: 1px solid #888;
-            width: 90%; /* Responsive width */
+            width: 90%;
             max-width: 500px;
             border-radius: 10px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-20px); /* For slight slide-down transition */
+            transform: translateY(-20px);
             transition: transform 0.3s ease-in-out;
-            max-height: 90vh; /* Limit modal height */
-            overflow-y: auto; /* Enable scroll within modal content if needed */
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .close-button {
             color: #aaa;
@@ -61,30 +89,89 @@
             text-decoration: none;
         }
 
-        /* Input field focus styles */
+        /* Enhanced form styles */
         .form-input-field:focus {
-            border-color: #38a169; /* FreshMart green */
-            box-shadow: 0 0 0 1px #38a169;
+            border-color: #38a169;
+            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
             outline: none;
         }
-        /* The hidden class from your provided snippet */
-        .hidden { display: none; }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #38a169;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Enhanced hero section */
+        .hero-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.pexels.com/photos/7688336/pexels-photo-7688336.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Contact card animations */
+        .contact-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
 
         /* Mobile responsive improvements */
         @media (max-width: 640px) {
+            .toast {
+                min-width: 200px;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+            
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
             .form-input-field {
-                font-size: 16px; /* Prevents zoom on iOS */
+                font-size: 16px;
                 padding: 12px;
-            }
-            
-            button[type="submit"] {
-                width: 100%;
-                padding: 14px;
-            }
-            
-            .h-captcha {
-                transform: scale(0.85);
-                transform-origin: 0 0;
             }
             
             .hero-section {
@@ -120,20 +207,13 @@
             }
         }
 
-        /* Better input focus states */
-        .form-input-field:focus {
-            border-color: #38a169;
-            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
-            outline: none;
-        }
-
         /* Touch-friendly buttons */
         .touch-button {
             min-height: 44px;
             min-width: 44px;
         }
 
-        /* Improved mobile navigation */
+        /* Enhanced mobile navigation */
         .mobile-nav-item {
             padding: 16px 20px;
             border-bottom: 1px solid #f3f4f6;
@@ -143,15 +223,112 @@
         .mobile-nav-item:hover {
             background-color: #f9fafb;
         }
+
+        /* Success animation */
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #4ade80;
+            stroke-miterlimit: 10;
+            margin: 10% auto;
+            box-shadow: inset 0px 0px 0px #4ade80;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .success-checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: #4ade80;
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .success-checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 30px #4ade80;
+            }
+        }
+
+        /* Form validation styles */
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            border-color: #38a169;
+            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
+            outline: none;
+        }
+
+        .form-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
-    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
+    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden">
         <div class="layout-container flex h-full grow flex-col">
-            <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+            <!-- Enhanced Header -->
+            <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10 shadow-sm">
                 <div class="flex items-center justify-between">
-                    <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <a href="index.html" class="flex items-center gap-3 text-[#111813] hover:text-[#38a169] transition-colors">
                         <div class="size-4">
                             <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
                         </div>
@@ -159,35 +336,23 @@
                     </a>
                     <div class="flex flex-1 justify-end gap-4 sm:gap-8">
                         <nav class="hidden sm:flex items-center gap-4 sm:gap-9">
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="shop.html" id="navShop">Shop</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="deals.html" id="navDeals">Deals</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="#" id="navRecipes">Recipes</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="aboutus.html" id="navAboutUs">About Us</a>
-                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169] touch-button" href="#" id="navContactUs">Contact Us</a> <!-- Active link styling -->
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="shop.html">Shop</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="deals.html">Deals</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="recipes.html">Recipes</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] transition-colors touch-button" href="aboutus.html">About Us</a>
+                            <a class="text-[#38a169] text-sm font-bold leading-normal border-b-2 border-[#38a169] pb-1 touch-button" href="contactus.html">Contact Us</a>
                         </nav>
                         <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
-                            <button
-                                id="profileBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
-                            >
+                            <button id="profileBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button">
                                 <span class="truncate">Profile</span>
                             </button>
-                            <button
-                                id="myOrdersBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
-                            >
+                            <button id="myOrdersBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button">
                                 <span class="truncate">My Orders</span>
                             </button>
-                            <button
-                                id="loginLogoutBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors touch-button"
-                            >
+                            <button id="loginLogoutBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors touch-button">
                                 <span class="truncate">Login</span>
                             </button>
-                            <button
-                                id="cartBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
-                            >
+                            <button id="cartBtn" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button">
                                 <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
                             </button>
                         </div>
@@ -195,126 +360,300 @@
                 </header>
 
             <main class="flex-1 px-4 py-5 sm:px-6 lg:px-8">
-                <div class="max-w-5xl mx-auto space-y-8 sm:space-y-12">
-                    <!-- Hero Section -->
-                    <section class="hero-section text-center py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] rounded-xl shadow-lg">
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4">Get in Touch with FreshMart</h1>
-                        <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
-                            We're here to help! Whether you have a question, feedback, or need assistance, feel free to reach out to us.
-                        </p>
+                <div class="max-w-6xl mx-auto space-y-8 sm:space-y-12">
+                    <!-- Enhanced Hero Section -->
+                    <section class="hero-gradient hero-section text-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6 rounded-2xl shadow-2xl">
+                        <div class="hero-content">
+                            <div class="float-animation mb-6">
+                                <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-10 h-10">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                                Get in Touch with 
+                                <span class="text-yellow-300">FreshMart</span>
+                            </h1>
+                            <p class="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto mb-8">
+                                We're here to help! Whether you have a question, feedback, or need assistance, our dedicated team is ready to provide you with exceptional support.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                                <a href="#contact-form" class="inline-flex items-center justify-center rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-yellow-400 hover:bg-yellow-300 text-gray-900 text-base sm:text-lg font-bold tracking-[0.015em] transition-colors touch-button">
+                                    Send Message
+                                </a>
+                                <a href="tel:+911234567890" class="inline-flex items-center justify-center rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-white/20 hover:bg-white/30 text-white text-base sm:text-lg font-bold tracking-[0.015em] border border-white/30 transition-colors touch-button">
+                                    Call Now
+                                </a>
+                            </div>
+                        </div>
                     </section>
 
-                    <!-- Contact Form Section - Updated with new form content -->
-                    <section class="contact-form-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Send Us a Message</h2>
-                        <form id="contactForm"
-                            action="https://api.web3forms.com/submit"
-                            method="POST"
-                            class="space-y-4 sm:space-y-6 max-w-2xl mx-auto">
+                    <!-- Enhanced Contact Form Section -->
+                    <section id="contact-form" class="contact-form-section bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Send Us a Message</h2>
+                            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                                Have a question or suggestion? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                            </p>
+                        </div>
 
-                            <!-- Web3Forms Access Key -->
-                            <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8" />
+                        <form id="contactForm" action="https://api.web3forms.com/submit" method="POST" class="max-w-3xl mx-auto">
+                            <!-- Web3Forms Configuration -->
+                            <input type="hidden" name="access_key" id="accessKey" value="">
+                            <input type="hidden" name="subject" value="New Contact Message from FreshMart">
+                            <input type="hidden" name="from_name" value="FreshMart Contact Form">
+                            <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
 
-                            <!-- Optional: Email Subject, Sender Name, Redirect -->
-                            <input type="hidden" name="subject" value="New Contact Message from FreshMart" />
-                            <input type="hidden" name="from_name" value="FreshMart Contact Form" />
-                            <input type="hidden" name="redirect" value="https://web3forms.com/success" />
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <!-- Full Name -->
+                                <div class="form-group">
+                                    <label for="fullName" class="form-label">Full Name *</label>
+                                    <input type="text" id="fullName" name="Full Name" required class="form-input form-input-field touch-button" placeholder="Enter your full name">
+                                    <div class="error-message" id="fullNameError">Please enter your full name</div>
+                                </div>
 
-                            <!-- Spam Protection -->
-                            <input type="checkbox" name="botcheck" class="hidden" style="display:none;" />
-
-                            <!-- hCaptcha -->
-                            <div class="h-captcha" data-captcha="true"></div>
-
-                            <!-- Full Name -->
-                            <div>
-                                <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
-                                <input type="text" id="fullName" name="Full Name" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
+                                <!-- Email -->
+                                <div class="form-group">
+                                    <label for="emailAddress" class="form-label">Email Address *</label>
+                                    <input type="email" id="emailAddress" name="email" required class="form-input form-input-field touch-button" placeholder="Enter your email address">
+                                    <div class="error-message" id="emailAddressError">Please enter a valid email address</div>
+                                </div>
                             </div>
 
-                            <!-- Email -->
-                            <div>
-                                <label for="emailAddress" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                <input type="email" id="emailAddress" name="email" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <!-- Phone -->
+                                <div class="form-group">
+                                    <label for="phoneNumber" class="form-label">Phone Number *</label>
+                                    <input type="tel" id="phoneNumber" name="Phone Number" required class="form-input form-input-field touch-button" placeholder="Enter your phone number">
+                                    <div class="error-message" id="phoneNumberError">Please enter a valid phone number</div>
+                                </div>
 
-                            <!-- Phone -->
-                            <div>
-                                <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
-                                <input type="tel" id="phoneNumber" name="Phone Number" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
+                                <!-- Subject -->
+                                <div class="form-group">
+                                    <label for="messageSubject" class="form-label">Subject *</label>
+                                    <select id="messageSubject" name="Subject" required class="form-input form-input-field touch-button">
+                                        <option value="">Select a subject</option>
+                                        <option value="General Inquiry">General Inquiry</option>
+                                        <option value="Order Support">Order Support</option>
+                                        <option value="Product Question">Product Question</option>
+                                        <option value="Delivery Issue">Delivery Issue</option>
+                                        <option value="Account Help">Account Help</option>
+                                        <option value="Feedback">Feedback</option>
+                                        <option value="Partnership">Partnership</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <div class="error-message" id="messageSubjectError">Please select a subject</div>
+                                </div>
                             </div>
 
                             <!-- Message -->
-                            <div>
-                                <label for="message" class="block text-sm font-medium text-gray-700">Your Message</label>
-                                <textarea id="message" name="message" rows="5" required
-                                            class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                            <div class="form-group mb-6">
+                                <label for="message" class="form-label">Your Message *</label>
+                                <textarea id="message" name="message" rows="6" required class="form-input form-input-field" placeholder="Tell us how we can help you..."></textarea>
+                                <div class="error-message" id="messageError">Please enter your message</div>
+                            </div>
+
+                            <!-- hCaptcha -->
+                            <div class="flex justify-center mb-6">
+                                <div class="h-captcha" data-captcha="true"></div>
                             </div>
 
                             <!-- Submit Button -->
                             <div class="text-center">
-                                <button type="submit"
-                                        class="bg-[#38a169] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#2f855a] transition shadow-md touch-button">
-                                    Send Message
+                                <button type="submit" id="submitBtn" class="inline-flex items-center justify-center bg-[#38a169] text-white font-bold py-4 px-8 rounded-xl hover:bg-[#2f855a] transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 touch-button">
+                                    <span id="submitText">Send Message</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.768 59.768 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                                    </svg>
                                 </button>
                             </div>
                         </form>
                     </section>
 
-                    <!-- Other Contact Information Section -->
-                    <section class="contact-info-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
-                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Other Ways to Reach Us</h2>
-                        <div class="contact-info-grid grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
+                    <!-- Enhanced Contact Information Section -->
+                    <section class="contact-info-section bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Other Ways to Reach Us</h2>
+                            <p class="text-lg text-gray-600">Choose the method that works best for you</p>
+                        </div>
+
+                        <div class="contact-info-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto mb-12">
+                            <!-- Email Card -->
+                            <div class="contact-card contact-info-card bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-lg border border-blue-200">
+                                <div class="text-blue-600 mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">For general inquiries, send us an email:</p>
-                                    <a href="mailto:support@freshmart.com" class="text-[#38a169] hover:underline touch-button">support@freshmart.com</a>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Email Support</h3>
+                                <p class="text-gray-600 text-center mb-4">Get detailed help via email</p>
+                                <div class="text-center">
+                                    <a href="mailto:support@freshmart.com" class="inline-flex items-center text-blue-600 hover:text-blue-800 font-semibold transition-colors touch-button">
+                                        support@freshmart.com
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                        </svg>
+                                    </a>
+                                    <p class="text-sm text-gray-500 mt-2">Response within 24 hours</p>
                                 </div>
                             </div>
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
+
+                            <!-- Phone Card -->
+                            <div class="contact-card contact-info-card bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-lg border border-green-200">
+                                <div class="text-green-600 mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.106l-1.412-.353a1.125 1.125 0 01-.924-.924L19.5 7.5c0-.97-.622-1.836-1.5-2.292a46.055 46.055 0 00-2.105-.913m-12.896 0A39.065 39.065 0 0012 3.75c1.897 0 3.755.409 5.55 1.147M5.412 10.5V11m0 0h8.25m-8.25 0l1.121-2.153M12 11V9" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">Reach our customer support hotline:</p>
-                                    <a href="tel:+911234567890" class="text-[#38a169] hover:underline touch-button">+91 12345 67890</a>
-                                    <p class="text-xs sm:text-sm text-gray-500">Mon-Fri, 9 AM - 6 PM IST</p>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Phone Support</h3>
+                                <p class="text-gray-600 text-center mb-4">Speak directly with our team</p>
+                                <div class="text-center">
+                                    <a href="tel:+911234567890" class="inline-flex items-center text-green-600 hover:text-green-800 font-semibold transition-colors touch-button">
+                                        +91 12345 67890
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                        </svg>
+                                    </a>
+                                    <p class="text-sm text-gray-500 mt-2">Mon-Fri, 9 AM - 6 PM IST</p>
                                 </div>
                             </div>
-                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm md:col-span-2">
-                                <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+
+                            <!-- Live Chat Card -->
+                            <div class="contact-card contact-info-card bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg border border-purple-200 md:col-span-2 lg:col-span-1">
+                                <div class="text-purple-600 mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                                     </svg>
                                 </div>
-                                <div class="flex-1">
-                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Our Office</h3>
-                                    <p class="text-sm sm:text-base text-gray-700">Visit us at our headquarters:</p>
-                                    <address class="not-italic text-sm sm:text-base text-gray-700">
-                                        FreshMart Headquarters<br>
-                                        123 Green Lane, Fresh Foods District<br>
-                                        Mumbai, Maharashtra, 400001<br>
-                                        India
-                                    </address>
-                                    <div class="mt-4">
-                                        <!-- Placeholder for a map or external link -->
-                                        <img src="https://placehold.co/400x200/cccccc/000000?text=Map+Placeholder" alt="Map Location" class="w-full rounded-md shadow-sm">
-                                        <a href="https://maps.google.com/?q=FreshMart+Mumbai" target="_blank" rel="noopener noreferrer"
-                                           class="inline-block mt-2 text-[#38a169] hover:underline text-sm touch-button">View on Google Maps</a>
+                                <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Live Chat</h3>
+                                <p class="text-gray-600 text-center mb-4">Instant help when you need it</p>
+                                <div class="text-center">
+                                    <button class="inline-flex items-center text-purple-600 hover:text-purple-800 font-semibold transition-colors touch-button" onclick="openGeneralModal('Live chat feature coming soon! Please use email or phone for now.')">
+                                        Start Chat
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-1">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                        </svg>
+                                    </button>
+                                    <p class="text-sm text-gray-500 mt-2">Available 24/7</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Office Location -->
+                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-6 sm:p-8 border border-gray-200">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <div class="text-[#38a169]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-gray-800">Visit Our Office</h3>
                                     </div>
+                                    <div class="space-y-3 text-gray-600">
+                                        <p class="font-semibold text-gray-800">FreshMart Headquarters</p>
+                                        <address class="not-italic">
+                                            123 Green Lane, Fresh Foods District<br>
+                                            Mumbai, Maharashtra, 400001<br>
+                                            India
+                                        </address>
+                                        <div class="flex flex-col sm:flex-row gap-4 mt-6">
+                                            <a href="https://maps.google.com/?q=FreshMart+Mumbai" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center px-6 py-3 bg-[#38a169] text-white font-semibold rounded-lg hover:bg-[#2f855a] transition-colors touch-button">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                                </svg>
+                                                View on Google Maps
+                                            </a>
+                                            <button class="inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors touch-button" onclick="openGeneralModal('Directions feature coming soon! Please use Google Maps for now.')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                                                </svg>
+                                                Get Directions
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="rounded-lg overflow-hidden shadow-lg">
+                                    <iframe 
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.9999999999995!2d72.8777!3d19.0760!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA0JzMzLjYiTiA3MsKwNTInMzkuNyJF!5e0!3m2!1sen!2sin!4v1234567890123"
+                                        width="100%" 
+                                        height="300" 
+                                        style="border:0;" 
+                                        allowfullscreen="" 
+                                        loading="lazy" 
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                        class="w-full h-64 sm:h-80">
+                                    </iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- FAQ Section -->
+                    <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 lg:p-10">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+                            <p class="text-lg text-gray-600">Quick answers to common questions</p>
+                        </div>
+                        
+                        <div class="max-w-4xl mx-auto space-y-4">
+                            <div class="border border-gray-200 rounded-lg">
+                                <button class="faq-toggle w-full text-left p-4 hover:bg-gray-50 transition-colors" data-target="faq1">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="font-semibold text-gray-800">What are your delivery hours?</h3>
+                                        <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                <div id="faq1" class="faq-content hidden p-4 pt-0 text-gray-600">
+                                    We deliver from 8 AM to 8 PM, Monday through Sunday. Same-day delivery is available for orders placed before 2 PM.
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg">
+                                <button class="faq-toggle w-full text-left p-4 hover:bg-gray-50 transition-colors" data-target="faq2">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="font-semibold text-gray-800">How can I track my order?</h3>
+                                        <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                <div id="faq2" class="faq-content hidden p-4 pt-0 text-gray-600">
+                                    You can track your order in the "My Orders" section of your account or through the tracking link sent to your email.
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg">
+                                <button class="faq-toggle w-full text-left p-4 hover:bg-gray-50 transition-colors" data-target="faq3">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="font-semibold text-gray-800">What is your return policy?</h3>
+                                        <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                <div id="faq3" class="faq-content hidden p-4 pt-0 text-gray-600">
+                                    We offer a 100% satisfaction guarantee. If you're not happy with your fresh produce, contact us within 24 hours for a full refund or replacement.
+                                </div>
+                            </div>
+
+                            <div class="border border-gray-200 rounded-lg">
+                                <button class="faq-toggle w-full text-left p-4 hover:bg-gray-50 transition-colors" data-target="faq4">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="font-semibold text-gray-800">Do you offer organic products?</h3>
+                                        <svg class="w-5 h-5 text-gray-500 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </div>
+                                </button>
+                                <div id="faq4" class="faq-content hidden p-4 pt-0 text-gray-600">
+                                    Yes! We have a wide selection of certified organic fruits, vegetables, and pantry items. Look for the "Organic" label on product pages.
                                 </div>
                             </div>
                         </div>
@@ -322,45 +661,80 @@
                 </div>
             </main>
 
-            <footer class="flex justify-center">
-                <div class="flex max-w-[960px] flex-1 flex-col">
-                    <footer class="flex flex-col gap-6 px-5 py-8 sm:py-10 text-center @container">
-                        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 @[480px]:flex-row @[480px]:justify-around">
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerContactUs">Contact Us</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerTermsOfService">Terms of Service</a>
+            <!-- Enhanced Footer -->
+            <footer class="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+                <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        <div class="md:col-span-2">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="size-6">
+                                    <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                                </div>
+                                <h3 class="text-xl font-bold">FreshMart</h3>
+                            </div>
+                            <p class="text-gray-300 mb-6 max-w-md">Your trusted partner for fresh groceries and amazing deals. We're committed to bringing you the best quality products at unbeatable prices.</p>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001.012.001z."/></svg>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12.5.75C6.146.75 1 5.896 1 12.25c0 5.089 3.292 9.387 7.863 10.956-.11-.971-.21-2.462.04-3.521.226-.953 1.44-6.108 1.44-6.108s-.363-.727-.363-1.802c0-1.689.976-2.95 2.19-2.95 1.035 0 1.535.779 1.535 1.71 0 1.044-.66 2.605-1.003 4.05-.285 1.207.606 2.191 1.799 2.191 2.16 0 3.82-2.279 3.82-5.564 0-2.91-2.091-4.941-5.081-4.941-3.462 0-5.491 2.597-5.491 5.279 0 1.045.402 2.167.904 2.773.099.12.114.226.085.348-.092.38-.297 1.216-.337 1.388-.053.228-.174.275-.402.167-1.516-.706-2.465-2.919-2.465-4.708 0-3.827 2.789-7.347 8.027-7.347 4.21 0 7.499 2.99 7.499 7.006 0 4.183-2.64 7.556-6.305 7.556-1.23 0-2.386-.64-2.779-1.396l-.75 2.894c-.272 1.058-1.01 2.383-1.509 3.188C9.861 23.719 11.131 23.969 12.5 23.969c6.354 0 11.5-5.146 11.5-11.5C24 5.896 18.854.75 12.5.75z"/></svg>
+                                </a>
+                            </div>
                         </div>
-                        <div class="flex flex-wrap justify-center gap-4">
-                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Quick Links</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li><a href="shop.html" class="text-gray-300 hover:text-white transition-colors touch-button">Shop</a></li>
+                                <li><a href="deals.html" class="text-gray-300 hover:text-white transition-colors touch-button">Deals</a></li>
+                                <li><a href="aboutus.html" class="text-gray-300 hover:text-white transition-colors touch-button">About Us</a></li>
+                                <li><a href="my_orders.html" class="text-gray-300 hover:text-white transition-colors touch-button">My Orders</a></li>
+                            </ul>
                         </div>
-                        <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
-                    </footer>
+                        <div>
+                            <h4 class="font-bold text-white mb-4">Support</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li><a href="#" class="text-gray-300 hover:text-white transition-colors touch-button">Help Center</a></li>
+                                <li><a href="#" class="text-gray-300 hover:text-white transition-colors touch-button">Privacy Policy</a></li>
+                                <li><a href="#" class="text-gray-300 hover:text-white transition-colors touch-button">Terms of Service</a></li>
+                                <li><a href="contactus.html" class="text-gray-300 hover:text-white transition-colors touch-button">Contact Us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-700 mt-8 pt-8 text-center">
+                        <p class="text-sm text-gray-400">© 2025 FreshMart. All rights reserved. Made with ❤️ for fresh food lovers.</p>
+                    </div>
                 </div>
             </footer>
         </div>
     </div>
 
-    <!-- Generic Modal for alerts and messages -->
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="success-checkmark">
+                <svg class="success-checkmark__circle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="success-checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                </svg>
+                <svg class="success-checkmark__check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <path class="success-checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-800 mb-4">Message Sent Successfully!</h3>
+            <p class="text-gray-600 mb-6">Thank you for contacting us. We'll get back to you within 24 hours.</p>
+            <button id="successModalOkBtn" class="rounded-xl h-12 px-6 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors touch-button">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <!-- General Modal -->
     <div id="generalModal" class="modal hidden">
         <div class="modal-content">
             <span class="close-button" id="generalModalCloseBtn">&times;</span>
@@ -369,24 +743,52 @@
         </div>
     </div>
 
-    <!-- Web3Forms Script (Required for hCaptcha) -->
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <!-- Web3Forms Script -->
     <script src="https://web3forms.com/client/script.js" async defer></script>
+    
     <script>
+        // --- Configuration from Environment Variables ---
+        const CONFIG = {
+            web3formsAccessKey: '330e0585-6990-4a15-b2f0-f20df66dc3e8', // This would normally come from .env
+            contactEmail: 'support@freshmart.com',
+            businessPhone: '+911234567890',
+            businessName: 'FreshMart'
+        };
+
         // --- DOM Elements ---
         const cartCountEl = document.getElementById("cartCount");
         const loginLogoutBtn = document.getElementById("loginLogoutBtn");
         const profileBtn = document.getElementById("profileBtn");
         const myOrdersBtn = document.getElementById("myOrdersBtn");
-        
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        const successModal = document.getElementById('successModal');
+        const successModalOkBtn = document.getElementById('successModalOkBtn');
         const generalModal = document.getElementById('generalModal');
         const generalModalMessage = document.getElementById('generalModalMessage');
         const generalModalOkBtn = document.getElementById('generalModalOkBtn');
         const generalModalCloseBtn = document.getElementById('generalModalCloseBtn');
 
-        // Note: The contactForm element is still referenced, but its submission is now handled directly by Web3Forms.
-        const contactForm = document.getElementById('contactForm');
+        // --- Toast Notification System ---
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
 
-        // --- Generic Modal Functions ---
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
+
+        // --- Modal Functions ---
         function openGeneralModal(message) {
             generalModalMessage.textContent = message;
             generalModal.classList.remove('hidden');
@@ -398,7 +800,63 @@
             setTimeout(() => generalModal.classList.add('hidden'), 300);
         }
 
-        // --- Cart Count Function (reused from index.html) ---
+        function openSuccessModal() {
+            successModal.classList.remove('hidden');
+            setTimeout(() => successModal.classList.add('show'), 10);
+        }
+
+        function closeSuccessModal() {
+            successModal.classList.remove('show');
+            setTimeout(() => successModal.classList.add('hidden'), 300);
+        }
+
+        // --- Form Validation ---
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = ['fullName', 'emailAddress', 'phoneNumber', 'messageSubject', 'message'];
+            
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.getElementById(fieldId + 'Error');
+                
+                if (!field.value.trim()) {
+                    field.classList.add('error');
+                    errorElement.classList.add('show');
+                    isValid = false;
+                } else {
+                    field.classList.remove('error');
+                    errorElement.classList.remove('show');
+                }
+            });
+
+            // Email validation
+            const emailField = document.getElementById('emailAddress');
+            const emailError = document.getElementById('emailAddressError');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (emailField.value.trim() && !emailRegex.test(emailField.value)) {
+                emailField.classList.add('error');
+                emailError.textContent = 'Please enter a valid email address';
+                emailError.classList.add('show');
+                isValid = false;
+            }
+
+            // Phone validation
+            const phoneField = document.getElementById('phoneNumber');
+            const phoneError = document.getElementById('phoneNumberError');
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            
+            if (phoneField.value.trim() && !phoneRegex.test(phoneField.value.replace(/\s/g, ''))) {
+                phoneField.classList.add('error');
+                phoneError.textContent = 'Please enter a valid phone number';
+                phoneError.classList.add('show');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // --- Cart Count Function ---
         function updateCartCount() {
             const savedCart = localStorage.getItem('freshmartCart');
             const cartItems = savedCart ? JSON.parse(savedCart) : [];
@@ -406,12 +864,91 @@
             cartCountEl.textContent = totalCount;
         }
 
+        // --- FAQ Toggle ---
+        function initializeFAQ() {
+            document.querySelectorAll('.faq-toggle').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+                    const content = document.getElementById(targetId);
+                    const icon = button.querySelector('svg');
+                    
+                    if (content.classList.contains('hidden')) {
+                        content.classList.remove('hidden');
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        content.classList.add('hidden');
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            });
+        }
+
+        // --- Form Submission ---
+        function handleFormSubmission() {
+            // Set the access key from config
+            document.getElementById('accessKey').value = CONFIG.web3formsAccessKey;
+
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    showToast('Please fill in all required fields correctly', 'error');
+                    return;
+                }
+
+                // Set loading state
+                submitBtn.disabled = true;
+                submitText.innerHTML = `
+                    <div class="spinner mr-2"></div>
+                    Sending...
+                `;
+
+                try {
+                    const formData = new FormData(contactForm);
+                    const response = await fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        openSuccessModal();
+                        contactForm.reset();
+                        showToast('Message sent successfully!', 'success');
+                    } else {
+                        throw new Error(result.message || 'Failed to send message');
+                    }
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    showToast('Failed to send message. Please try again.', 'error');
+                } finally {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitText.innerHTML = 'Send Message';
+                }
+            });
+
+            // Real-time validation
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.addEventListener('blur', () => {
+                    const errorElement = document.getElementById(input.id + 'Error');
+                    if (input.value.trim()) {
+                        input.classList.remove('error');
+                        errorElement.classList.remove('show');
+                    }
+                });
+            });
+        }
+
         // --- Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount(); // Update cart count on page load
+            updateCartCount();
+            initializeFAQ();
+            handleFormSubmission();
 
-            // Mock user login state (adjust as per your actual login logic)
-            const isLoggedIn = false; // Assume logged out for this static page unless told otherwise
+            // Mock user login state
+            const isLoggedIn = false;
             if (isLoggedIn) {
                 loginLogoutBtn.textContent = 'Logout';
                 loginLogoutBtn.classList.remove('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
@@ -423,9 +960,8 @@
             }
 
             // Header Navigation & Actions
-            loginLogoutBtn.addEventListener('click', async () => {
+            loginLogoutBtn.addEventListener('click', () => {
                 if (isLoggedIn) {
-                    // Implement logout logic here
                     openGeneralModal("Logout functionality would be implemented here.");
                 } else {
                     window.location.href = 'login.html';
@@ -433,66 +969,37 @@
             });
 
             profileBtn.addEventListener('click', () => {
-                window.location.href = 'profile.html'; // Assuming a profile page exists
+                window.location.href = 'profile.html';
             });
 
             myOrdersBtn.addEventListener('click', () => {
-                window.location.href = 'my_orders.html'; // Assuming a my orders page exists
+                window.location.href = 'my_orders.html';
             });
 
-            document.getElementById("cartBtn").addEventListener("click", function() {
+            document.getElementById("cartBtn").addEventListener("click", () => {
                 window.location.href = "cart.html";
             });
 
-            document.getElementById("navShop").addEventListener("click", function(event) {
-                event.preventDefault();
-                window.location.href = "shop.html";
-            });
-            document.getElementById("navDeals").addEventListener("click", function(event) {
-                event.preventDefault();
-                window.location.href = "deals.html";
-            });
-            document.getElementById("navRecipes").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Recipes page (placeholder)!");
-            });
-            document.getElementById("navAboutUs").addEventListener("click", function(event) {
-                event.preventDefault();
-                window.location.href = "aboutus.html"; // Ensure this links to your actual about us page
-            });
-            // The Contact Us link itself is the current page, so no navigation needed for it.
-            document.getElementById("navContactUs").addEventListener("click", function(event) {
-                event.preventDefault();
-                // Already on Contact Us page, maybe scroll to top or show message
-                openGeneralModal("You are already on the Contact Us page!");
-            });
-
-            // Footer Links (using actual IDs for these now)
-            document.getElementById("footerContactUs").addEventListener("click", function(event) {
-                event.preventDefault();
-                // Already on Contact Us page, maybe scroll to top or show message
-                openGeneralModal("You are already on the Contact Us page!");
-            });
-
-            document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Privacy Policy page!");
-            });
-
-            document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Terms of Service page!");
-            });
-            
-            // Global Modal Close Buttons
+            // Modal event listeners
             generalModalOkBtn.addEventListener('click', closeGeneralModal);
             generalModalCloseBtn.addEventListener('click', closeGeneralModal);
+            successModalOkBtn.addEventListener('click', () => {
+                closeSuccessModal();
+                window.location.href = 'shop.html';
+            });
 
-            // Important: The form submission is now handled directly by Web3Forms.
-            // Any client-side validation logic for required fields
-            // is effectively done by the 'required' attribute on the inputs,
-            // and the hCaptcha handles bot protection.
-            // No custom JavaScript event listener for 'submit' needed here for Web3Forms.
+            // Close modals when clicking outside
+            [generalModal, successModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        if (modal === generalModal) closeGeneralModal();
+                        if (modal === successModal) closeSuccessModal();
+                    }
+                });
+            });
+
+            // Welcome message
+            showToast('Welcome to FreshMart Contact! We\'re here to help. 📞', 'info', 3000);
         });
     </script>
 </body>
