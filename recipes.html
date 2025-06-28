@@ -6,42 +6,17 @@
     <title>Recipes - FreshMart</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
     <style>
-        :root {
-            --primary-green: #6ec88e;
-            --primary-green-dark: #5bb377;
-            --primary-green-light: #8ed4a6;
-            --accent-orange: #ff8c42;
-            --accent-purple: #8b5cf6;
-            --accent-pink: #ec4899;
-            --text-dark: #1f2937;
-            --text-light: #6b7280;
-            --bg-light: #f9fafb;
-            --glass-bg: rgba(255, 255, 255, 0.25);
-            --glass-border: rgba(255, 255, 255, 0.18);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, 
-                #667eea 0%, 
-                #764ba2 25%, 
-                #f093fb 50%, 
-                #f5576c 75%, 
-                #4facfe 100%);
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+
+        /* Animated gradient background */
+        .gradient-bg {
+            background: linear-gradient(-45deg, #f9fbfa, #eaf0ec, #d8e3dc, #c7d2cc);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
-            min-height: 100vh;
-            color: var(--text-dark);
         }
 
         @keyframes gradientShift {
@@ -50,260 +25,125 @@
             100% { background-position: 0% 50%; }
         }
 
-        .glass-morphism {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        /* Glass morphism effects */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
         }
 
-        .floating-animation {
+        /* Floating animation for recipe cards */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
             animation: float 6s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-10px) rotate(1deg); }
-            66% { transform: translateY(-5px) rotate(-1deg); }
+        .float-animation:nth-child(2n) {
+            animation-delay: -2s;
         }
 
+        .float-animation:nth-child(3n) {
+            animation-delay: -4s;
+        }
+
+        /* Recipe card hover effects */
         .recipe-card {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-origin: center;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
         }
 
         .recipe-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .recipe-image {
-            transition: transform 0.6s ease;
-            overflow: hidden;
-        }
-
-        .recipe-card:hover .recipe-image img {
-            transform: scale(1.1);
-        }
-
-        .category-btn {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .category-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .category-btn:hover::before {
-            left: 100%;
-        }
-
-        .category-btn.active {
-            background: var(--primary-green);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .search-container {
-            position: relative;
-        }
-
-        .search-input {
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            transform: scale(1.02);
-            box-shadow: 0 0 0 4px rgba(110, 200, 142, 0.2);
-        }
-
-        .star-rating {
-            display: flex;
-            gap: 2px;
-        }
-
-        .star {
-            color: #fbbf24;
-            font-size: 1rem;
-        }
-
-        .difficulty-badge {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 4px 8px;
-            border-radius: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .difficulty-easy { background: #dcfce7; color: #166534; }
-        .difficulty-medium { background: #fef3c7; color: #92400e; }
-        .difficulty-hard { background: #fee2e2; color: #dc2626; }
-
-        .tag {
-            background: rgba(110, 200, 142, 0.1);
-            color: var(--primary-green-dark);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border: 1px solid rgba(110, 200, 142, 0.3);
-        }
-
-        .favorite-btn {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .favorite-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .favorite-btn.active {
-            color: #ef4444;
-            animation: heartBeat 0.6s ease;
-        }
-
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
-
-        /* Modal Styles */
+        /* Modal styles */
         .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal.show {
-            display: flex;
-            opacity: 1;
+            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
         }
 
         .modal-content {
-            background: white;
-            margin: auto;
-            padding: 0;
-            border-radius: 20px;
-            width: 95%;
-            max-width: 900px;
+            transform: scale(0.7) translateY(-50px);
+            transition: all 0.3s ease;
             max-height: 90vh;
             overflow-y: auto;
-            transform: scale(0.7);
-            transition: transform 0.3s ease;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         }
 
         .modal.show .modal-content {
-            transform: scale(1);
+            transform: scale(1) translateY(0);
         }
 
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.5);
+        /* Custom scrollbar */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #6ec88e;
+            border-radius: 4px;
+        }
+
+        /* Search and filter styles */
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(110, 200, 142, 0.1);
+            border-color: #6ec88e;
+        }
+
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: #6ec88e;
             color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 20px;
-            cursor: pointer;
-            z-index: 1001;
-            transition: all 0.3s ease;
-        }
-
-        .close-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
-            transform: scale(1.1);
-        }
-
-        .nutrition-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 16px;
-        }
-
-        .nutrition-item {
-            text-align: center;
-            padding: 16px;
-            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-            border-radius: 12px;
-            border: 1px solid #bae6fd;
-        }
-
-        .ingredient-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .ingredient-item:hover {
-            background: #f1f5f9;
-            transform: translateX(4px);
-        }
-
-        .add-to-cart-btn {
-            background: var(--primary-green);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .add-to-cart-btn:hover {
-            background: var(--primary-green-dark);
             transform: scale(1.05);
         }
 
-        .step-number {
-            background: var(--primary-green);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            margin-right: 16px;
-            flex-shrink: 0;
+        /* Ingredient grid */
+        .ingredient-item {
+            transition: all 0.2s ease;
         }
 
-        /* Toast Notifications */
-        .toast-container {
+        .ingredient-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Nutrition grid */
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .nutrition-item {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .nutrition-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Toast notifications */
+        #toast-container {
             position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
             z-index: 10000;
             display: flex;
@@ -312,843 +152,882 @@
         }
 
         .toast {
-            background: white;
-            border-radius: 12px;
-            padding: 16px 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid var(--primary-green);
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
-            min-width: 300px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
         }
 
         .toast.show {
+            opacity: 1;
             transform: translateX(0);
         }
 
-        .toast.success { border-left-color: #22c55e; }
-        .toast.error { border-left-color: #ef4444; }
-        .toast.info { border-left-color: #3b82f6; }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .toast {
+                min-width: 200px;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+            
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
             .modal-content {
-                width: 98%;
-                margin: 10px auto;
+                margin: 10px;
                 max-height: 95vh;
             }
-
-            .nutrition-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
+            
             .recipe-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
-
-            .category-filters {
+            
+            .filter-buttons {
                 flex-wrap: wrap;
                 gap: 8px;
             }
-
-            .category-btn {
+            
+            .filter-btn {
                 font-size: 0.875rem;
                 padding: 8px 16px;
             }
         }
 
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-green);
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Recipe grid responsive */
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .recipe-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        /* Favorite heart animation */
+        .favorite-btn {
+            transition: all 0.2s ease;
+        }
+
+        .favorite-btn.favorited {
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+
+        /* Tag styles */
+        .recipe-tag {
+            background: rgba(110, 200, 142, 0.1);
+            color: #059669;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Instruction steps */
+        .instruction-step {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 40px;
+            margin-bottom: 16px;
+        }
+
+        .instruction-step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: #6ec88e;
+            color: white;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Scroll Animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Header Styles */
-        .header-glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-green);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-green-dark);
+        .instructions-list {
+            counter-reset: step-counter;
         }
     </style>
 </head>
-<body>
-    <!-- Header -->
-    <header class="header-glass sticky top-0 z-50 px-4 sm:px-10 py-4">
-        <div class="flex items-center justify-between max-w-7xl mx-auto">
-            <a href="index.html" class="flex items-center gap-3 text-white">
-                <div class="size-8">
-                    <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-                    </svg>
-                </div>
-                <h1 class="text-xl font-bold tracking-tight">FreshMart</h1>
-            </a>
-            <div class="flex items-center gap-4">
-                <button id="cart-btn" class="glass-morphism px-4 py-2 rounded-full text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all duration-300">
-                    🛒 Cart (<span id="cart-count">0</span>)
-                </button>
-                <a href="shop.html" class="glass-morphism px-6 py-2 rounded-full text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all duration-300">
-                    Shop
-                </a>
-            </div>
-        </div>
-    </header>
+<body class="gradient-bg min-h-screen">
 
-    <!-- Hero Section -->
-    <section class="py-20 px-4">
-        <div class="max-w-7xl mx-auto text-center">
-            <div class="floating-animation">
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6" style="font-family: 'Playfair Display', serif;">
-                    Delicious
-                    <span class="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                        Recipes
-                    </span>
-                </h1>
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-40 glass border-b border-white/20 px-4 sm:px-10 py-3">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <div class="size-5">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+                </a>
+                
+                <div class="flex items-center gap-3">
+                    <button id="cartBtn" class="flex cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-white/80 hover:bg-white text-[#111813] text-sm font-bold tracking-[0.015em] transition-all touch-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                        </svg>
+                        Cart (<span id="cartCount">0</span>)
+                    </button>
+                    <a href="shop.html" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-white text-sm font-bold tracking-[0.015em] transition-colors touch-button">
+                        Shop
+                    </a>
+                </div>
             </div>
-            <p class="text-xl text-white text-opacity-90 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Discover amazing recipes and get all the fresh ingredients delivered to your doorstep
-            </p>
-            
-            <!-- Search Bar -->
-            <div class="search-container max-w-2xl mx-auto mb-12">
-                <div class="glass-morphism rounded-full p-2 flex items-center">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        placeholder="Search recipes, ingredients, or cuisines..." 
-                        class="search-input flex-1 bg-transparent text-white placeholder-white placeholder-opacity-70 px-6 py-3 outline-none text-lg"
-                    >
-                    <button class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+        </header>
+
+        <!-- Hero Section -->
+        <section class="py-12 sm:py-16 px-4">
+            <div class="max-w-6xl mx-auto text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#111813] mb-4 leading-tight">
+                    Delicious <span class="text-[#6ec88e]">Recipes</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                    Discover amazing recipes and add all ingredients to your cart with one click!
+                </p>
+                
+                <!-- Search and Filters -->
+                <div class="max-w-4xl mx-auto space-y-6">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Search recipes, ingredients, or cooking methods..."
+                            class="search-input w-full px-6 py-4 pl-12 rounded-2xl border border-white/30 bg-white/80 backdrop-blur-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#6ec88e] transition-all"
+                        >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
-                    </button>
+                    </div>
+                    
+                    <!-- Filter Buttons -->
+                    <div class="filter-buttons flex flex-wrap justify-center gap-3">
+                        <button class="filter-btn active px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="all">
+                            All Recipes
+                        </button>
+                        <button class="filter-btn px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="breakfast">
+                            Breakfast
+                        </button>
+                        <button class="filter-btn px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="lunch">
+                            Lunch
+                        </button>
+                        <button class="filter-btn px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="dinner">
+                            Dinner
+                        </button>
+                        <button class="filter-btn px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="dessert">
+                            Dessert
+                        </button>
+                        <button class="filter-btn px-6 py-2 rounded-full bg-white/80 hover:bg-[#6ec88e] hover:text-white text-gray-700 font-medium transition-all touch-button" data-category="vegetarian">
+                            Vegetarian
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Category Filters -->
-    <section class="px-4 mb-12">
-        <div class="max-w-7xl mx-auto">
-            <div class="category-filters flex justify-center gap-4 flex-wrap">
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium active" data-category="all">
-                    All Recipes
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="breakfast">
-                    🍳 Breakfast
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="lunch">
-                    🥗 Lunch
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="dinner">
-                    🍽️ Dinner
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="dessert">
-                    🍰 Desserts
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="snack">
-                    🍿 Snacks
-                </button>
-                <button class="category-btn glass-morphism px-6 py-3 rounded-full text-white font-medium" data-category="beverage">
-                    🥤 Beverages
-                </button>
+        <!-- Recipes Grid -->
+        <section class="py-8 px-4">
+            <div class="max-w-7xl mx-auto">
+                <div id="recipesGrid" class="recipe-grid">
+                    <!-- Recipes will be dynamically loaded here -->
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Recipes Grid -->
-    <section class="px-4 pb-20">
-        <div class="max-w-7xl mx-auto">
-            <div id="recipes-grid" class="recipe-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Recipes will be dynamically loaded here -->
+        <!-- Footer -->
+        <footer class="glass border-t border-white/20 mt-16">
+            <div class="max-w-7xl mx-auto py-8 px-4 text-center">
+                <div class="flex flex-wrap justify-center gap-6 mb-6">
+                    <a href="aboutus.html" class="text-gray-600 hover:text-[#6ec88e] transition-colors touch-button">About Us</a>
+                    <a href="contactus.html" class="text-gray-600 hover:text-[#6ec88e] transition-colors touch-button">Contact</a>
+                    <a href="#" class="text-gray-600 hover:text-[#6ec88e] transition-colors touch-button">Privacy Policy</a>
+                    <a href="#" class="text-gray-600 hover:text-[#6ec88e] transition-colors touch-button">Terms of Service</a>
+                </div>
+                <p class="text-gray-500">© 2025 FreshMart. All rights reserved.</p>
             </div>
-            
-            <!-- Loading State -->
-            <div id="loading" class="text-center py-12 hidden">
-                <div class="loading mx-auto mb-4"></div>
-                <p class="text-white text-opacity-80">Loading delicious recipes...</p>
-            </div>
-            
-            <!-- No Results -->
-            <div id="no-results" class="text-center py-12 hidden">
-                <div class="text-6xl mb-4">🔍</div>
-                <h3 class="text-2xl font-bold text-white mb-2">No recipes found</h3>
-                <p class="text-white text-opacity-80">Try adjusting your search or filters</p>
-            </div>
-        </div>
-    </section>
+        </footer>
+    </div>
 
     <!-- Recipe Modal -->
-    <div id="recipe-modal" class="modal">
-        <div class="modal-content">
-            <button class="close-btn" id="close-modal">&times;</button>
-            <div id="modal-content">
-                <!-- Modal content will be dynamically loaded here -->
-            </div>
+    <div id="recipeModal" class="modal fixed inset-0 z-50 hidden">
+        <div class="modal-content bg-white rounded-2xl shadow-2xl mx-4 my-8 max-w-4xl mx-auto">
+            <!-- Modal will be populated dynamically -->
         </div>
     </div>
 
     <!-- Toast Container -->
-    <div id="toast-container" class="toast-container"></div>
+    <div id="toast-container"></div>
 
     <script>
-        // Recipe Data
+        // Sample recipe data with correct food images
         const recipes = [
             {
                 id: 1,
-                name: "Mediterranean Quinoa Bowl",
-                category: "lunch",
-                difficulty: "easy",
-                time: "25 mins",
+                name: "Classic Margherita Pizza",
+                image: "https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "dinner",
+                cookTime: "25 mins",
                 servings: 4,
+                difficulty: "Medium",
                 rating: 4.8,
-                image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["healthy", "vegetarian", "gluten-free", "mediterranean"],
-                description: "A nutritious and colorful bowl packed with fresh vegetables, quinoa, and a tangy lemon dressing.",
+                description: "A classic Italian pizza with fresh tomatoes, mozzarella, and basil. Simple ingredients that create an amazing flavor combination.",
+                tags: ["Italian", "Vegetarian", "Quick"],
                 ingredients: [
-                    { name: "Quinoa", amount: "1 cup", price: 120, image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Cherry Tomatoes", amount: "200g", price: 80, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Cucumber", amount: "1 large", price: 40, image: "https://images.pexels.com/photos/2329440/pexels-photo-2329440.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Red Onion", amount: "1 medium", price: 30, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Feta Cheese", amount: "150g", price: 200, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Olive Oil", amount: "3 tbsp", price: 150, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Lemon", amount: "2 pieces", price: 60, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Fresh Herbs", amount: "1 bunch", price: 50, image: "https://images.pexels.com/photos/533280/pexels-photo-533280.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "Pizza Dough", image: "https://images.pexels.com/photos/4109111/pexels-photo-4109111.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 80, quantity: 1, unit: "piece" },
+                    { name: "Tomato Sauce", image: "https://images.pexels.com/photos/6287284/pexels-photo-6287284.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 45, quantity: 200, unit: "ml" },
+                    { name: "Mozzarella Cheese", image: "https://images.pexels.com/photos/773253/pexels-photo-773253.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 120, quantity: 200, unit: "g" },
+                    { name: "Fresh Basil", image: "https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 25, quantity: 10, unit: "leaves" },
+                    { name: "Olive Oil", image: "https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 150, quantity: 2, unit: "tbsp" }
                 ],
                 instructions: [
-                    "Rinse quinoa thoroughly and cook according to package instructions. Let cool.",
-                    "Dice cucumber, halve cherry tomatoes, and thinly slice red onion.",
-                    "Whisk together olive oil, lemon juice, salt, and pepper for dressing.",
-                    "Combine quinoa with vegetables in a large bowl.",
-                    "Add crumbled feta cheese and fresh herbs.",
-                    "Drizzle with dressing and toss gently to combine.",
-                    "Serve immediately or chill for 30 minutes for better flavor."
+                    "Preheat your oven to 475°F (245°C).",
+                    "Roll out the pizza dough on a floured surface to your desired thickness.",
+                    "Transfer the dough to a pizza stone or baking sheet.",
+                    "Spread the tomato sauce evenly over the dough, leaving a border for the crust.",
+                    "Tear the mozzarella into small pieces and distribute over the sauce.",
+                    "Drizzle with olive oil and season with salt and pepper.",
+                    "Bake for 12-15 minutes until the crust is golden and cheese is bubbly.",
+                    "Remove from oven and immediately top with fresh basil leaves.",
+                    "Let cool for 2-3 minutes before slicing and serving."
                 ],
                 nutrition: {
-                    calories: 320,
+                    calories: 285,
                     protein: "12g",
-                    carbs: "45g",
+                    carbs: "35g",
                     fat: "11g",
-                    fiber: "6g",
-                    sodium: "380mg"
+                    fiber: "2g",
+                    sodium: "590mg"
                 }
             },
             {
                 id: 2,
-                name: "Chocolate Avocado Smoothie",
-                category: "beverage",
-                difficulty: "easy",
-                time: "5 mins",
+                name: "Avocado Toast with Poached Egg",
+                image: "https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "breakfast",
+                cookTime: "15 mins",
                 servings: 2,
+                difficulty: "Easy",
                 rating: 4.6,
-                image: "https://images.pexels.com/photos/775032/pexels-photo-775032.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["healthy", "vegan", "smoothie", "chocolate"],
-                description: "A creamy, rich smoothie that tastes like a chocolate milkshake but is packed with nutrients.",
+                description: "A nutritious and delicious breakfast featuring creamy avocado on toasted bread topped with a perfectly poached egg.",
+                tags: ["Healthy", "Vegetarian", "Quick", "Protein-rich"],
                 ingredients: [
-                    { name: "Ripe Avocado", amount: "1 large", price: 80, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Banana", amount: "1 large", price: 40, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Cocoa Powder", amount: "3 tbsp", price: 120, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Almond Milk", amount: "1 cup", price: 150, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Maple Syrup", amount: "2 tbsp", price: 200, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Vanilla Extract", amount: "1 tsp", price: 100, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Ice Cubes", amount: "1 cup", price: 0, image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "Whole Grain Bread", image: "https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 60, quantity: 4, unit: "slices" },
+                    { name: "Ripe Avocados", image: "https://images.pexels.com/photos/557659/pexels-photo-557659.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 80, quantity: 2, unit: "pieces" },
+                    { name: "Fresh Eggs", image: "https://images.pexels.com/photos/162712/egg-white-food-protein-162712.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 40, quantity: 2, unit: "pieces" },
+                    { name: "Lemon", image: "https://images.pexels.com/photos/1414130/pexels-photo-1414130.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 15, quantity: 1, unit: "piece" },
+                    { name: "Sea Salt", image: "https://images.pexels.com/photos/1340116/pexels-photo-1340116.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 25, quantity: 1, unit: "pinch" },
+                    { name: "Black Pepper", image: "https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 30, quantity: 1, unit: "pinch" }
                 ],
                 instructions: [
-                    "Add all ingredients to a high-speed blender.",
-                    "Blend on high for 60-90 seconds until completely smooth.",
-                    "Taste and adjust sweetness if needed.",
-                    "Add more ice for thicker consistency or more milk for thinner.",
-                    "Pour into glasses and serve immediately.",
-                    "Garnish with cocoa powder or chocolate shavings if desired."
+                    "Fill a medium saucepan with water and bring to a gentle simmer.",
+                    "Add a splash of vinegar to the water to help the egg whites stay together.",
+                    "Toast the bread slices until golden brown.",
+                    "While bread is toasting, cut avocados in half and remove pits.",
+                    "Scoop avocado flesh into a bowl and mash with lemon juice, salt, and pepper.",
+                    "Crack each egg into a small bowl, then gently slide into the simmering water.",
+                    "Poach eggs for 3-4 minutes for runny yolks, or longer for firmer yolks.",
+                    "Spread mashed avocado generously on toasted bread.",
+                    "Top each toast with a poached egg and season with additional salt and pepper.",
+                    "Serve immediately while eggs are warm."
                 ],
                 nutrition: {
-                    calories: 280,
-                    protein: "6g",
-                    carbs: "35g",
-                    fat: "15g",
-                    fiber: "12g",
-                    sodium: "120mg"
+                    calories: 320,
+                    protein: "14g",
+                    carbs: "28g",
+                    fat: "18g",
+                    fiber: "8g",
+                    sodium: "380mg"
                 }
             },
             {
                 id: 3,
-                name: "Spicy Thai Basil Chicken",
-                category: "dinner",
-                difficulty: "medium",
-                time: "30 mins",
+                name: "Chicken Caesar Salad",
+                image: "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "lunch",
+                cookTime: "20 mins",
                 servings: 4,
-                rating: 4.9,
-                image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["spicy", "thai", "chicken", "asian"],
-                description: "Authentic Thai stir-fry with aromatic basil, chilies, and tender chicken in a savory sauce.",
+                difficulty: "Medium",
+                rating: 4.7,
+                description: "A classic Caesar salad with grilled chicken, crispy romaine lettuce, parmesan cheese, and homemade croutons.",
+                tags: ["Protein-rich", "Classic", "Satisfying"],
                 ingredients: [
-                    { name: "Chicken Breast", amount: "500g", price: 300, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Thai Basil", amount: "1 bunch", price: 80, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Thai Chilies", amount: "5-6 pieces", price: 40, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Garlic", amount: "6 cloves", price: 30, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Onion", amount: "1 medium", price: 40, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Fish Sauce", amount: "3 tbsp", price: 120, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Soy Sauce", amount: "2 tbsp", price: 80, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Vegetable Oil", amount: "3 tbsp", price: 60, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Jasmine Rice", amount: "2 cups", price: 100, image: "https://images.pexels.com/photos/2474661/pexels-photo-2474661.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "Chicken Breast", image: "https://images.pexels.com/photos/616354/pexels-photo-616354.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 200, quantity: 500, unit: "g" },
+                    { name: "Romaine Lettuce", image: "https://images.pexels.com/photos/1656666/pexels-photo-1656666.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 40, quantity: 2, unit: "heads" },
+                    { name: "Parmesan Cheese", image: "https://images.pexels.com/photos/773253/pexels-photo-773253.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 150, quantity: 100, unit: "g" },
+                    { name: "Bread for Croutons", image: "https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 50, quantity: 4, unit: "slices" },
+                    { name: "Caesar Dressing", image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 80, quantity: 100, unit: "ml" },
+                    { name: "Garlic", image: "https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 20, quantity: 2, unit: "cloves" }
                 ],
                 instructions: [
-                    "Slice chicken breast into thin strips and season with salt and pepper.",
-                    "Heat oil in a wok or large skillet over high heat.",
-                    "Add minced garlic and chilies, stir-fry for 30 seconds.",
-                    "Add chicken and cook until no longer pink, about 5-7 minutes.",
-                    "Add sliced onion and cook for 2 minutes.",
-                    "Stir in fish sauce and soy sauce, mix well.",
-                    "Add Thai basil leaves and stir until wilted.",
-                    "Serve immediately over steamed jasmine rice."
+                    "Season chicken breasts with salt, pepper, and garlic powder.",
+                    "Heat a grill pan or skillet over medium-high heat.",
+                    "Cook chicken for 6-7 minutes per side until fully cooked (165°F internal temp).",
+                    "Let chicken rest for 5 minutes, then slice into strips.",
+                    "Cut bread into cubes and toast in a pan with olive oil until golden.",
+                    "Wash and chop romaine lettuce into bite-sized pieces.",
+                    "In a large bowl, toss lettuce with Caesar dressing.",
+                    "Add sliced chicken and croutons to the salad.",
+                    "Top with freshly grated Parmesan cheese.",
+                    "Serve immediately with additional dressing on the side."
                 ],
                 nutrition: {
-                    calories: 420,
-                    protein: "35g",
-                    carbs: "28g",
-                    fat: "18g",
-                    fiber: "2g",
-                    sodium: "980mg"
+                    calories: 380,
+                    protein: "32g",
+                    carbs: "18g",
+                    fat: "22g",
+                    fiber: "4g",
+                    sodium: "720mg"
                 }
             },
             {
                 id: 4,
-                name: "Classic Blueberry Pancakes",
-                category: "breakfast",
-                difficulty: "easy",
-                time: "20 mins",
-                servings: 4,
-                rating: 4.7,
-                image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["breakfast", "pancakes", "blueberry", "classic"],
-                description: "Fluffy, golden pancakes bursting with fresh blueberries - the perfect weekend breakfast.",
+                name: "Chocolate Chip Cookies",
+                image: "https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "dessert",
+                cookTime: "25 mins",
+                servings: 24,
+                difficulty: "Easy",
+                rating: 4.9,
+                description: "Classic homemade chocolate chip cookies that are crispy on the outside and chewy on the inside.",
+                tags: ["Sweet", "Classic", "Family-friendly", "Vegetarian"],
                 ingredients: [
-                    { name: "All-Purpose Flour", amount: "2 cups", price: 80, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Fresh Blueberries", amount: "1 cup", price: 200, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Milk", amount: "1.5 cups", price: 60, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Eggs", amount: "2 large", price: 40, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Sugar", amount: "2 tbsp", price: 30, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Baking Powder", amount: "2 tsp", price: 50, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Butter", amount: "4 tbsp", price: 120, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Vanilla Extract", amount: "1 tsp", price: 100, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Salt", amount: "1/2 tsp", price: 20, image: "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "All-Purpose Flour", image: "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 45, quantity: 300, unit: "g" },
+                    { name: "Butter", image: "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 120, quantity: 200, unit: "g" },
+                    { name: "Brown Sugar", image: "https://images.pexels.com/photos/1340116/pexels-photo-1340116.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 60, quantity: 150, unit: "g" },
+                    { name: "White Sugar", image: "https://images.pexels.com/photos/1340116/pexels-photo-1340116.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 40, quantity: 100, unit: "g" },
+                    { name: "Eggs", image: "https://images.pexels.com/photos/162712/egg-white-food-protein-162712.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 40, quantity: 2, unit: "pieces" },
+                    { name: "Chocolate Chips", image: "https://images.pexels.com/photos/918327/pexels-photo-918327.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 180, quantity: 200, unit: "g" },
+                    { name: "Vanilla Extract", image: "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 80, quantity: 1, unit: "tsp" }
                 ],
                 instructions: [
-                    "In a large bowl, whisk together flour, sugar, baking powder, and salt.",
-                    "In another bowl, beat eggs, then add milk, melted butter, and vanilla.",
-                    "Pour wet ingredients into dry ingredients and stir until just combined.",
-                    "Gently fold in blueberries, being careful not to overmix.",
-                    "Heat a griddle or large skillet over medium heat and lightly grease.",
-                    "Pour 1/4 cup batter for each pancake onto the griddle.",
-                    "Cook until bubbles form on surface, then flip and cook until golden.",
-                    "Serve hot with maple syrup and additional blueberries."
+                    "Preheat oven to 375°F (190°C).",
+                    "In a large bowl, cream together butter and both sugars until light and fluffy.",
+                    "Beat in eggs one at a time, then add vanilla extract.",
+                    "In a separate bowl, whisk together flour, baking soda, and salt.",
+                    "Gradually mix the dry ingredients into the wet ingredients.",
+                    "Fold in chocolate chips until evenly distributed.",
+                    "Drop rounded tablespoons of dough onto ungreased baking sheets.",
+                    "Bake for 9-11 minutes until edges are golden brown.",
+                    "Let cool on baking sheet for 5 minutes before transferring to wire rack.",
+                    "Store in airtight container for up to one week."
                 ],
                 nutrition: {
-                    calories: 380,
-                    protein: "12g",
-                    carbs: "58g",
-                    fat: "12g",
-                    fiber: "3g",
-                    sodium: "420mg"
+                    calories: 180,
+                    protein: "2g",
+                    carbs: "24g",
+                    fat: "9g",
+                    fiber: "1g",
+                    sodium: "95mg"
                 }
             },
             {
                 id: 5,
-                name: "Chocolate Lava Cake",
-                category: "dessert",
-                difficulty: "hard",
-                time: "45 mins",
-                servings: 6,
-                rating: 4.9,
-                image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["chocolate", "dessert", "indulgent", "warm"],
-                description: "Decadent individual chocolate cakes with a molten center that flows like lava when cut.",
+                name: "Vegetable Stir Fry",
+                image: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "dinner",
+                cookTime: "15 mins",
+                servings: 4,
+                difficulty: "Easy",
+                rating: 4.5,
+                description: "A colorful and nutritious vegetable stir fry with a savory sauce, perfect for a quick and healthy dinner.",
+                tags: ["Vegetarian", "Healthy", "Quick", "Asian"],
                 ingredients: [
-                    { name: "Dark Chocolate", amount: "200g", price: 300, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Butter", amount: "6 tbsp", price: 150, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Eggs", amount: "2 large", price: 40, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Egg Yolks", amount: "2 pieces", price: 30, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Sugar", amount: "1/4 cup", price: 40, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "All-Purpose Flour", amount: "2 tbsp", price: 30, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Vanilla Ice Cream", amount: "1 pint", price: 200, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Powdered Sugar", amount: "2 tbsp", price: 50, image: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "Bell Peppers", image: "https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 60, quantity: 2, unit: "pieces" },
+                    { name: "Broccoli", image: "https://images.pexels.com/photos/47347/broccoli-vegetable-food-healthy-47347.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 50, quantity: 300, unit: "g" },
+                    { name: "Carrots", image: "https://images.pexels.com/photos/143133/pexels-photo-143133.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 30, quantity: 2, unit: "pieces" },
+                    { name: "Snow Peas", image: "https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 70, quantity: 200, unit: "g" },
+                    { name: "Soy Sauce", image: "https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 45, quantity: 3, unit: "tbsp" },
+                    { name: "Sesame Oil", image: "https://images.pexels.com/photos/33783/olive-oil-salad-dressing-cooking-olive.jpg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 120, quantity: 1, unit: "tbsp" },
+                    { name: "Ginger", image: "https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 25, quantity: 1, unit: "inch" },
+                    { name: "Garlic", image: "https://images.pexels.com/photos/1435904/pexels-photo-1435904.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 20, quantity: 3, unit: "cloves" }
                 ],
                 instructions: [
-                    "Preheat oven to 425°F (220°C). Butter 6 ramekins and dust with cocoa powder.",
-                    "Melt chocolate and butter in a double boiler until smooth.",
-                    "In a bowl, whisk together eggs, egg yolks, and sugar until thick.",
-                    "Stir in the melted chocolate mixture and flour until just combined.",
-                    "Divide batter evenly among prepared ramekins.",
-                    "Bake for 12-14 minutes until edges are firm but centers jiggle slightly.",
-                    "Let cool for 1 minute, then run a knife around edges to loosen.",
-                    "Invert onto plates, dust with powdered sugar, and serve with ice cream."
+                    "Prepare all vegetables by washing and cutting into bite-sized pieces.",
+                    "Heat a large wok or skillet over high heat.",
+                    "Add a tablespoon of oil and swirl to coat the pan.",
+                    "Add minced garlic and ginger, stir-fry for 30 seconds until fragrant.",
+                    "Add harder vegetables (carrots, broccoli) first and stir-fry for 2-3 minutes.",
+                    "Add bell peppers and snow peas, continue stir-frying for 2 minutes.",
+                    "In a small bowl, mix soy sauce, sesame oil, and a pinch of sugar.",
+                    "Pour sauce over vegetables and toss to coat evenly.",
+                    "Stir-fry for another 1-2 minutes until vegetables are crisp-tender.",
+                    "Serve immediately over steamed rice or noodles."
                 ],
                 nutrition: {
-                    calories: 520,
-                    protein: "8g",
-                    carbs: "45g",
-                    fat: "35g",
-                    fiber: "4g",
-                    sodium: "180mg"
+                    calories: 120,
+                    protein: "4g",
+                    carbs: "15g",
+                    fat: "6g",
+                    fiber: "5g",
+                    sodium: "580mg"
                 }
             },
             {
                 id: 6,
-                name: "Crispy Sweet Potato Fries",
-                category: "snack",
-                difficulty: "easy",
-                time: "35 mins",
-                servings: 4,
-                rating: 4.5,
-                image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=500&h=300&fit=crop",
-                tags: ["healthy", "crispy", "sweet potato", "baked"],
-                description: "Perfectly seasoned and crispy sweet potato fries that are baked, not fried, for a healthier option.",
+                name: "Greek Yogurt Parfait",
+                image: "https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop",
+                category: "breakfast",
+                cookTime: "5 mins",
+                servings: 2,
+                difficulty: "Easy",
+                rating: 4.4,
+                description: "A healthy and delicious breakfast parfait with layers of Greek yogurt, fresh berries, and crunchy granola.",
+                tags: ["Healthy", "Vegetarian", "Quick", "Protein-rich", "No-cook"],
                 ingredients: [
-                    { name: "Sweet Potatoes", amount: "3 large", price: 120, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Olive Oil", amount: "3 tbsp", price: 150, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Paprika", amount: "1 tsp", price: 60, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Garlic Powder", amount: "1 tsp", price: 80, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Salt", amount: "1 tsp", price: 20, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Black Pepper", amount: "1/2 tsp", price: 40, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" },
-                    { name: "Cornstarch", amount: "2 tbsp", price: 50, image: "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop" }
+                    { name: "Greek Yogurt", image: "https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 120, quantity: 400, unit: "g" },
+                    { name: "Mixed Berries", image: "https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 150, quantity: 200, unit: "g" },
+                    { name: "Granola", image: "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 180, quantity: 100, unit: "g" },
+                    { name: "Honey", image: "https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 200, quantity: 2, unit: "tbsp" },
+                    { name: "Almonds", image: "https://images.pexels.com/photos/1295572/pexels-photo-1295572.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop", price: 250, quantity: 50, unit: "g" }
                 ],
                 instructions: [
-                    "Preheat oven to 425°F (220°C). Line a baking sheet with parchment paper.",
-                    "Wash and peel sweet potatoes, then cut into 1/2-inch thick fries.",
-                    "Soak cut fries in cold water for 30 minutes to remove excess starch.",
-                    "Pat fries completely dry with paper towels.",
-                    "Toss fries with cornstarch, then add olive oil and seasonings.",
-                    "Arrange in a single layer on the baking sheet, not overlapping.",
-                    "Bake for 25-30 minutes, flipping halfway through.",
-                    "Serve immediately while hot and crispy."
+                    "Wash and prepare fresh berries, removing any stems.",
+                    "In a small bowl, mix Greek yogurt with honey until well combined.",
+                    "Roughly chop almonds for extra crunch.",
+                    "In serving glasses or bowls, start with a layer of yogurt mixture.",
+                    "Add a layer of mixed berries over the yogurt.",
+                    "Sprinkle a layer of granola over the berries.",
+                    "Repeat layers until glasses are filled, ending with granola on top.",
+                    "Garnish with chopped almonds and a few extra berries.",
+                    "Serve immediately for best texture, or chill for up to 2 hours.",
+                    "Drizzle with additional honey if desired before serving."
                 ],
                 nutrition: {
-                    calories: 180,
-                    protein: "3g",
-                    carbs: "32g",
-                    fat: "5g",
-                    fiber: "5g",
-                    sodium: "390mg"
+                    calories: 280,
+                    protein: "18g",
+                    carbs: "35g",
+                    fat: "8g",
+                    fiber: "6g",
+                    sodium: "85mg"
                 }
             }
         ];
 
-        // Global Variables
+        // Global variables
         let currentRecipes = [...recipes];
         let favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
-        let cart = JSON.parse(localStorage.getItem('freshmartCart') || '[]');
 
-        // DOM Elements
-        const recipesGrid = document.getElementById('recipes-grid');
-        const searchInput = document.getElementById('search-input');
-        const categoryButtons = document.querySelectorAll('.category-btn');
-        const modal = document.getElementById('recipe-modal');
-        const modalContent = document.getElementById('modal-content');
-        const closeModal = document.getElementById('close-modal');
-        const cartBtn = document.getElementById('cart-btn');
-        const cartCount = document.getElementById('cart-count');
-        const loading = document.getElementById('loading');
-        const noResults = document.getElementById('no-results');
+        // DOM elements
+        const recipesGrid = document.getElementById('recipesGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const recipeModal = document.getElementById('recipeModal');
+        const cartBtn = document.getElementById('cartBtn');
+        const cartCount = document.getElementById('cartCount');
+        const toastContainer = document.getElementById('toast-container');
 
-        // Toast Notification System
-        function showToast(message, type = 'success') {
-            const toastContainer = document.getElementById('toast-container');
+        // Toast notification system
+        function showToast(message, type = 'info', duration = 4000) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="text-2xl">
-                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
-                    </div>
-                    <div>
-                        <p class="font-semibold text-gray-900">${message}</p>
-                    </div>
-                </div>
-            `;
-            
+            toast.textContent = message;
             toastContainer.appendChild(toast);
-            setTimeout(() => toast.classList.add('show'), 100);
-            
+
+            setTimeout(() => toast.classList.add('show'), 10);
             setTimeout(() => {
                 toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
         }
 
-        // Update Cart Count
+        // Cart management
         function updateCartCount() {
-            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-            cartCount.textContent = totalItems;
+            const savedCart = localStorage.getItem('freshmartCart');
+            const cartItems = savedCart ? JSON.parse(savedCart) : [];
+            const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            cartCount.textContent = totalCount;
         }
 
-        // Add to Cart Function
         function addToCart(ingredient) {
-            const existingItem = cart.find(item => item.name === ingredient.name);
+            const savedCart = localStorage.getItem('freshmartCart');
+            const cartItems = savedCart ? JSON.parse(savedCart) : [];
+            
+            const existingItem = cartItems.find(item => item.name === ingredient.name);
             
             if (existingItem) {
-                existingItem.quantity = (existingItem.quantity || 1) + 1;
+                existingItem.quantity += ingredient.quantity;
             } else {
-                cart.push({
+                cartItems.push({
                     id: Date.now() + Math.random(),
                     name: ingredient.name,
                     price: ingredient.price,
-                    quantity: 1,
-                    unit: ingredient.amount,
+                    quantity: ingredient.quantity,
+                    unit: ingredient.unit,
                     image: ingredient.image
                 });
             }
             
-            localStorage.setItem('freshmartCart', JSON.stringify(cart));
+            localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
             updateCartCount();
-            showToast(`${ingredient.name} added to cart!`);
+            showToast(`${ingredient.name} added to cart!`, 'success');
         }
 
-        // Add All Ingredients to Cart
         function addAllIngredientsToCart(recipe) {
-            let addedCount = 0;
+            const savedCart = localStorage.getItem('freshmartCart');
+            const cartItems = savedCart ? JSON.parse(savedCart) : [];
             
             recipe.ingredients.forEach(ingredient => {
-                const existingItem = cart.find(item => item.name === ingredient.name);
+                const existingItem = cartItems.find(item => item.name === ingredient.name);
                 
                 if (existingItem) {
-                    existingItem.quantity = (existingItem.quantity || 1) + 1;
+                    existingItem.quantity += ingredient.quantity;
                 } else {
-                    cart.push({
-                        id: Date.now() + Math.random() + addedCount,
+                    cartItems.push({
+                        id: Date.now() + Math.random() + Math.random(),
                         name: ingredient.name,
                         price: ingredient.price,
-                        quantity: 1,
-                        unit: ingredient.amount,
+                        quantity: ingredient.quantity,
+                        unit: ingredient.unit,
                         image: ingredient.image
                     });
                 }
-                addedCount++;
             });
             
-            localStorage.setItem('freshmartCart', JSON.stringify(cart));
+            localStorage.setItem('freshmartCart', JSON.stringify(cartItems));
             updateCartCount();
-            showToast(`All ingredients for ${recipe.name} added to cart!`);
+            
+            const totalCost = recipe.ingredients.reduce((sum, ing) => sum + (ing.price * ing.quantity), 0);
+            showToast(`All ingredients added to cart! Total: ₹${totalCost.toFixed(2)}`, 'success', 5000);
         }
 
-        // Toggle Favorite
+        // Favorite management
         function toggleFavorite(recipeId) {
             const index = favorites.indexOf(recipeId);
             if (index > -1) {
                 favorites.splice(index, 1);
-                showToast('Recipe removed from favorites');
+                showToast('Recipe removed from favorites', 'info');
             } else {
                 favorites.push(recipeId);
-                showToast('Recipe added to favorites!');
+                showToast('Recipe added to favorites!', 'success');
             }
             localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
             renderRecipes(currentRecipes);
         }
 
-        // Render Recipes
+        // Render recipes
         function renderRecipes(recipesToRender) {
-            if (recipesToRender.length === 0) {
-                recipesGrid.classList.add('hidden');
-                noResults.classList.remove('hidden');
-                return;
-            }
-
-            recipesGrid.classList.remove('hidden');
-            noResults.classList.add('hidden');
-
             recipesGrid.innerHTML = recipesToRender.map(recipe => {
-                const isFavorite = favorites.includes(recipe.id);
-                const totalPrice = recipe.ingredients.reduce((sum, ing) => sum + ing.price, 0);
+                const isFavorited = favorites.includes(recipe.id);
+                const totalCost = recipe.ingredients.reduce((sum, ing) => sum + (ing.price * ing.quantity), 0);
                 
                 return `
-                    <div class="recipe-card glass-morphism rounded-2xl overflow-hidden fade-in">
-                        <div class="recipe-image relative">
+                    <div class="recipe-card float-animation bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300">
+                        <div class="relative">
                             <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-48 object-cover">
-                            <button 
-                                class="favorite-btn absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-80 rounded-full flex items-center justify-center ${isFavorite ? 'active' : ''}"
-                                onclick="toggleFavorite(${recipe.id})"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="${isFavorite ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                                </svg>
-                            </button>
+                            <div class="absolute top-4 right-4">
+                                <button onclick="toggleFavorite(${recipe.id})" class="favorite-btn ${isFavorited ? 'favorited' : ''} p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-all touch-button">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="${isFavorited ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                    </svg>
+                                </button>
+                            </div>
                             <div class="absolute bottom-4 left-4">
-                                <span class="difficulty-badge difficulty-${recipe.difficulty}">${recipe.difficulty}</span>
+                                <span class="recipe-tag">${recipe.category}</span>
                             </div>
                         </div>
                         
                         <div class="p-6">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="text-xl font-bold text-white">${recipe.name}</h3>
-                                <div class="star-rating">
-                                    ${Array.from({length: 5}, (_, i) => 
-                                        `<span class="star ${i < Math.floor(recipe.rating) ? 'text-yellow-400' : 'text-gray-300'}">★</span>`
-                                    ).join('')}
-                                    <span class="text-white text-sm ml-1">${recipe.rating}</span>
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-xl font-bold text-gray-900">${recipe.name}</h3>
+                                <div class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4 text-yellow-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                    </svg>
+                                    <span class="text-sm text-gray-600">${recipe.rating}</span>
                                 </div>
                             </div>
                             
-                            <p class="text-white text-opacity-80 text-sm mb-4 line-clamp-2">${recipe.description}</p>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">${recipe.description}</p>
                             
-                            <div class="flex items-center gap-4 mb-4 text-white text-opacity-70 text-sm">
-                                <span>⏱️ ${recipe.time}</span>
-                                <span>👥 ${recipe.servings} servings</span>
-                                <span>💰 ₹${totalPrice}</span>
+                            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                                <span class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    ${recipe.cookTime}
+                                </span>
+                                <span class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                    </svg>
+                                    ${recipe.servings} servings
+                                </span>
+                                <span class="px-2 py-1 bg-gray-100 rounded-full text-xs">${recipe.difficulty}</span>
                             </div>
                             
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                ${recipe.tags.slice(0, 3).map(tag => 
-                                    `<span class="tag">${tag}</span>`
-                                ).join('')}
+                            <div class="flex flex-wrap gap-1 mb-4">
+                                ${recipe.tags.map(tag => `<span class="recipe-tag text-xs">${tag}</span>`).join('')}
                             </div>
                             
-                            <div class="flex gap-2">
-                                <button 
-                                    class="flex-1 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300"
-                                    onclick="openRecipeModal(${recipe.id})"
-                                >
+                            <div class="space-y-3">
+                                <button onclick="openRecipeModal(${recipe.id})" class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-semibold py-3 px-4 rounded-xl transition-colors touch-button">
                                     View Recipe
                                 </button>
-                                <button 
-                                    class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300"
-                                    onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})"
-                                >
-                                    🛒 Add All
+                                <button onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors touch-button">
+                                    Add All Ingredients - ₹${totalCost.toFixed(2)}
                                 </button>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            // Trigger fade-in animation
-            setTimeout(() => {
-                document.querySelectorAll('.fade-in').forEach(el => {
-                    el.classList.add('visible');
-                });
-            }, 100);
         }
 
-        // Open Recipe Modal
+        // Open recipe modal
         function openRecipeModal(recipeId) {
             const recipe = recipes.find(r => r.id === recipeId);
             if (!recipe) return;
 
-            const totalPrice = recipe.ingredients.reduce((sum, ing) => sum + ing.price, 0);
-            
-            modalContent.innerHTML = `
+            const totalCost = recipe.ingredients.reduce((sum, ing) => sum + (ing.price * ing.quantity), 0);
+            const isFavorited = favorites.includes(recipe.id);
+
+            recipeModal.querySelector('.modal-content').innerHTML = `
                 <div class="relative">
-                    <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-64 md:h-80 object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 text-white">
-                        <h1 class="text-3xl md:text-4xl font-bold mb-2" style="font-family: 'Playfair Display', serif;">${recipe.name}</h1>
-                        <div class="flex items-center gap-4 text-sm">
-                            <span>⏱️ ${recipe.time}</span>
-                            <span>👥 ${recipe.servings} servings</span>
-                            <span class="difficulty-badge difficulty-${recipe.difficulty}">${recipe.difficulty}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-6 md:p-8">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <!-- Left Column -->
-                        <div>
-                            <div class="mb-6">
-                                <h2 class="text-2xl font-bold mb-3">Description</h2>
-                                <p class="text-gray-600 leading-relaxed">${recipe.description}</p>
+                    <!-- Close button -->
+                    <button onclick="closeRecipeModal()" class="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-all touch-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <!-- Hero image -->
+                    <div class="relative h-64 sm:h-80">
+                        <img src="${recipe.image}" alt="${recipe.name}" class="w-full h-full object-cover rounded-t-2xl">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-t-2xl"></div>
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h2 class="text-3xl sm:text-4xl font-bold mb-2">${recipe.name}</h2>
+                            <div class="flex items-center gap-4 text-sm">
+                                <span class="flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4 text-yellow-400">
+                                        <path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.562.562 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                    </svg>
+                                    ${recipe.rating}
+                                </span>
+                                <span>${recipe.cookTime}</span>
+                                <span>${recipe.servings} servings</span>
+                                <span class="px-2 py-1 bg-white/20 rounded-full">${recipe.difficulty}</span>
                             </div>
-                            
-                            <div class="mb-6">
+                        </div>
+                        <button onclick="toggleFavorite(${recipe.id})" class="absolute top-6 right-16 favorite-btn ${isFavorited ? 'favorited' : ''} p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-all touch-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="${isFavorited ? 'currentColor' : 'none'}" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <!-- Description and tags -->
+                        <div class="mb-6">
+                            <p class="text-gray-700 text-lg mb-4">${recipe.description}</p>
+                            <div class="flex flex-wrap gap-2">
+                                ${recipe.tags.map(tag => `<span class="recipe-tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <!-- Ingredients -->
+                            <div>
                                 <div class="flex items-center justify-between mb-4">
-                                    <h2 class="text-2xl font-bold">Ingredients</h2>
-                                    <div class="text-right">
-                                        <p class="text-sm text-gray-600">Total Cost</p>
-                                        <p class="text-xl font-bold text-green-600">₹${totalPrice}</p>
-                                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-900">Ingredients</h3>
+                                    <button onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})" class="bg-[#6ec88e] hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm touch-button">
+                                        Add All - ₹${totalCost.toFixed(2)}
+                                    </button>
                                 </div>
-                                <div class="space-y-2">
+                                <div class="space-y-3">
                                     ${recipe.ingredients.map(ingredient => `
-                                        <div class="ingredient-item">
+                                        <div class="ingredient-item flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                                             <div class="flex items-center gap-3">
-                                                <img src="${ingredient.image}" alt="${ingredient.name}" class="w-10 h-10 rounded object-cover">
+                                                <img src="${ingredient.image}" alt="${ingredient.name}" class="w-12 h-12 rounded-lg object-cover">
                                                 <div>
-                                                    <p class="font-medium">${ingredient.name}</p>
-                                                    <p class="text-sm text-gray-500">${ingredient.amount} - ₹${ingredient.price}</p>
+                                                    <p class="font-medium text-gray-900">${ingredient.name}</p>
+                                                    <p class="text-sm text-gray-500">${ingredient.quantity} ${ingredient.unit}</p>
                                                 </div>
                                             </div>
-                                            <button 
-                                                class="add-to-cart-btn"
-                                                onclick="addToCart(${JSON.stringify(ingredient).replace(/"/g, '&quot;')})"
-                                            >
-                                                Add to Cart
-                                            </button>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                                <button 
-                                    class="w-full mt-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300"
-                                    onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})"
-                                >
-                                    🛒 Add All Ingredients to Cart (₹${totalPrice})
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Right Column -->
-                        <div>
-                            <div class="mb-6">
-                                <h2 class="text-2xl font-bold mb-4">Instructions</h2>
-                                <div class="space-y-4">
-                                    ${recipe.instructions.map((step, index) => `
-                                        <div class="flex gap-4">
-                                            <div class="step-number">${index + 1}</div>
-                                            <p class="text-gray-700 leading-relaxed">${step}</p>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-semibold text-gray-900">₹${ingredient.price}</span>
+                                                <button onclick="addToCart(${JSON.stringify(ingredient).replace(/"/g, '&quot;')})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors touch-button">
+                                                    Add
+                                                </button>
+                                            </div>
                                         </div>
                                     `).join('')}
                                 </div>
                             </div>
-                            
-                            <div class="mb-6">
-                                <h2 class="text-2xl font-bold mb-4">Nutrition Information</h2>
-                                <div class="nutrition-grid">
-                                    ${Object.entries(recipe.nutrition).map(([key, value]) => `
-                                        <div class="nutrition-item">
-                                            <p class="text-2xl font-bold text-blue-600">${value}</p>
-                                            <p class="text-sm font-medium text-gray-600 capitalize">${key}</p>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
+
+                            <!-- Instructions -->
                             <div>
-                                <h2 class="text-2xl font-bold mb-4">Tags</h2>
-                                <div class="flex flex-wrap gap-2">
-                                    ${recipe.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                <h3 class="text-2xl font-bold text-gray-900 mb-4">Instructions</h3>
+                                <div class="instructions-list space-y-4">
+                                    ${recipe.instructions.map(instruction => `
+                                        <div class="instruction-step">
+                                            <p class="text-gray-700">${instruction}</p>
+                                        </div>
+                                    `).join('')}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Share Button -->
-                    <div class="mt-8 pt-6 border-t text-center">
-                        <button 
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300"
-                            onclick="shareRecipe('${recipe.name}')"
-                        >
-                            📤 Share Recipe
-                        </button>
+
+                        <!-- Nutrition Information -->
+                        <div class="mt-8">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-4">Nutrition Information</h3>
+                            <div class="nutrition-grid">
+                                ${Object.entries(recipe.nutrition).map(([key, value]) => `
+                                    <div class="nutrition-item">
+                                        <p class="text-sm font-medium text-gray-600 capitalize">${key}</p>
+                                        <p class="text-lg font-bold text-gray-900">${value}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                            <button onclick="addAllIngredientsToCart(${JSON.stringify(recipe).replace(/"/g, '&quot;')})" class="flex-1 bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl transition-colors touch-button">
+                                Add All Ingredients - ₹${totalCost.toFixed(2)}
+                            </button>
+                            <button onclick="shareRecipe(${recipe.id})" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-colors touch-button">
+                                Share Recipe
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
-            
-            modal.classList.add('show');
+
+            recipeModal.classList.remove('hidden');
+            setTimeout(() => recipeModal.classList.add('show'), 10);
             document.body.style.overflow = 'hidden';
         }
 
-        // Close Modal
+        // Close recipe modal
         function closeRecipeModal() {
-            modal.classList.remove('show');
-            document.body.style.overflow = 'auto';
+            recipeModal.classList.remove('show');
+            setTimeout(() => {
+                recipeModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
         }
 
-        // Share Recipe
-        function shareRecipe(recipeName) {
+        // Share recipe
+        function shareRecipe(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+
             if (navigator.share) {
                 navigator.share({
-                    title: `${recipeName} - FreshMart Recipe`,
-                    text: `Check out this amazing recipe: ${recipeName}`,
+                    title: recipe.name,
+                    text: recipe.description,
                     url: window.location.href
-                });
+                }).catch(console.error);
             } else {
-                navigator.clipboard.writeText(window.location.href);
-                showToast('Recipe link copied to clipboard!');
+                // Fallback for browsers that don't support Web Share API
+                const shareText = `Check out this amazing recipe: ${recipe.name}\n\n${recipe.description}\n\n${window.location.href}`;
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showToast('Recipe link copied to clipboard!', 'success');
+                }).catch(() => {
+                    showToast('Unable to share recipe', 'error');
+                });
             }
         }
 
-        // Filter Recipes
-        function filterRecipes() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const activeCategory = document.querySelector('.category-btn.active').dataset.category;
-            
-            currentRecipes = recipes.filter(recipe => {
-                const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) ||
-                                    recipe.description.toLowerCase().includes(searchTerm) ||
-                                    recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
-                                    recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm));
-                
-                const matchesCategory = activeCategory === 'all' || recipe.category === activeCategory;
-                
-                return matchesSearch && matchesCategory;
-            });
-            
+        // Search functionality
+        function searchRecipes(query) {
+            const searchTerm = query.toLowerCase();
+            currentRecipes = recipes.filter(recipe => 
+                recipe.name.toLowerCase().includes(searchTerm) ||
+                recipe.description.toLowerCase().includes(searchTerm) ||
+                recipe.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                recipe.ingredients.some(ing => ing.name.toLowerCase().includes(searchTerm))
+            );
             renderRecipes(currentRecipes);
         }
 
-        // Event Listeners
-        searchInput.addEventListener('input', filterRecipes);
+        // Filter functionality
+        function filterRecipes(category) {
+            if (category === 'all') {
+                currentRecipes = [...recipes];
+            } else {
+                currentRecipes = recipes.filter(recipe => 
+                    recipe.category === category || 
+                    recipe.tags.some(tag => tag.toLowerCase() === category.toLowerCase())
+                );
+            }
+            renderRecipes(currentRecipes);
+        }
 
-        categoryButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                categoryButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                filterRecipes();
-            });
+        // Event listeners
+        searchInput.addEventListener('input', (e) => {
+            searchRecipes(e.target.value);
         });
 
-        closeModal.addEventListener('click', closeRecipeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeRecipeModal();
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Filter recipes
+                const category = button.dataset.category;
+                filterRecipes(category);
+            });
         });
 
         cartBtn.addEventListener('click', () => {
             window.location.href = 'cart.html';
         });
 
-        // Global Functions
-        window.toggleFavorite = toggleFavorite;
+        // Close modal when clicking outside
+        recipeModal.addEventListener('click', (e) => {
+            if (e.target === recipeModal) {
+                closeRecipeModal();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeRecipeModal();
+            }
+            if (e.key === '/' && !recipeModal.classList.contains('hidden')) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // Make functions globally available
         window.openRecipeModal = openRecipeModal;
+        window.closeRecipeModal = closeRecipeModal;
+        window.toggleFavorite = toggleFavorite;
         window.addToCart = addToCart;
         window.addAllIngredientsToCart = addAllIngredientsToCart;
         window.shareRecipe = shareRecipe;
@@ -1157,35 +1036,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateCartCount();
             renderRecipes(currentRecipes);
-            
-            // Scroll animations
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, observerOptions);
-            
-            document.querySelectorAll('.fade-in').forEach(el => {
-                observer.observe(el);
-            });
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('show')) {
-                closeRecipeModal();
-            }
-            if (e.key === '/' && !modal.classList.contains('show')) {
-                e.preventDefault();
-                searchInput.focus();
-            }
+            showToast('Welcome to FreshMart Recipes! 👨‍🍳', 'success', 3000);
         });
     </script>
 </body>
