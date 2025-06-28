@@ -70,7 +70,7 @@
         /* The hidden class from your provided snippet */
         .hidden { display: none; }
 
-        /* Add to your existing style section */
+        /* Mobile responsive improvements */
         @media (max-width: 640px) {
             .form-input-field {
                 font-size: 16px; /* Prevents zoom on iOS */
@@ -86,6 +86,38 @@
                 transform: scale(0.85);
                 transform-origin: 0 0;
             }
+            
+            .hero-section {
+                padding: 48px 24px;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.5rem;
+                line-height: 1.1;
+            }
+            
+            .contact-form-section {
+                padding: 24px;
+            }
+            
+            .contact-info-section {
+                padding: 24px;
+            }
+            
+            .contact-info-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            
+            .contact-info-card {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 16px;
+                padding: 24px;
+            }
         }
 
         /* Better input focus states */
@@ -94,13 +126,30 @@
             box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.1);
             outline: none;
         }
+
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Improved mobile navigation */
+        .mobile-nav-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-nav-item:hover {
+            background-color: #f9fafb;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
     <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
         <div class="layout-container flex h-full grow flex-col">
-            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
+            <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
                 <div class="flex items-center justify-between">
                     <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                         <div class="size-4">
@@ -109,35 +158,35 @@
                         <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
                     </a>
                     <div class="flex flex-1 justify-end gap-4 sm:gap-8">
-                        <nav class="flex items-center gap-4 sm:gap-9">
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="shop.html" id="navShop">Shop</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="deals.html" id="navDeals">Deals</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="about.html" id="navAboutUs">About Us</a>
-                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169]" href="#" id="navContactUs">Contact Us</a> <!-- Active link styling -->
+                        <nav class="hidden sm:flex items-center gap-4 sm:gap-9">
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="shop.html" id="navShop">Shop</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="deals.html" id="navDeals">Deals</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="#" id="navRecipes">Recipes</a>
+                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169] touch-button" href="aboutus.html" id="navAboutUs">About Us</a>
+                            <a class="text-[#38a169] text-sm font-bold leading-normal hover:text-[#38a169] touch-button" href="#" id="navContactUs">Contact Us</a> <!-- Active link styling -->
                         </nav>
                         <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
                             <button
                                 id="profileBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
                             >
                                 <span class="truncate">Profile</span>
                             </button>
                             <button
                                 id="myOrdersBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
                             >
                                 <span class="truncate">My Orders</span>
                             </button>
                             <button
                                 id="loginLogoutBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors touch-button"
                             >
                                 <span class="truncate">Login</span>
                             </button>
                             <button
                                 id="cartBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
+                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors touch-button"
                             >
                                 <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
                             </button>
@@ -146,22 +195,22 @@
                 </header>
 
             <main class="flex-1 px-4 py-5 sm:px-6 lg:px-8">
-                <div class="max-w-5xl mx-auto space-y-12">
+                <div class="max-w-5xl mx-auto space-y-8 sm:space-y-12">
                     <!-- Hero Section -->
-                    <section class="text-center py-12 px-6 bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] rounded-xl shadow-lg">
-                        <h1 class="text-4xl sm:text-5xl font-bold text-gray-800 leading-tight mb-4">Get in Touch with FreshMart</h1>
-                        <p class="text-lg text-gray-700 max-w-2xl mx-auto">
+                    <section class="hero-section text-center py-8 sm:py-12 px-4 sm:px-6 bg-gradient-to-r from-[#eaf0ec] to-[#d8e3dc] rounded-xl shadow-lg">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight mb-4">Get in Touch with FreshMart</h1>
+                        <p class="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
                             We're here to help! Whether you have a question, feedback, or need assistance, feel free to reach out to us.
                         </p>
                     </section>
 
                     <!-- Contact Form Section - Updated with new form content -->
-                    <section class="bg-white rounded-lg shadow-md p-6 sm:p-8">
-                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Send Us a Message</h2>
+                    <section class="contact-form-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Send Us a Message</h2>
                         <form id="contactForm"
                             action="https://api.web3forms.com/submit"
                             method="POST"
-                            class="space-y-6 max-w-2xl mx-auto">
+                            class="space-y-4 sm:space-y-6 max-w-2xl mx-auto">
 
                             <!-- Web3Forms Access Key -->
                             <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8" />
@@ -181,21 +230,21 @@
                             <div>
                                 <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
                                 <input type="text" id="fullName" name="Full Name" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
                             </div>
 
                             <!-- Email -->
                             <div>
                                 <label for="emailAddress" class="block text-sm font-medium text-gray-700">Email Address</label>
                                 <input type="email" id="emailAddress" name="email" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
                             </div>
 
                             <!-- Phone -->
                             <div>
                                 <label for="phoneNumber" class="block text-sm font-medium text-gray-700">Phone Number</label>
                                 <input type="tel" id="phoneNumber" name="Phone Number" required
-                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm" />
+                                        class="form-input-field mt-1 block w-full rounded-md border-gray-300 shadow-sm touch-button" />
                             </div>
 
                             <!-- Message -->
@@ -208,7 +257,7 @@
                             <!-- Submit Button -->
                             <div class="text-center">
                                 <button type="submit"
-                                        class="bg-[#38a169] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#2f855a] transition shadow-md">
+                                        class="bg-[#38a169] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#2f855a] transition shadow-md touch-button">
                                     Send Message
                                 </button>
                             </div>
@@ -216,45 +265,45 @@
                     </section>
 
                     <!-- Other Contact Information Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6 sm:p-8">
-                        <h2 class="text-3xl font-bold text-gray-800 text-center mb-8">Other Ways to Reach Us</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+                    <section class="contact-info-section bg-white rounded-lg shadow-md p-4 sm:p-6 lg:p-8">
+                        <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-6 sm:mb-8">Other Ways to Reach Us</h2>
+                        <div class="contact-info-grid grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 max-w-3xl mx-auto">
+                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
                                 <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
-                                    <p class="text-gray-700">For general inquiries, send us an email:</p>
-                                    <a href="mailto:support@freshmart.com" class="text-[#38a169] hover:underline">support@freshmart.com</a>
+                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Email Us</h3>
+                                    <p class="text-sm sm:text-base text-gray-700">For general inquiries, send us an email:</p>
+                                    <a href="mailto:support@freshmart.com" class="text-[#38a169] hover:underline touch-button">support@freshmart.com</a>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
+                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm">
                                 <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.106l-1.412-.353a1.125 1.125 0 01-.924-.924L19.5 7.5c0-.97-.622-1.836-1.5-2.292a46.055 46.055 0 00-2.105-.913m-12.896 0A39.065 39.065 0 0012 3.75c1.897 0 3.755.409 5.55 1.147M5.412 10.5V11m0 0h8.25m-8.25 0l1.121-2.153M12 11V9" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
-                                    <p class="text-gray-700">Reach our customer support hotline:</p>
-                                    <a href="tel:+911234567890" class="text-[#38a169] hover:underline">+91 12345 67890</a>
-                                    <p class="text-sm text-gray-500">Mon-Fri, 9 AM - 6 PM IST</p>
+                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Call Us</h3>
+                                    <p class="text-sm sm:text-base text-gray-700">Reach our customer support hotline:</p>
+                                    <a href="tel:+911234567890" class="text-[#38a169] hover:underline touch-button">+91 12345 67890</a>
+                                    <p class="text-xs sm:text-sm text-gray-500">Mon-Fri, 9 AM - 6 PM IST</p>
                                 </div>
                             </div>
-                            <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm md:col-span-2">
+                            <div class="contact-info-card flex items-start gap-4 p-4 bg-gray-50 rounded-lg shadow-sm md:col-span-2">
                                 <div class="text-[#38a169] flex-shrink-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 sm:w-8 sm:h-8">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                                     </svg>
                                 </div>
-                                <div>
-                                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Our Office</h3>
-                                    <p class="text-gray-700">Visit us at our headquarters:</p>
-                                    <address class="not-italic text-gray-700">
+                                <div class="flex-1">
+                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Our Office</h3>
+                                    <p class="text-sm sm:text-base text-gray-700">Visit us at our headquarters:</p>
+                                    <address class="not-italic text-sm sm:text-base text-gray-700">
                                         FreshMart Headquarters<br>
                                         123 Green Lane, Fresh Foods District<br>
                                         Mumbai, Maharashtra, 400001<br>
@@ -264,7 +313,7 @@
                                         <!-- Placeholder for a map or external link -->
                                         <img src="https://placehold.co/400x200/cccccc/000000?text=Map+Placeholder" alt="Map Location" class="w-full rounded-md shadow-sm">
                                         <a href="https://maps.google.com/?q=FreshMart+Mumbai" target="_blank" rel="noopener noreferrer"
-                                           class="inline-block mt-2 text-[#38a169] hover:underline text-sm">View on Google Maps</a>
+                                           class="inline-block mt-2 text-[#38a169] hover:underline text-sm touch-button">View on Google Maps</a>
                                     </div>
                                 </div>
                             </div>
@@ -275,28 +324,28 @@
 
             <footer class="flex justify-center">
                 <div class="flex max-w-[960px] flex-1 flex-col">
-                    <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
-                        <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerContactUs">Contact Us</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerTermsOfService">Terms of Service</a>
+                    <footer class="flex flex-col gap-6 px-5 py-8 sm:py-10 text-center @container">
+                        <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6 @[480px]:flex-row @[480px]:justify-around">
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerContactUs">Contact Us</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
+                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169] touch-button" href="#" id="footerTermsOfService">Terms of Service</a>
                         </div>
                         <div class="flex flex-wrap justify-center gap-4">
-                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
                                 <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                         <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
                                     </svg>
                                 </div>
                             </a>
-                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
                                 <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                         <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
                                     </svg>
                                 </div>
                             </a>
-                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
+                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer" class="touch-button">
                                 <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
                                         <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
@@ -316,7 +365,7 @@
         <div class="modal-content">
             <span class="close-button" id="generalModalCloseBtn">&times;</span>
             <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
-            <button id="generalModalOkBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">OK</button>
+            <button id="generalModalOkBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors touch-button">OK</button>
         </div>
     </div>
 
@@ -336,7 +385,6 @@
 
         // Note: The contactForm element is still referenced, but its submission is now handled directly by Web3Forms.
         const contactForm = document.getElementById('contactForm');
-
 
         // --- Generic Modal Functions ---
         function openGeneralModal(message) {
@@ -410,7 +458,7 @@
             });
             document.getElementById("navAboutUs").addEventListener("click", function(event) {
                 event.preventDefault();
-                window.location.href = "about.html"; // Ensure this links to your actual about us page
+                window.location.href = "aboutus.html"; // Ensure this links to your actual about us page
             });
             // The Contact Us link itself is the current page, so no navigation needed for it.
             document.getElementById("navContactUs").addEventListener("click", function(event) {
@@ -418,7 +466,6 @@
                 // Already on Contact Us page, maybe scroll to top or show message
                 openGeneralModal("You are already on the Contact Us page!");
             });
-
 
             // Footer Links (using actual IDs for these now)
             document.getElementById("footerContactUs").addEventListener("click", function(event) {

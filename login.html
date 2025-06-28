@@ -124,12 +124,50 @@
                 radial-gradient(circle at 75px 75px, rgba(110, 200, 142, 0.05) 2px, transparent 0);
             background-size: 100px 100px;
         }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .toast {
+                min-width: 200px;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+            
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            .form-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .auth-container {
+                margin: 16px;
+                padding: 24px;
+            }
+            
+            .welcome-section {
+                margin-bottom: 24px;
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.875rem;
+            }
+        }
+
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa] bg-pattern min-h-screen">
 
     <!-- Header -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-[#eaf0ec] px-4 sm:px-10 py-3">
+    <header class="bg-white/90 backdrop-blur-md border-b border-[#eaf0ec] px-4 sm:px-10 py-3">
         <div class="flex items-center justify-between max-w-6xl mx-auto">
             <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                 <div class="size-5">
@@ -139,41 +177,41 @@
                 </div>
                 <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
             </a>
-            <a href="index.html" class="text-sm text-gray-600 hover:text-[#6ec88e] transition-colors">
+            <a href="index.html" class="text-sm text-gray-600 hover:text-[#6ec88e] transition-colors touch-button">
                 ← Back to Home
             </a>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 flex items-center justify-center px-4 py-12">
+    <main class="flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
         <div class="w-full max-w-md">
             <!-- Welcome Section -->
-            <div class="text-center mb-8">
+            <div class="welcome-section text-center mb-6 sm:mb-8">
                 <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
                 </div>
-                <h2 class="text-3xl font-bold text-[#111813] mb-2">Welcome Back!</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold text-[#111813] mb-2">Welcome Back!</h2>
                 <p class="text-gray-600">Sign in to your FreshMart account</p>
             </div>
 
             <!-- Auth Container -->
-            <div class="bg-white rounded-2xl shadow-xl p-8">
+            <div class="auth-container bg-white rounded-2xl shadow-xl p-6 sm:p-8">
                 <!-- Tab Navigation -->
-                <div class="flex mb-8 bg-gray-50 rounded-xl p-1">
-                    <button id="loginTab" class="tab-button active flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all">
+                <div class="flex mb-6 sm:mb-8 bg-gray-50 rounded-xl p-1">
+                    <button id="loginTab" class="tab-button active flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all touch-button">
                         Sign In
                     </button>
-                    <button id="signupTab" class="tab-button flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all">
+                    <button id="signupTab" class="tab-button flex-1 py-3 px-4 text-sm font-medium rounded-lg transition-all touch-button">
                         Sign Up
                     </button>
                 </div>
 
                 <!-- Login Form -->
                 <div id="loginForm" class="form-container active">
-                    <form id="loginFormElement" class="space-y-6">
+                    <form id="loginFormElement" class="space-y-4 sm:space-y-6">
                         <div>
                             <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                             <input 
@@ -198,7 +236,7 @@
                                     class="form-input w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent transition-all"
                                     placeholder="Enter your password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                                <button type="button" class="password-toggle touch-button" onclick="togglePassword('loginPassword', this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -208,12 +246,12 @@
                             <p id="loginPasswordError" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
 
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                             <label class="flex items-center">
                                 <input type="checkbox" class="rounded border-gray-300 text-[#6ec88e] focus:ring-[#6ec88e]">
                                 <span class="ml-2 text-sm text-gray-600">Remember me</span>
                             </label>
-                            <button type="button" id="forgotPasswordBtn" class="text-sm text-[#6ec88e] hover:text-green-600 font-medium">
+                            <button type="button" id="forgotPasswordBtn" class="text-sm text-[#6ec88e] hover:text-green-600 font-medium touch-button">
                                 Forgot password?
                             </button>
                         </div>
@@ -221,7 +259,7 @@
                         <button 
                             type="submit" 
                             id="loginSubmitBtn"
-                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center"
+                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center touch-button"
                         >
                             <span>Sign In</span>
                         </button>
@@ -230,7 +268,7 @@
 
                 <!-- Signup Form -->
                 <div id="signupForm" class="form-container hidden">
-                    <form id="signupFormElement" class="space-y-6">
+                    <form id="signupFormElement" class="space-y-4 sm:space-y-6">
                         <div>
                             <label for="signupName" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                             <input 
@@ -268,7 +306,7 @@
                                     class="form-input w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent transition-all"
                                     placeholder="Create a strong password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePassword('signupPassword', this)">
+                                <button type="button" class="password-toggle touch-button" onclick="togglePassword('signupPassword', this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -290,7 +328,7 @@
                                     class="form-input w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent transition-all"
                                     placeholder="Confirm your password"
                                 >
-                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">
+                                <button type="button" class="password-toggle touch-button" onclick="togglePassword('confirmPassword', this)">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -300,8 +338,8 @@
                             <p id="confirmPasswordError" class="text-red-500 text-xs mt-1 hidden"></p>
                         </div>
 
-                        <div class="flex items-center">
-                            <input type="checkbox" id="agreeTerms" required class="rounded border-gray-300 text-[#6ec88e] focus:ring-[#6ec88e]">
+                        <div class="flex items-start">
+                            <input type="checkbox" id="agreeTerms" required class="rounded border-gray-300 text-[#6ec88e] focus:ring-[#6ec88e] mt-1">
                             <label for="agreeTerms" class="ml-2 text-sm text-gray-600">
                                 I agree to the <a href="#" class="text-[#6ec88e] hover:text-green-600">Terms of Service</a> and <a href="#" class="text-[#6ec88e] hover:text-green-600">Privacy Policy</a>
                             </label>
@@ -310,7 +348,7 @@
                         <button 
                             type="submit" 
                             id="signupSubmitBtn"
-                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center"
+                            class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center touch-button"
                         >
                             <span>Create Account</span>
                         </button>
@@ -318,7 +356,7 @@
                 </div>
 
                 <!-- Divider -->
-                <div class="my-8">
+                <div class="my-6 sm:my-8">
                     <div class="relative">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-300"></div>
@@ -333,7 +371,7 @@
                 <div class="space-y-3">
                     <button 
                         id="googleSignInBtn"
-                        class="social-btn w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all"
+                        class="social-btn w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all touch-button"
                     >
                         <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -346,7 +384,7 @@
 
                     <button 
                         id="phoneSignInBtn"
-                        class="social-btn w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all"
+                        class="social-btn w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-all touch-button"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-3">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
@@ -357,7 +395,7 @@
             </div>
 
             <!-- Footer Text -->
-            <p class="text-center text-sm text-gray-500 mt-8">
+            <p class="text-center text-sm text-gray-500 mt-6 sm:mt-8 px-4">
                 By signing in, you agree to our 
                 <a href="#" class="text-[#6ec88e] hover:text-green-600">Terms of Service</a> 
                 and 
@@ -371,7 +409,7 @@
 
     <!-- Reset Password Modal -->
     <div id="resetPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
-        <div class="bg-white rounded-2xl p-8 w-full max-w-md mx-4">
+        <div class="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-md mx-4">
             <h3 class="text-xl font-bold text-[#111813] mb-4">Reset Password</h3>
             <p class="text-gray-600 mb-6">Enter your email address and we'll send you a link to reset your password.</p>
             
@@ -388,18 +426,18 @@
                     <p id="resetEmailError" class="text-red-500 text-xs mt-1 hidden"></p>
                 </div>
                 
-                <div class="flex gap-3">
+                <div class="flex flex-col sm:flex-row gap-3">
                     <button 
                         type="button" 
                         id="cancelResetBtn"
-                        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all"
+                        class="flex-1 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-all touch-button"
                     >
                         Cancel
                     </button>
                     <button 
                         type="submit" 
                         id="resetSubmitBtn"
-                        class="flex-1 bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center"
+                        class="flex-1 bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 flex items-center justify-center touch-button"
                     >
                         <span>Send Reset Link</span>
                     </button>

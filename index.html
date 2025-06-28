@@ -119,13 +119,99 @@
         .open .hamburger-bottom {
             transform: rotate(-45deg) translateY(6px) translateX(-6px);
         }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .toast {
+                min-width: 200px;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+            
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            .hero-bg {
+                padding: 60px 16px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+                line-height: 1.1;
+            }
+            
+            .hero-content p {
+                font-size: 1rem;
+                margin-bottom: 24px;
+            }
+            
+            .feature-card {
+                padding: 20px;
+            }
+            
+            .category-card {
+                padding: 16px;
+            }
+            
+            .category-card img {
+                height: 120px;
+            }
+        }
+
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* Improved mobile navigation */
+        .mobile-nav-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s;
+        }
+        
+        .mobile-nav-item:hover {
+            background-color: #f9fafb;
+        }
+
+        /* Mobile-first responsive grid */
+        .responsive-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        
+        @media (min-width: 640px) {
+            .responsive-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .responsive-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .responsive-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 32px;
+            }
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
     <div class="relative flex min-h-screen flex-col">
         <!-- Header -->
-        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+        <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="flex items-center gap-3 text-[#111813]">
                     <div class="size-5">
@@ -145,23 +231,23 @@
                 
                 <!-- Desktop Buttons -->
                 <div class="hidden md:flex items-center gap-3">
-                    <button id="loginBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                    <button id="loginBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors touch-button">
                         <span>Login</span>
                     </button>
-                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                    <button id="cartBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors touch-button">
                         <span>Cart (<span id="cartCount">0</span>)</span>
                     </button>
                 </div>
 
                 <!-- Mobile Menu Button and Cart -->
                 <div class="flex md:hidden items-center gap-3">
-                    <button id="mobileCartBtn" class="flex cursor-pointer items-center justify-center rounded-xl h-10 px-3 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                    <button id="mobileCartBtn" class="flex cursor-pointer items-center justify-center rounded-xl h-10 px-3 bg-[#eaf0ec] hover:bg-gray-300 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors touch-button">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
                         </svg>
                         <span class="ml-1" id="mobileCartCount">0</span>
                     </button>
-                    <button id="menuBtn" class="hamburger">
+                    <button id="menuBtn" class="hamburger touch-button">
                         <div class="hamburger-top"></div>
                         <div class="hamburger-middle"></div>
                         <div class="hamburger-bottom"></div>
@@ -174,7 +260,7 @@
         <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden"></div>
 
         <!-- Mobile Menu -->
-        <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-xl md:hidden">
+        <div id="mobileMenu" class="mobile-menu fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white z-50 shadow-xl md:hidden overflow-y-auto">
             <div class="p-6">
                 <!-- Mobile Menu Header -->
                 <div class="flex items-center justify-between mb-8">
@@ -190,7 +276,7 @@
                 <div id="mobileUserSection" class="mb-8 p-4 bg-[#f9fbfa] rounded-xl">
                     <div id="mobileLoggedOut" class="text-center">
                         <p class="text-gray-600 mb-3">Welcome to FreshMart!</p>
-                        <button id="mobileLoginBtn" class="w-full rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
+                        <button id="mobileLoginBtn" class="w-full rounded-xl h-12 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors touch-button">
                             Login / Sign Up
                         </button>
                     </div>
@@ -206,46 +292,51 @@
                                 <p class="text-sm text-gray-600">Welcome back!</p>
                             </div>
                         </div>
-                        <button id="mobileProfileBtn" class="w-full rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em] transition-colors">
-                            View Profile
-                        </button>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="mobileProfileBtn" class="rounded-xl h-10 px-3 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-xs font-bold tracking-[0.015em] transition-colors touch-button">
+                                Profile
+                            </button>
+                            <button id="mobileLogoutBtn" class="rounded-xl h-10 px-3 bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold tracking-[0.015em] transition-colors touch-button">
+                                Logout
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Navigation Links -->
-                <nav class="space-y-4">
-                    <a href="shop.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                <nav class="space-y-2">
+                    <a href="shop.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.001 3.001 0 01-.621-1.72c0-.966.456-1.823 1.164-2.383l1.457-1.153" />
                         </svg>
                         Shop
                     </a>
-                    <a href="deals.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                    <a href="deals.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
                         </svg>
                         Deals
                     </a>
-                    <a href="recipes.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                    <a href="recipes.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                         </svg>
                         Recipes
                     </a>
-                    <a href="my_orders.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                    <a href="my_orders.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                         </svg>
                         My Orders
                     </a>
-                    <a href="aboutus.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                    <a href="aboutus.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                         </svg>
                         About
                     </a>
-                    <a href="contactus.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
+                    <a href="contactus.html" class="mobile-nav-item flex items-center gap-3 rounded-xl hover:bg-[#f9fbfa] text-[#111813] font-medium transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
                         </svg>
@@ -256,20 +347,20 @@
         </div>
 
         <!-- Hero Section -->
-        <section class="hero-bg py-20 px-4">
+        <section class="hero-bg py-12 sm:py-16 md:py-20 px-4">
             <div class="hero-content max-w-6xl mx-auto text-center">
-                <h1 class="text-4xl md:text-6xl font-bold text-[#111813] mb-6 leading-tight">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#111813] mb-4 sm:mb-6 leading-tight">
                     Fresh Groceries<br>
                     <span class="text-[#6ec88e]">Delivered Daily</span>
                 </h1>
-                <p class="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+                <p class="text-lg sm:text-xl text-gray-700 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
                     Get the freshest produce, pantry essentials, and organic foods delivered right to your doorstep. Quality guaranteed, convenience delivered.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="shop.html" class="inline-flex items-center justify-center rounded-xl h-12 px-8 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-base font-bold tracking-[0.015em] transition-colors">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center px-4">
+                    <a href="shop.html" class="inline-flex items-center justify-center rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-base sm:text-lg font-bold tracking-[0.015em] transition-colors touch-button">
                         Start Shopping
                     </a>
-                    <a href="deals.html" class="inline-flex items-center justify-center rounded-xl h-12 px-8 bg-white hover:bg-gray-50 text-[#111813] text-base font-bold tracking-[0.015em] border border-gray-200 transition-colors">
+                    <a href="deals.html" class="inline-flex items-center justify-center rounded-xl h-12 sm:h-14 px-6 sm:px-8 bg-white hover:bg-gray-50 text-[#111813] text-base sm:text-lg font-bold tracking-[0.015em] border border-gray-200 transition-colors touch-button">
                         View Deals
                     </a>
                 </div>
@@ -277,65 +368,65 @@
         </section>
 
         <!-- Features Section -->
-        <section class="py-20 px-4 bg-white">
+        <section class="py-12 sm:py-16 md:py-20 px-4 bg-white">
             <div class="max-w-6xl mx-auto">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#111813] mb-12">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#111813] mb-8 sm:mb-12">
                     Why Choose FreshMart?
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                <div class="responsive-grid">
+                    <div class="feature-card text-center p-4 sm:p-6 rounded-xl bg-[#f9fbfa] float-animation">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6 sm:w-8 sm:h-8">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM12 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM15.75 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Fresh Quality</h3>
-                        <p class="text-gray-600">Hand-picked fresh produce and quality ingredients sourced directly from local farms.</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-[#111813] mb-2">Fresh Quality</h3>
+                        <p class="text-sm sm:text-base text-gray-600">Hand-picked fresh produce and quality ingredients sourced directly from local farms.</p>
                     </div>
-                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 0.5s;">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                    <div class="feature-card text-center p-4 sm:p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 0.5s;">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6 sm:w-8 sm:h-8">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM12 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5zM15.75 18.75a1.5 1.5 0 01-3 0V8.25a1.5 1.5 0 013 0v10.5z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Fast Delivery</h3>
-                        <p class="text-gray-600">Same-day delivery available. Get your groceries delivered within hours of ordering.</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-[#111813] mb-2">Fast Delivery</h3>
+                        <p class="text-sm sm:text-base text-gray-600">Same-day delivery available. Get your groceries delivered within hours of ordering.</p>
                     </div>
-                    <div class="text-center p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 1s;">
-                        <div class="w-16 h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-8 h-8">
+                    <div class="feature-card text-center p-4 sm:p-6 rounded-xl bg-[#f9fbfa] float-animation" style="animation-delay: 1s;">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-[#6ec88e] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6 sm:w-8 sm:h-8">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-[#111813] mb-2">Best Prices</h3>
-                        <p class="text-gray-600">Competitive prices with regular deals and discounts. Save more on your grocery shopping.</p>
+                        <h3 class="text-lg sm:text-xl font-bold text-[#111813] mb-2">Best Prices</h3>
+                        <p class="text-sm sm:text-base text-gray-600">Competitive prices with regular deals and discounts. Save more on your grocery shopping.</p>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Popular Categories -->
-        <section class="py-20 px-4 bg-[#f9fbfa]">
+        <section class="py-12 sm:py-16 md:py-20 px-4 bg-[#f9fbfa]">
             <div class="max-w-6xl mx-auto">
-                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#111813] mb-12">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-[#111813] mb-8 sm:mb-12">
                     Popular Categories
                 </h2>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('fruits')">
-                        <img src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Fresh Fruits" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-[#111813]">Fresh Fruits</h3>
+                <div class="responsive-grid">
+                    <div class="category-card bg-white rounded-xl p-4 sm:p-6 text-center hover:shadow-lg transition-shadow cursor-pointer touch-button" onclick="navigateToShop('fruits')">
+                        <img src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Fresh Fruits" class="w-full h-24 sm:h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813] text-sm sm:text-base">Fresh Fruits</h3>
                     </div>
-                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('vegetables')">
-                        <img src="https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Vegetables" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-[#111813]">Vegetables</h3>
+                    <div class="category-card bg-white rounded-xl p-4 sm:p-6 text-center hover:shadow-lg transition-shadow cursor-pointer touch-button" onclick="navigateToShop('vegetables')">
+                        <img src="https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Vegetables" class="w-full h-24 sm:h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813] text-sm sm:text-base">Vegetables</h3>
                     </div>
-                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('dairy')">
-                        <img src="https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Dairy Products" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-[#111813]">Dairy Products</h3>
+                    <div class="category-card bg-white rounded-xl p-4 sm:p-6 text-center hover:shadow-lg transition-shadow cursor-pointer touch-button" onclick="navigateToShop('dairy')">
+                        <img src="https://images.pexels.com/photos/416978/pexels-photo-416978.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Dairy Products" class="w-full h-24 sm:h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813] text-sm sm:text-base">Dairy Products</h3>
                     </div>
-                    <div class="bg-white rounded-xl p-6 text-center hover:shadow-lg transition-shadow cursor-pointer" onclick="navigateToShop('bakery')">
-                        <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Bakery Items" class="w-full h-32 object-cover rounded-lg mb-4">
-                        <h3 class="font-bold text-[#111813]">Bakery Items</h3>
+                    <div class="category-card bg-white rounded-xl p-4 sm:p-6 text-center hover:shadow-lg transition-shadow cursor-pointer touch-button" onclick="navigateToShop('bakery')">
+                        <img src="https://images.pexels.com/photos/209206/pexels-photo-209206.jpeg?auto=compress&cs=tinysrgb&w=300&h=200&fit=crop" alt="Bakery Items" class="w-full h-24 sm:h-32 object-cover rounded-lg mb-4">
+                        <h3 class="font-bold text-[#111813] text-sm sm:text-base">Bakery Items</h3>
                     </div>
                 </div>
             </div>
@@ -343,9 +434,9 @@
 
         <!-- Footer -->
         <footer class="bg-gray-50 border-t">
-            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
+            <div class="max-w-7xl mx-auto py-8 sm:py-10 px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
+                    <div class="sm:col-span-2 md:col-span-1">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="size-5">
                                 <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
@@ -357,31 +448,40 @@
                     <div>
                         <h4 class="font-bold text-[#111813] mb-4">Quick Links</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="shop.html" class="text-gray-600 hover:text-[#6ec88e]">Shop</a></li>
-                            <li><a href="deals.html" class="text-gray-600 hover:text-[#6ec88e]">Deals</a></li>
-                            <li><a href="aboutus.html" class="text-gray-600 hover:text-[#6ec88e]">About Us</a></li>
-                            <li><a href="contactus.html" class="text-gray-600 hover:text-[#6ec88e]">Contact</a></li>
+                            <li><a href="shop.html" class="text-gray-600 hover:text-[#6ec88e] touch-button">Shop</a></li>
+                            <li><a href="deals.html" class="text-gray-600 hover:text-[#6ec88e] touch-button">Deals</a></li>
+                            <li><a href="aboutus.html" class="text-gray-600 hover:text-[#6ec88e] touch-button">About Us</a></li>
+                            <li><a href="contactus.html" class="text-gray-600 hover:text-[#6ec88e] touch-button">Contact</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-bold text-[#111813] mb-4">Customer Service</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="my_orders.html" class="text-gray-600 hover:text-[#6ec88e]">My Orders</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Help Center</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Return Policy</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a></li>
+                            <li><a href="my_orders.html" class="text-gray-600 hover:text-[#6ec88e] touch-button">My Orders</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e] touch-button">Help Center</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e] touch-button">Return Policy</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#6ec88e] touch-button">Privacy Policy</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-bold text-[#111813] mb-4">Contact Info</h4>
                         <ul class="space-y-2 text-sm text-gray-600">
-                            <li>📞 +91 12345 67890</li>
-                            <li>📧 support@freshmart.com</li>
-                            <li>📍 Mumbai, Maharashtra</li>
+                            <li class="flex items-center gap-2">
+                                <span>📞</span>
+                                <a href="tel:+911234567890" class="hover:text-[#6ec88e] touch-button">+91 12345 67890</a>
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span>📧</span>
+                                <a href="mailto:support@freshmart.com" class="hover:text-[#6ec88e] touch-button">support@freshmart.com</a>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span>📍</span>
+                                <span>Mumbai, Maharashtra</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
-                <div class="border-t mt-8 pt-8 text-center">
+                <div class="border-t mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
                     <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
                 </div>
             </div>
@@ -393,7 +493,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -421,6 +521,7 @@
         const mobileMenuOverlay = document.getElementById("mobileMenuOverlay");
         const mobileLoginBtn = document.getElementById("mobileLoginBtn");
         const mobileProfileBtn = document.getElementById("mobileProfileBtn");
+        const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
         const mobileLoggedOut = document.getElementById("mobileLoggedOut");
         const mobileLoggedIn = document.getElementById("mobileLoggedIn");
         const mobileUserName = document.getElementById("mobileUserName");
@@ -476,6 +577,15 @@
                 mobileLoggedIn.classList.remove('hidden');
                 mobileUserName.textContent = user.displayName || user.email || 'User';
                 mobileProfileBtn.onclick = () => window.location.href = 'profile.html';
+                mobileLogoutBtn.onclick = async () => {
+                    try {
+                        await signOut(auth);
+                        showToast('Logged out successfully!', 'success');
+                        closeMobileMenu();
+                    } catch (error) {
+                        showToast('Error logging out: ' + error.message, 'error');
+                    }
+                };
             } else {
                 // Desktop
                 loginBtn.textContent = 'Login';
@@ -530,6 +640,13 @@
 
             // Welcome message
             showToast('Welcome to FreshMart! 🛒', 'success', 3000);
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    closeMobileMenu();
+                }
+            });
         });
     </script>
 </body>
