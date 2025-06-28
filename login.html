@@ -7,8 +7,162 @@
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/login.css">
+    <style>
+        body {
+            font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
+        }
+
+        /* Custom Toast Notification System */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #22c55e; }
+        .toast.error { background-color: #ef4444; }
+        .toast.info { background-color: #3b82f6; }
+
+        /* Loading spinner */
+        .spinner {
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #6ec88e;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tab styles */
+        .tab-button {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            color: #6ec88e;
+            font-weight: 600;
+        }
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #6ec88e;
+            border-radius: 1px;
+        }
+
+        /* Form animations */
+        .form-container {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        .form-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Input focus styles */
+        .form-input:focus {
+            border-color: #6ec88e;
+            box-shadow: 0 0 0 3px rgba(110, 200, 142, 0.1);
+            outline: none;
+        }
+
+        /* Password toggle */
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        .password-toggle:hover {
+            color: #374151;
+        }
+
+        /* Social button styles */
+        .social-btn {
+            transition: all 0.2s ease;
+        }
+        .social-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Background pattern */
+        .bg-pattern {
+            background-image: 
+                radial-gradient(circle at 25px 25px, rgba(110, 200, 142, 0.1) 2px, transparent 0),
+                radial-gradient(circle at 75px 75px, rgba(110, 200, 142, 0.05) 2px, transparent 0);
+            background-size: 100px 100px;
+        }
+
+        /* Mobile responsive improvements */
+        @media (max-width: 640px) {
+            .toast {
+                min-width: 200px;
+                font-size: 0.8rem;
+                padding: 10px 16px;
+            }
+            
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+            
+            .form-input {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+            
+            .auth-container {
+                margin: 16px;
+                padding: 24px;
+            }
+            
+            .welcome-section {
+                margin-bottom: 24px;
+            }
+            
+            .welcome-section h2 {
+                font-size: 1.875rem;
+            }
+        }
+
+        /* Touch-friendly buttons */
+        .touch-button {
+            min-height: 44px;
+            min-width: 44px;
+        }
+    </style>
 </head>
 <body class="bg-[#f9fbfa] bg-pattern min-h-screen">
 
@@ -292,11 +446,407 @@
         </div>
     </div>
 
-    <script src="js/common.js"></script>
-    <script src="js/login.js"></script>
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            sendEmailVerification,
+            sendPasswordResetEmail,
+            signInWithPopup,
+            GoogleAuthProvider,
+            updateProfile,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+            authDomain: "portfolio-56be7.firebaseapp.com",
+            projectId: "portfolio-56be7",
+            storageBucket: "portfolio-56be7.firebasestorage.app",
+            messagingSenderId: "888511551571",
+            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+            measurementId: "G-X3CYL9YZR1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // DOM Elements
+        const loginTab = document.getElementById('loginTab');
+        const signupTab = document.getElementById('signupTab');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginFormElement = document.getElementById('loginFormElement');
+        const signupFormElement = document.getElementById('signupFormElement');
+        const resetPasswordModal = document.getElementById('resetPasswordModal');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+        const cancelResetBtn = document.getElementById('cancelResetBtn');
+        const googleSignInBtn = document.getElementById('googleSignInBtn');
+        const phoneSignInBtn = document.getElementById('phoneSignInBtn');
+
+        // Toast Notification System
+        const toastContainer = document.getElementById('toast-container');
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+            }, duration);
+        }
+
+        // Password toggle function
+        window.togglePassword = function(fieldId, button) {
+            const field = document.getElementById(fieldId);
+            const isPassword = field.type === 'password';
+            field.type = isPassword ? 'text' : 'password';
+            
+            const icon = button.querySelector('svg');
+            if (isPassword) {
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                `;
+            } else {
+                icon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                `;
+            }
+        };
+
+        // Tab switching
+        function switchTab(tab) {
+            if (tab === 'login') {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginForm.classList.remove('hidden');
+                loginForm.classList.add('active');
+                signupForm.classList.add('hidden');
+                signupForm.classList.remove('active');
+            } else {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupForm.classList.remove('hidden');
+                signupForm.classList.add('active');
+                loginForm.classList.add('hidden');
+                loginForm.classList.remove('active');
+            }
+        }
+
+        // Error handling
+        function showError(fieldId, message) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+            }
+        }
+
+        function clearError(fieldId) {
+            const errorElement = document.getElementById(fieldId + 'Error');
+            if (errorElement) {
+                errorElement.classList.add('hidden');
+            }
+        }
+
+        function clearAllErrors() {
+            document.querySelectorAll('[id$="Error"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+        }
+
+        // Loading state
+        function setLoading(button, isLoading) {
+            const span = button.querySelector('span');
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = `
+                    <div class="spinner mr-2"></div>
+                    <span>Processing...</span>
+                `;
+            } else {
+                button.disabled = false;
+                button.innerHTML = `<span>${span.textContent}</span>`;
+            }
+        }
+
+        // Validation
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        // Event Listeners
+        loginTab.addEventListener('click', () => switchTab('login'));
+        signupTab.addEventListener('click', () => switchTab('signup'));
+
+        // Clear errors on input
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                clearError(input.id);
+            });
+        });
+
+        // Login form submission
+        loginFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAllErrors();
+
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            // Validation
+            if (!validateEmail(email)) {
+                showError('loginEmail', 'Please enter a valid email address');
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showError('loginPassword', 'Password must be at least 6 characters');
+                return;
+            }
+
+            setLoading(submitBtn, true);
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                showToast('Login successful! Welcome back!', 'success');
+                
+                // Redirect after short delay
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                let errorMessage = 'Login failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                    case 'auth/wrong-password':
+                    case 'auth/invalid-credential':
+                        errorMessage = 'Invalid email or password';
+                        showError('loginEmail', errorMessage);
+                        showError('loginPassword', errorMessage);
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email format';
+                        showError('loginEmail', errorMessage);
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        });
+
+        // Signup form submission
+        signupFormElement.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearAllErrors();
+
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+            const submitBtn = document.getElementById('signupSubmitBtn');
+
+            // Validation
+            if (!name) {
+                showError('signupName', 'Full name is required');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showError('signupEmail', 'Please enter a valid email address');
+                return;
+            }
+
+            if (!validatePassword(password)) {
+                showError('signupPassword', 'Password must be at least 6 characters');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('confirmPassword', 'Passwords do not match');
+                return;
+            }
+
+            if (!agreeTerms) {
+                showToast('Please agree to the Terms of Service and Privacy Policy', 'error');
+                return;
+            }
+
+            setLoading(submitBtn, true);
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Update user profile with name
+                await updateProfile(userCredential.user, {
+                    displayName: name
+                });
+
+                // Send email verification
+                await sendEmailVerification(userCredential.user);
+                
+                showToast('Account created successfully! Please check your email to verify your account.', 'success', 6000);
+                
+                // Switch to login tab
+                setTimeout(() => {
+                    switchTab('login');
+                    signupFormElement.reset();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Signup error:', error);
+                let errorMessage = 'Account creation failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'An account with this email already exists';
+                        showError('signupEmail', errorMessage);
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email format';
+                        showError('signupEmail', errorMessage);
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password is too weak. Please choose a stronger password.';
+                        showError('signupPassword', errorMessage);
+                        break;
+                    default:
+                        errorMessage = error.message;
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        });
+
+        // Google Sign In
+        googleSignInBtn.addEventListener('click', async () => {
+            setLoading(googleSignInBtn, true);
+            
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                showToast(`Welcome ${result.user.displayName}!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                let errorMessage = 'Google sign-in failed. Please try again.';
+                
+                if (error.code === 'auth/popup-closed-by-user') {
+                    errorMessage = 'Sign-in cancelled';
+                } else if (error.code === 'auth/network-request-failed') {
+                    errorMessage = 'Network error. Please check your connection.';
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                setLoading(googleSignInBtn, false);
+            }
+        });
+
+        // Phone Sign In
+        phoneSignInBtn.addEventListener('click', () => {
+            window.location.href = 'phone-auth.html';
+        });
+
+        // Forgot Password
+        forgotPasswordBtn.addEventListener('click', () => {
+            resetPasswordModal.classList.remove('hidden');
+        });
+
+        cancelResetBtn.addEventListener('click', () => {
+            resetPasswordModal.classList.add('hidden');
+            document.getElementById('resetEmail').value = '';
+            clearError('resetEmail');
+        });
+
+        // Reset Password Form
+        resetPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearError('resetEmail');
+
+            const email = document.getElementById('resetEmail').value.trim();
+            const submitBtn = document.getElementById('resetSubmitBtn');
+
+            if (!validateEmail(email)) {
+                showError('resetEmail', 'Please enter a valid email address');
+                return;
+            }
+
+            setLoading(submitBtn, true);
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('Password reset email sent! Please check your inbox.', 'success', 6000);
+                resetPasswordModal.classList.add('hidden');
+                document.getElementById('resetEmail').value = '';
+                
+            } catch (error) {
+                console.error('Password reset error:', error);
+                let errorMessage = 'Failed to send reset email. Please try again.';
+                
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email address';
+                    showError('resetEmail', errorMessage);
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email format';
+                    showError('resetEmail', errorMessage);
+                }
+                
+                showToast(errorMessage, 'error');
+            } finally {
+                setLoading(submitBtn, false);
+            }
+        });
+
+        // Check if user is already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.emailVerified) {
+                // User is already logged in and verified, redirect to home
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Close modal when clicking outside
+        resetPasswordModal.addEventListener('click', (e) => {
+            if (e.target === resetPasswordModal) {
+                resetPasswordModal.classList.add('hidden');
+            }
+        });
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            window.FreshMartLogin.initializeLoginPage();
+            showToast('Welcome to FreshMart! Please sign in to continue.', 'info', 3000);
         });
     </script>
 </body>
