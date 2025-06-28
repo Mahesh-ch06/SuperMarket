@@ -130,18 +130,19 @@
                             method="POST"
                             class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
 
-                            <!-- Web3Forms Configuration -->
+                            <!-- Web3Forms Configuration with Your Access Key -->
                             <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8" />
-                            <input type="hidden" name="subject" value="New Contact Message from FreshMart" />
+                            <input type="hidden" name="subject" value="New Contact Message from FreshMart Website" />
                             <input type="hidden" name="from_name" value="FreshMart Contact Form" />
-                            <input type="hidden" name="redirect" value="https://web3forms.com/success" />
+                            
+                            <!-- Spam Protection -->
                             <input type="checkbox" name="botcheck" class="hidden" style="display:none;" />
 
                             <!-- Enhanced Form Fields -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="form-group">
                                     <label for="fullName" class="form-label">Full Name *</label>
-                                    <input type="text" id="fullName" name="Full Name" required
+                                    <input type="text" id="fullName" name="name" required
                                             class="form-input-field w-full" 
                                             placeholder="Enter your full name" />
                                 </div>
@@ -156,14 +157,14 @@
 
                             <div class="form-group">
                                 <label for="phoneNumber" class="form-label">Phone Number *</label>
-                                <input type="tel" id="phoneNumber" name="Phone Number" required
+                                <input type="tel" id="phoneNumber" name="phone" required
                                         class="form-input-field w-full" 
                                         placeholder="Enter your phone number" />
                             </div>
 
                             <div class="form-group">
                                 <label for="subject" class="form-label">Subject</label>
-                                <select id="subject" name="Subject" class="form-input-field w-full">
+                                <select id="subject" name="subject_category" class="form-input-field w-full">
                                     <option value="">Select a subject</option>
                                     <option value="General Inquiry">General Inquiry</option>
                                     <option value="Order Support">Order Support</option>
@@ -414,13 +415,69 @@
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <!-- Web3Forms Script (No longer needed for hCaptcha but keeping for form functionality) -->
-    <script src="https://web3forms.com/client/script.js" async defer></script>
+    <!-- Success Message -->
+    <div id="successMessage" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
+            <div class="text-6xl mb-4">✅</div>
+            <h3 class="text-2xl font-bold text-green-600 mb-4">Message Sent Successfully!</h3>
+            <p class="text-gray-600 mb-6">Thank you for contacting FreshMart. We'll get back to you within 24 hours.</p>
+            <button onclick="closeSuccessMessage()" class="submit-btn">Close</button>
+        </div>
+    </div>
+
     <script src="js/common.js"></script>
     <script src="js/contact.js"></script>
     <script>
+        // Success message handler
+        function showSuccessMessage() {
+            document.getElementById('successMessage').classList.remove('hidden');
+        }
+        
+        function closeSuccessMessage() {
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        // Enhanced form submission handler
         document.addEventListener('DOMContentLoaded', () => {
             window.FreshMartContact.initializeContactPage();
+            
+            const form = document.getElementById('contactForm');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span>Sending...</span>';
+                    
+                    try {
+                        const formData = new FormData(form);
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            // Show success message
+                            showSuccessMessage();
+                            form.reset();
+                            window.FreshMartCommon.showToast('Message sent successfully! 🎉', 'success', 4000);
+                        } else {
+                            throw new Error('Failed to send message');
+                        }
+                    } catch (error) {
+                        console.error('Form submission error:', error);
+                        window.FreshMartCommon.showToast('Failed to send message. Please try again.', 'error', 5000);
+                    } finally {
+                        // Reset button
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
         });
     </script>
 </body>
