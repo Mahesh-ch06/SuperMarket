@@ -4,18 +4,18 @@
 class FormValidator {
     constructor() {
         this.rules = {
-            fullName: {
+            name: {
                 required: true,
                 minLength: 2,
                 pattern: /^[a-zA-Z\s]+$/,
                 message: 'Please enter a valid name (letters only, minimum 2 characters)'
             },
-            emailAddress: {
+            email: {
                 required: true,
                 pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                 message: 'Please enter a valid email address'
             },
-            phoneNumber: {
+            phone: {
                 required: true,
                 pattern: /^[\+]?[1-9][\d]{0,15}$/,
                 message: 'Please enter a valid phone number'
@@ -219,16 +219,12 @@ function initializeFormValidation() {
     
     if (!form) return;
     
-    // Add error elements to form
-    const fields = ['fullName', 'emailAddress', 'phoneNumber', 'message'];
+    // Add error elements to form (they're already in HTML now)
+    const fields = ['name', 'email', 'phone', 'message'];
+    
     fields.forEach(fieldName => {
         const field = document.getElementById(fieldName);
         if (field) {
-            const errorElement = document.createElement('div');
-            errorElement.id = fieldName + 'Error';
-            errorElement.className = 'error-message';
-            field.parentNode.appendChild(errorElement);
-            
             // Real-time validation
             field.addEventListener('blur', function() {
                 const validation = validator.validateField(fieldName, this.value);
@@ -255,9 +251,7 @@ function initializeFormValidation() {
         
         // Validate all fields
         fields.forEach(fieldName => {
-            const value = formData.get(fieldName === 'emailAddress' ? 'email' : 
-                                     fieldName === 'phoneNumber' ? 'Phone Number' : 
-                                     fieldName === 'fullName' ? 'Full Name' : fieldName);
+            const value = formData.get(fieldName);
             const validation = validator.validateField(fieldName, value);
             
             if (!validation.isValid) {
