@@ -45,6 +45,98 @@
         .toast.error { background-color: #ef4444; }
         .toast.info { background-color: #3b82f6; }
 
+        /* Checkout Modal Styles */
+        .checkout-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .checkout-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .checkout-modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .checkout-modal.show .checkout-modal-content {
+            transform: translateY(0);
+        }
+
+        /* Step indicator */
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin: 0 4px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #6ec88e;
+            color: white;
+        }
+
+        .step.completed {
+            background: #22c55e;
+            color: white;
+        }
+
+        .step-line {
+            width: 32px;
+            height: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .step-line.completed {
+            background: #22c55e;
+        }
+
+        /* Form step animations */
+        .checkout-step {
+            display: none;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        }
+
+        .checkout-step.active {
+            display: block;
+            opacity: 1;
+            transform: translateX(0);
+        }
+
         /* Mobile responsive improvements */
         @media (max-width: 640px) {
             .toast {
@@ -57,6 +149,12 @@
                 bottom: 10px;
                 right: 10px;
                 left: 10px;
+            }
+            
+            .checkout-modal-content {
+                width: 95%;
+                margin: 16px;
+                max-height: 85vh;
             }
             
             .cart-item {
@@ -130,6 +228,36 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Coupon styles */
+        .coupon-applied {
+            background: #dcfce7;
+            border: 1px solid #22c55e;
+            color: #166534;
+        }
+
+        /* Payment method styles */
+        .payment-method {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #6ec88e;
+        }
+
+        .payment-method.selected {
+            border-color: #6ec88e;
+            background: #f0fdf4;
+        }
+
+        .payment-method.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
@@ -181,6 +309,269 @@
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="checkout-modal">
+        <div class="checkout-modal-content">
+            <div class="p-6">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Checkout</h2>
+                    <button id="close-checkout-modal" class="text-gray-400 hover:text-gray-600 touch-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Step Indicator -->
+                <div class="step-indicator">
+                    <div id="step1" class="step active">1</div>
+                    <div class="step-line" id="line1"></div>
+                    <div id="step2" class="step">2</div>
+                    <div class="step-line" id="line2"></div>
+                    <div id="step3" class="step">3</div>
+                    <div class="step-line" id="line3"></div>
+                    <div id="step4" class="step">4</div>
+                </div>
+
+                <!-- Step 1: Address -->
+                <div id="address-step" class="checkout-step active">
+                    <h3 class="text-xl font-semibold mb-4">Delivery Address</h3>
+                    <form id="address-form" class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                                <input type="text" id="fullName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                                <input type="tel" id="phoneNumber" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                            <textarea id="streetAddress" required rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent" placeholder="House/Flat No., Building, Street"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                                <input type="text" id="city" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                                <select id="state" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                                    <option value="">Select State</option>
+                                    <option value="Maharashtra">Maharashtra</option>
+                                    <option value="Delhi">Delhi</option>
+                                    <option value="Karnataka">Karnataka</option>
+                                    <option value="Tamil Nadu">Tamil Nadu</option>
+                                    <option value="Gujarat">Gujarat</option>
+                                    <option value="Rajasthan">Rajasthan</option>
+                                    <option value="West Bengal">West Bengal</option>
+                                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                    <option value="Telangana">Telangana</option>
+                                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">PIN Code *</label>
+                                <input type="text" id="pincode" required pattern="[0-9]{6}" maxlength="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Landmark (Optional)</label>
+                            <input type="text" id="landmark" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent" placeholder="Near hospital, school, etc.">
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Continue to Coupons
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Step 2: Coupons -->
+                <div id="coupon-step" class="checkout-step">
+                    <h3 class="text-xl font-semibold mb-4">Apply Coupon</h3>
+                    <div class="space-y-4">
+                        <div class="flex gap-3">
+                            <input type="text" id="coupon-code" placeholder="Enter coupon code" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6ec88e] focus:border-transparent">
+                            <button id="apply-coupon-btn" class="bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-lg transition-colors touch-button">
+                                Apply
+                            </button>
+                        </div>
+                        <div id="coupon-message" class="hidden text-sm"></div>
+                        
+                        <!-- Available Coupons -->
+                        <div class="mt-6">
+                            <h4 class="font-semibold text-gray-900 mb-3">Available Coupons</h4>
+                            <div class="space-y-3">
+                                <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-[#6ec88e] transition-colors coupon-card" data-code="FRESH10">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="font-semibold text-[#6ec88e]">FRESH10</div>
+                                            <div class="text-sm text-gray-600">Get 10% off on orders above ₹500</div>
+                                        </div>
+                                        <button class="text-[#6ec88e] font-medium text-sm apply-coupon-card">Apply</button>
+                                    </div>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-[#6ec88e] transition-colors coupon-card" data-code="SAVE50">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="font-semibold text-[#6ec88e]">SAVE50</div>
+                                            <div class="text-sm text-gray-600">Flat ₹50 off on orders above ₹300</div>
+                                        </div>
+                                        <button class="text-[#6ec88e] font-medium text-sm apply-coupon-card">Apply</button>
+                                    </div>
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-[#6ec88e] transition-colors coupon-card" data-code="WELCOME20">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <div class="font-semibold text-[#6ec88e]">WELCOME20</div>
+                                            <div class="text-sm text-gray-600">20% off for new customers (max ₹100)</div>
+                                        </div>
+                                        <button class="text-[#6ec88e] font-medium text-sm apply-coupon-card">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button id="back-to-address" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Back
+                            </button>
+                            <button id="continue-to-payment" class="bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Continue to Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Payment -->
+                <div id="payment-step" class="checkout-step">
+                    <h3 class="text-xl font-semibold mb-4">Payment Method</h3>
+                    <div class="space-y-4">
+                        <div class="payment-method selected" data-method="cod">
+                            <div class="flex items-center">
+                                <input type="radio" name="payment" value="cod" checked class="mr-3">
+                                <div class="flex-1">
+                                    <div class="font-semibold">Cash on Delivery</div>
+                                    <div class="text-sm text-gray-600">Pay when your order arrives</div>
+                                </div>
+                                <div class="text-green-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H4.5m2.25 0v3m0 0v.75A.75.75 0 016 10.5h-.75m0 0V9.75c0-.621.504-1.125 1.125-1.125H7.5m0 0v.375c0 .621-.504 1.125-1.125 1.125H6.75m0 0V12m0 0v.75A.75.75 0 016 13.5h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H7.5m0 0V12m0 0v.375c0 .621-.504 1.125-1.125 1.125H6.75m0 0v.75A.75.75 0 006 15h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H7.5m0 0v.375c0 .621-.504 1.125-1.125 1.125H6.75m0 0V15m0 0v.75A.75.75 0 006 16.5h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H7.5" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method disabled" data-method="online">
+                            <div class="flex items-center">
+                                <input type="radio" name="payment" value="online" disabled class="mr-3">
+                                <div class="flex-1">
+                                    <div class="font-semibold">Online Payment</div>
+                                    <div class="text-sm text-gray-600">UPI, Cards, Net Banking</div>
+                                    <div class="text-xs text-orange-600 mt-1">Coming Soon!</div>
+                                </div>
+                                <div class="text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-method disabled" data-method="wallet">
+                            <div class="flex items-center">
+                                <input type="radio" name="payment" value="wallet" disabled class="mr-3">
+                                <div class="flex-1">
+                                    <div class="font-semibold">Digital Wallet</div>
+                                    <div class="text-sm text-gray-600">Paytm, PhonePe, Google Pay</div>
+                                    <div class="text-xs text-orange-600 mt-1">Coming Soon!</div>
+                                </div>
+                                <div class="text-gray-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button id="back-to-coupon" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Back
+                            </button>
+                            <button id="continue-to-review" class="bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Review Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Place Order -->
+                <div id="review-step" class="checkout-step">
+                    <h3 class="text-xl font-semibold mb-4">Review Your Order</h3>
+                    <div class="space-y-6">
+                        <!-- Order Summary -->
+                        <div id="order-summary" class="bg-gray-50 rounded-lg p-4">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+
+                        <!-- Address Summary -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">Delivery Address</h4>
+                            <div id="address-summary" class="text-sm text-gray-600">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Payment Summary -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-semibold mb-2">Payment Method</h4>
+                            <div id="payment-summary" class="text-sm text-gray-600">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h4 class="font-semibold mb-3">Price Details</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span>Subtotal</span>
+                                    <span id="review-subtotal">₹0.00</span>
+                                </div>
+                                <div class="flex justify-between text-green-600" id="discount-row" style="display: none;">
+                                    <span>Discount</span>
+                                    <span id="review-discount">-₹0.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Delivery Fee</span>
+                                    <span id="review-delivery">₹0.00</span>
+                                </div>
+                                <hr>
+                                <div class="flex justify-between font-semibold text-lg">
+                                    <span>Total</span>
+                                    <span id="review-total">₹0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between pt-4">
+                            <button id="back-to-payment" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg transition-colors touch-button">
+                                Back
+                            </button>
+                            <button id="place-order-btn" class="bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-8 rounded-lg transition-colors touch-button">
+                                <span>Place Order</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
@@ -206,12 +597,20 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         let cartItems = [];
+        let appliedCoupon = null;
+        let checkoutData = {
+            address: {},
+            paymentMethod: 'cod',
+            coupon: null
+        };
+
         const mainContent = document.getElementById('main-content');
         const confirmationModal = document.getElementById('confirmation-modal');
         const confirmationMessage = document.getElementById('confirmation-message');
         const confirmBtn = document.getElementById('confirm-btn');
         const cancelBtn = document.getElementById('cancel-btn');
-        const modalContentElement = confirmationModal.querySelector('div'); // Get the inner modal content div
+        const modalContentElement = confirmationModal.querySelector('div');
+        const checkoutModal = document.getElementById('checkout-modal');
         
         let actionToConfirm = null;
 
@@ -228,6 +627,41 @@
                 toast.classList.remove('show');
                 setTimeout(() => toast.parentNode?.removeChild(toast), 300);
             }, duration);
+        }
+
+        // --- Coupon System ---
+        const coupons = {
+            'FRESH10': { type: 'percentage', value: 10, minOrder: 500, description: '10% off on orders above ₹500' },
+            'SAVE50': { type: 'fixed', value: 50, minOrder: 300, description: 'Flat ₹50 off on orders above ₹300' },
+            'WELCOME20': { type: 'percentage', value: 20, minOrder: 200, maxDiscount: 100, description: '20% off for new customers (max ₹100)' }
+        };
+
+        function applyCoupon(code, subtotal) {
+            const coupon = coupons[code.toUpperCase()];
+            if (!coupon) {
+                return { success: false, message: 'Invalid coupon code' };
+            }
+
+            if (subtotal < coupon.minOrder) {
+                return { success: false, message: `Minimum order amount ₹${coupon.minOrder} required` };
+            }
+
+            let discount = 0;
+            if (coupon.type === 'percentage') {
+                discount = (subtotal * coupon.value) / 100;
+                if (coupon.maxDiscount) {
+                    discount = Math.min(discount, coupon.maxDiscount);
+                }
+            } else {
+                discount = coupon.value;
+            }
+
+            return {
+                success: true,
+                discount: discount,
+                coupon: coupon,
+                message: `Coupon applied! You saved ₹${discount.toFixed(2)}`
+            };
         }
 
         // Helper to open the confirmation modal with animation
@@ -251,6 +685,152 @@
             }, 300);
         }
 
+        // --- Checkout Modal Functions ---
+        function openCheckoutModal() {
+            checkoutModal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+            populateUserData();
+        }
+
+        function closeCheckoutModal() {
+            checkoutModal.classList.remove('show');
+            document.body.style.overflow = '';
+            resetCheckoutSteps();
+        }
+
+        function populateUserData() {
+            if (currentUser) {
+                document.getElementById('fullName').value = currentUser.displayName || '';
+                // You can populate other fields from user profile if available
+            }
+        }
+
+        function resetCheckoutSteps() {
+            // Reset to step 1
+            goToStep(1);
+            // Clear forms
+            document.getElementById('address-form').reset();
+            document.getElementById('coupon-code').value = '';
+            appliedCoupon = null;
+            updateCouponDisplay();
+        }
+
+        function goToStep(stepNumber) {
+            // Update step indicators
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                const line = document.getElementById(`line${i}`);
+                
+                if (i < stepNumber) {
+                    step.classList.remove('active');
+                    step.classList.add('completed');
+                    if (line) line.classList.add('completed');
+                } else if (i === stepNumber) {
+                    step.classList.remove('completed');
+                    step.classList.add('active');
+                    if (line) line.classList.remove('completed');
+                } else {
+                    step.classList.remove('active', 'completed');
+                    if (line) line.classList.remove('completed');
+                }
+            }
+
+            // Show/hide step content
+            document.querySelectorAll('.checkout-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            const stepNames = ['', 'address-step', 'coupon-step', 'payment-step', 'review-step'];
+            const currentStep = document.getElementById(stepNames[stepNumber]);
+            if (currentStep) {
+                setTimeout(() => {
+                    currentStep.classList.add('active');
+                }, 100);
+            }
+
+            // Update review step if we're on step 4
+            if (stepNumber === 4) {
+                updateReviewStep();
+            }
+        }
+
+        function updateCouponDisplay() {
+            const messageEl = document.getElementById('coupon-message');
+            const codeInput = document.getElementById('coupon-code');
+            
+            if (appliedCoupon) {
+                messageEl.textContent = appliedCoupon.message;
+                messageEl.className = 'text-sm text-green-600 coupon-applied p-2 rounded';
+                messageEl.classList.remove('hidden');
+                codeInput.value = appliedCoupon.code;
+                codeInput.classList.add('coupon-applied');
+            } else {
+                messageEl.classList.add('hidden');
+                codeInput.classList.remove('coupon-applied');
+            }
+        }
+
+        function updateReviewStep() {
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let discount = 0;
+            let deliveryFee = subtotal >= 500 ? 0 : 40; // Free delivery above ₹500
+
+            if (appliedCoupon) {
+                discount = appliedCoupon.discount;
+            }
+
+            const total = subtotal - discount + deliveryFee;
+
+            // Update order summary
+            let orderSummaryHtml = '<h4 class="font-semibold mb-3">Order Items</h4>';
+            cartItems.forEach(item => {
+                orderSummaryHtml += `
+                    <div class="flex justify-between items-center py-2">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded object-cover">
+                            <div>
+                                <div class="font-medium">${item.name}</div>
+                                <div class="text-sm text-gray-600">₹${item.price} × ${item.quantity}</div>
+                            </div>
+                        </div>
+                        <div class="font-semibold">₹${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('order-summary').innerHTML = orderSummaryHtml;
+
+            // Update address summary
+            const address = checkoutData.address;
+            document.getElementById('address-summary').innerHTML = `
+                <div><strong>${address.fullName}</strong></div>
+                <div>${address.streetAddress}</div>
+                <div>${address.city}, ${address.state} - ${address.pincode}</div>
+                <div>Phone: ${address.phoneNumber}</div>
+            `;
+
+            // Update payment summary
+            document.getElementById('payment-summary').innerHTML = `
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H4.5m2.25 0v3m0 0v.75A.75.75 0 016 10.5h-.75m0 0V9.75c0-.621.504-1.125 1.125-1.125H7.5m0 0v.375c0 .621-.504 1.125-1.125 1.125H6.75m0 0V12m0 0v.75A.75.75 0 016 13.5h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H7.5m0 0V12m0 0v.375c0 .621-.504 1.125-1.125 1.125H6.75m0 0v.75A.75.75 0 006 15h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H7.5" />
+                    </svg>
+                    <span>Cash on Delivery</span>
+                </div>
+            `;
+
+            // Update price breakdown
+            document.getElementById('review-subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('review-delivery').textContent = deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`;
+            document.getElementById('review-total').textContent = `₹${total.toFixed(2)}`;
+
+            if (discount > 0) {
+                document.getElementById('discount-row').style.display = 'flex';
+                document.getElementById('review-discount').textContent = `-₹${discount.toFixed(2)}`;
+            } else {
+                document.getElementById('discount-row').style.display = 'none';
+            }
+        }
+
         function loadCart() {
             const savedCart = localStorage.getItem('freshmartCart');
             cartItems = savedCart ? JSON.parse(savedCart) : [];
@@ -265,7 +845,6 @@
             if (item) {
                 item.quantity += change;
                 if (item.quantity <= 0) {
-                    // remove item if quantity is 0 or less
                     cartItems = cartItems.filter(i => i.id !== productId);
                 }
             }
@@ -313,15 +892,19 @@
 
         function saveOrderToLocalStorage(orderData) {
             const existingOrders = JSON.parse(localStorage.getItem('freshmartOrders') || '[]');
-            existingOrders.unshift(orderData); // Add new order at the beginning
+            existingOrders.unshift(orderData);
             localStorage.setItem('freshmartOrders', JSON.stringify(existingOrders));
+            
+            // Also save to admin orders
+            const adminOrders = JSON.parse(localStorage.getItem('adminOrders') || '[]');
+            adminOrders.unshift(orderData);
+            localStorage.setItem('adminOrders', JSON.stringify(adminOrders));
+            
             return orderData.id;
         }
 
         async function proceedToCheckout() {
             console.log('🛒 Checkout initiated');
-            console.log('Current user:', currentUser);
-            console.log('Cart items:', cartItems);
 
             if (!currentUser) {
                 console.log('❌ User not logged in');
@@ -332,93 +915,98 @@
                 return;
             }
 
-            // Check if cart is empty before proceeding to checkout
             if (cartItems.length === 0) {
                 console.log('❌ Cart is empty');
                 showToast('Your cart is empty. Please add items before checking out.', 'info');
                 return;
             }
 
-            openConfirmationModal('Proceed to checkout with your current items?', async () => {
-                closeConfirmationModal(); // Close confirmation modal immediately
+            openCheckoutModal();
+        }
 
-                const checkoutBtn = document.getElementById('checkout-btn');
-                setButtonLoading(checkoutBtn, true, 'Proceed to Checkout');
+        async function placeOrder() {
+            const placeOrderBtn = document.getElementById('place-order-btn');
+            setButtonLoading(placeOrderBtn, true, 'Place Order');
 
-                try {
-                    console.log('💰 Calculating total...');
-                    const grandTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                    console.log('Grand total:', grandTotal);
-                    
-                    // Create comprehensive order data for localStorage
-                    const orderId = generateOrderId();
-                    const orderData = {
-                        id: orderId,
-                        userId: currentUser.uid,
-                        userName: currentUser.displayName || currentUser.email || 'Guest User',
-                        userEmail: currentUser.email || 'No email provided',
-                        items: cartItems.map(item => ({
-                            id: item.id,
-                            name: item.name,
-                            price: parseFloat(item.price),
-                            quantity: parseInt(item.quantity),
-                            image: item.image || 'https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop',
-                            unit: item.unit || 'unit',
-                            subtotal: parseFloat((item.price * item.quantity).toFixed(2))
-                        })),
-                        totalAmount: parseFloat(grandTotal.toFixed(2)),
-                        orderDate: new Date().toISOString(),
-                        status: 'Pending',
-                        paymentStatus: 'Pending',
-                        deliveryAddress: {
-                            street: 'Default Address',
-                            city: 'Mumbai',
-                            state: 'Maharashtra',
-                            pincode: '400001',
-                            country: 'India'
-                        },
-                        orderNotes: '',
-                        estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days from now
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                    };
+            try {
+                const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                let discount = 0;
+                let deliveryFee = subtotal >= 500 ? 0 : 40;
 
-                    console.log('📦 Order data prepared:', orderData);
-
-                    // Save order to localStorage
-                    console.log('💾 Saving order to localStorage...');
-                    const savedOrderId = saveOrderToLocalStorage(orderData);
-                    
-                    console.log('✅ Order placed successfully with ID:', savedOrderId);
-                    
-                    showToast('🎉 Order placed successfully!', 'success', 4000);
-                    showToast('📧 Order confirmation sent to your email!', 'info', 3000);
-
-                    // Clear cart after successful order
-                    cartItems = [];
-                    saveCart();
-                    renderCart();
-                    
-                    // Show success message and redirect
-                    setTimeout(() => {
-                        showToast('Redirecting to My Orders...', 'info', 2000);
-                        setTimeout(() => {
-                            window.location.href = 'my_orders.html';
-                        }, 1000);
-                    }, 2000);
-
-                } catch (error) {
-                    console.error("❌ Error placing order:", error);
-                    showToast(`❌ Failed to place order: ${error.message}`, 'error', 6000);
-                } finally {
-                    setButtonLoading(checkoutBtn, false, 'Proceed to Checkout');
+                if (appliedCoupon) {
+                    discount = appliedCoupon.discount;
                 }
-            });
+
+                const total = subtotal - discount + deliveryFee;
+
+                const orderId = generateOrderId();
+                const orderData = {
+                    id: orderId,
+                    userId: currentUser.uid,
+                    userName: checkoutData.address.fullName || currentUser.displayName || currentUser.email || 'Guest User',
+                    userEmail: currentUser.email || 'No email provided',
+                    items: cartItems.map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        price: parseFloat(item.price),
+                        quantity: parseInt(item.quantity),
+                        image: item.image || 'https://images.pexels.com/photos/1300972/pexels-photo-1300972.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop',
+                        unit: item.unit || 'unit',
+                        subtotal: parseFloat((item.price * item.quantity).toFixed(2))
+                    })),
+                    subtotal: parseFloat(subtotal.toFixed(2)),
+                    discount: parseFloat(discount.toFixed(2)),
+                    deliveryFee: parseFloat(deliveryFee.toFixed(2)),
+                    totalAmount: parseFloat(total.toFixed(2)),
+                    orderDate: new Date().toISOString(),
+                    status: 'Pending',
+                    paymentMethod: checkoutData.paymentMethod,
+                    paymentStatus: checkoutData.paymentMethod === 'cod' ? 'Pending' : 'Paid',
+                    deliveryAddress: checkoutData.address,
+                    couponApplied: appliedCoupon ? {
+                        code: appliedCoupon.code,
+                        discount: appliedCoupon.discount,
+                        description: appliedCoupon.description
+                    } : null,
+                    orderNotes: '',
+                    estimatedDelivery: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+
+                console.log('📦 Order data prepared:', orderData);
+
+                const savedOrderId = saveOrderToLocalStorage(orderData);
+                console.log('✅ Order placed successfully with ID:', savedOrderId);
+                
+                showToast('🎉 Order placed successfully!', 'success', 4000);
+                showToast('📧 Order confirmation sent to your email!', 'info', 3000);
+
+                // Clear cart after successful order
+                cartItems = [];
+                saveCart();
+                closeCheckoutModal();
+                renderCart();
+                
+                // Show success message and redirect
+                setTimeout(() => {
+                    showToast('Redirecting to My Orders...', 'info', 2000);
+                    setTimeout(() => {
+                        window.location.href = 'my_orders.html';
+                    }, 1000);
+                }, 2000);
+
+            } catch (error) {
+                console.error("❌ Error placing order:", error);
+                showToast(`❌ Failed to place order: ${error.message}`, 'error', 6000);
+            } finally {
+                setButtonLoading(placeOrderBtn, false, 'Place Order');
+            }
         }
 
         function renderCart() {
-            loadCart(); // Load the latest cart data before rendering
-            mainContent.innerHTML = ''; // Clear previous content
+            loadCart();
+            mainContent.innerHTML = '';
 
             if (cartItems.length === 0) {
                 mainContent.innerHTML = `
@@ -444,7 +1032,6 @@
             let cartListHTML = '';
 
             cartItems.forEach(item => {
-                // Ensure item.quantity is a number, default to 1 if not
                 const quantity = typeof item.quantity === 'number' ? item.quantity : 1;
                 const itemTotal = item.price * quantity;
                 subtotal += itemTotal;
@@ -478,7 +1065,8 @@
                 `;
             });
             
-            const grandTotal = subtotal; // Assuming no taxes/fees for now
+            const deliveryFee = subtotal >= 500 ? 0 : 40;
+            const grandTotal = subtotal + deliveryFee;
 
             const cartPageHTML = `
                 <div class="max-w-4xl mx-auto py-6 sm:py-10 px-4">
@@ -497,6 +1085,11 @@
                                             <span class="font-medium text-gray-600">Subtotal:</span>
                                             <span class="font-semibold text-gray-800">₹${subtotal.toFixed(2)}</span>
                                         </div>
+                                        <div class="flex justify-between text-sm">
+                                            <span class="text-gray-600">Delivery Fee:</span>
+                                            <span class="text-gray-800">${deliveryFee === 0 ? 'FREE' : '₹' + deliveryFee.toFixed(2)}</span>
+                                        </div>
+                                        ${subtotal < 500 ? `<div class="text-xs text-gray-500">Free delivery on orders above ₹500</div>` : ''}
                                         <div class="flex justify-between text-lg sm:text-xl border-t pt-2">
                                             <span class="font-bold text-gray-800">Grand Total:</span>
                                             <span class="font-bold text-gray-900">₹${grandTotal.toFixed(2)}</span>
@@ -536,6 +1129,82 @@
             document.getElementById('empty-cart-btn')?.addEventListener('click', emptyCart);
             document.getElementById('checkout-btn')?.addEventListener('click', proceedToCheckout);
         }
+
+        // --- Checkout Event Listeners ---
+        document.getElementById('close-checkout-modal').addEventListener('click', closeCheckoutModal);
+
+        // Address form
+        document.getElementById('address-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            checkoutData.address = {
+                fullName: document.getElementById('fullName').value,
+                phoneNumber: document.getElementById('phoneNumber').value,
+                streetAddress: document.getElementById('streetAddress').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                pincode: document.getElementById('pincode').value,
+                landmark: document.getElementById('landmark').value
+            };
+            goToStep(2);
+        });
+
+        // Coupon application
+        document.getElementById('apply-coupon-btn').addEventListener('click', () => {
+            const code = document.getElementById('coupon-code').value.trim();
+            if (!code) {
+                showToast('Please enter a coupon code', 'error');
+                return;
+            }
+
+            const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const result = applyCoupon(code, subtotal);
+
+            if (result.success) {
+                appliedCoupon = {
+                    code: code.toUpperCase(),
+                    discount: result.discount,
+                    description: result.coupon.description,
+                    message: result.message
+                };
+                showToast(result.message, 'success');
+            } else {
+                showToast(result.message, 'error');
+            }
+            updateCouponDisplay();
+        });
+
+        // Coupon card application
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('apply-coupon-card')) {
+                const code = e.target.closest('.coupon-card').dataset.code;
+                document.getElementById('coupon-code').value = code;
+                document.getElementById('apply-coupon-btn').click();
+            }
+        });
+
+        // Navigation buttons
+        document.getElementById('back-to-address').addEventListener('click', () => goToStep(1));
+        document.getElementById('continue-to-payment').addEventListener('click', () => goToStep(3));
+        document.getElementById('back-to-coupon').addEventListener('click', () => goToStep(2));
+        document.getElementById('continue-to-review').addEventListener('click', () => goToStep(4));
+        document.getElementById('back-to-payment').addEventListener('click', () => goToStep(3));
+
+        // Payment method selection
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', () => {
+                if (method.classList.contains('disabled')) return;
+                
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                method.classList.add('selected');
+                
+                const radio = method.querySelector('input[type="radio"]');
+                radio.checked = true;
+                checkoutData.paymentMethod = radio.value;
+            });
+        });
+
+        // Place order
+        document.getElementById('place-order-btn').addEventListener('click', placeOrder);
         
         // Confirmation Modal Listeners
         confirmBtn.addEventListener('click', () => {
@@ -552,13 +1221,8 @@
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             console.log('🔐 Auth state changed:', user ? `Logged in as ${user.email}` : 'Not logged in');
-            // Only render cart after auth state is known
             renderCart();
         });
-
-        // Initial Render
-        // The initial render is now triggered by onAuthStateChanged to ensure `currentUser` is set.
-        // If there's no immediate auth state (e.g., first load), it will still render.
     });
 </script>
 </body>
