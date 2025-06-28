@@ -1,0 +1,45 @@
+/* Dashboard cards */
+.dashboard-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar styles */
+.sidebar {
+    transition: transform 0.3s ease;
+}
+
+.sidebar-overlay {
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
+
+/* Mobile responsive improvements for admin */
+@media (max-width: 640px) {
+    .order-card {
+        padding: 16px;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .order-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
