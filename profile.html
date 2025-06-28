@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - FreshMart</title>
+    <title>Profile - FreshMart</title>
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Noto+Sans:wght@400;500;700;900&display=swap">
@@ -11,58 +11,6 @@
         body {
             font-family: 'Space Grotesk', 'Noto Sans', sans-serif;
         }
-        /* Custom styles for the modal */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0; /* For fade in/out transition */
-            transition: opacity 0.3s ease-in-out;
-        }
-        .modal.show {
-            opacity: 1;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%; /* Responsive width */
-            max-width: 500px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-20px); /* For slight slide-down transition */
-            transition: transform 0.3s ease-in-out;
-            max-height: 90vh; /* Limit modal height */
-            overflow-y: auto; /* Enable scroll within modal content if needed */
-        }
-        /* Adjusted modal content for forms to allow better alignment */
-        .modal-content.text-left {
-            text-align: left;
-        }
-        .close-button {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .close-button:hover,
-        .close-button:focus {
-            color: black;
-            text-decoration: none;
-        }
-
         /* Custom Toast Notification System */
         #toast-container {
             position: fixed;
@@ -92,1476 +40,350 @@
         .toast.error { background-color: #ef4444; }
         .toast.info { background-color: #3b82f6; }
 
-        /* Styles for collapsible order details */
-        .order-details-collapsible, .collapsible-section-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-        .order-details-collapsible.expanded, .collapsible-section-content.expanded {
-            max-height: 500px; /* Adjust based on max expected content height */
-            transition: max-height 0.5s ease-in;
-        }
-        .toggle-details-btn svg, .collapsible-section-toggle svg {
-            transition: transform 0.3s ease-in-out;
-        }
-        .toggle-details-btn.expanded svg, .collapsible-section-toggle.expanded svg {
-            transform: rotate(180deg);
-        }
-
-        /* Filter button active state */
-        .filter-btn.active {
-            background-color: #38a169;
-            color: white;
-        }
-
-        /* Toggle Switch for Preferences */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            -webkit-transition: .4s;
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            -webkit-transition: .4s;
-            transition: .4s;
+        /* Loader styles */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #38a169;
             border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
 
-        input:checked + .slider {
-            background-color: #38a169;
-        }
-
-        input:focus + .slider {
-            box-shadow: 0 0 1px #38a169;
-        }
-
-        input:checked + .slider:before {
-            -webkit-transform: translateX(16px);
-            -ms-transform: translateX(16px);
-            transform: translateX(16px);
-        }
-
-        /* Red for delete actions */
-        .action-delete {
-            color: #ef4444; /* red-500 */
-            border-color: #fca5a5; /* red-300 */
-            background-color: #fee2e2; /* red-100 */
-        }
-        .action-delete:hover {
-            background-color: #fecaca; /* red-200 */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body class="bg-[#f9fbfa]">
 
-    <div class="relative flex size-full min-h-screen flex-col bg-[#f9fbfa] group/design-root overflow-x-hidden" style='font-family: "Space Grotesk", "Noto Sans", sans-serif;'>
-        <div class="layout-container flex h-full grow flex-col">
-            <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 py-3 sm:px-10">
-                <div class="flex items-center justify-between">
-                    <a href="index.html" class="flex items-center gap-3 text-[#111813]">
-                        <div class="size-4">
-                            <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
-                        </div>
-                        <h2 class="text-[#111813] text-lg font-bold leading-tight tracking-[-0.015em]">FreshMart</h2>
+    <div class="relative flex min-h-screen flex-col">
+        <!-- Header -->
+        <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-solid border-b-[#eaf0ec] px-4 sm:px-10 py-3">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center gap-3 text-[#111813]">
+                    <div class="size-5">
+                        <svg viewBox="0 0 48 48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path></svg>
+                    </div>
+                    <h1 class="text-[#111813] text-lg font-bold tracking-[-0.015em]">FreshMart</h1>
+                </a>
+                <div class="flex items-center gap-3">
+                    <a href="shop.html" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-[#6ec88e] hover:bg-green-500 text-[#111813] text-sm font-bold tracking-[0.015em]">
+                        <span>Shop</span>
                     </a>
-                    <div class="flex flex-1 justify-end gap-4 sm:gap-8">
-                        <nav class="flex items-center gap-4 sm:gap-9">
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="shop.html" id="navShop">Shop</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="deals.html" id="navDeals">Deals</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navRecipes">Recipes</a>
-                            <a class="text-[#111813] text-sm font-medium leading-normal hover:text-[#38a169]" href="#" id="navAboutUs">About Us</a>
-                        </nav>
-                        <div class="flex items-center flex-wrap justify-end gap-x-2 gap-y-1">
-                            <span id="userEmailDisplay" class="text-[#2f855a] text-sm font-medium hidden"></span>
-                            <button
-                                id="profileBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#6ec88e] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-green-600 transition-colors"
-                            >
-                                <span class="truncate">Profile</span>
-                            </button>
-                            <button
-                                id="myOrdersBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                            >
-                                <span class="truncate">My Orders</span>
-                            </button>
-                            <button
-                                id="loginLogoutBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2f855a] transition-colors"
-                            >
-                                <span class="truncate">Login</span>
-                            </button>
-                            <button
-                                id="cartBtn"
-                                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-300 transition-colors"
-                            >
-                                <span class="truncate">Cart (<span id="cartCount">0</span>)</span>
-                            </button>
-                        </div>
-                    </div>
-                </header>
-
-            <main class="flex-1 px-4 py-5 sm:px-6 lg:px-8">
-                <div class="max-w-4xl mx-auto space-y-8">
-                    <h1 class="text-3xl font-bold text-gray-800 mb-8">My Profile</h1>
-
-                    <!-- User Information Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <h2 class="text-xl font-bold text-gray-800 mb-4">Account Information</h2>
-                        <div class="space-y-4">
-                            <!-- User Avatar (Placeholder for now) -->
-                            <div class="flex flex-col items-center gap-4 py-4 border-b border-gray-200">
-                                <img id="userAvatar" src="https://placehold.co/100x100/b7cdbe/5e876d?text=User" alt="User Avatar" class="w-24 h-24 rounded-full object-cover border-2 border-[#eaf0ec]">
-                                <button id="changePhotoBtn" class="rounded-xl h-9 px-3 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Change Photo</button>
-                            </div>
-                            <div>
-                                <label for="userEmail" class="block text-sm font-medium text-gray-700">Email Address:</label>
-                                <input type="email" id="userEmail" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 cursor-not-allowed" readonly>
-                            </div>
-                            <div>
-                                <label for="displayName" class="block text-sm font-medium text-gray-700">Display Name:</label>
-                                <div class="flex flex-col sm:flex-row gap-2 mt-1">
-                                    <input type="text" id="displayName" class="block w-full rounded-md border-gray-300 shadow-sm" readonly>
-                                    <button id="editNameBtn" class="flex-shrink-0 rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Edit</button>
-                                    <button id="saveNameBtn" class="flex-shrink-0 rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors hidden">Save</button>
-                                    <button id="cancelNameBtn" class="flex-shrink-0 rounded-xl h-10 px-4 bg-red-100 text-red-700 text-sm font-bold hover:bg-red-200 transition-colors hidden">Cancel</button>
-                                </div>
-                            </div>
-                            <div>
-                                <button id="changePasswordBtn" class="rounded-xl h-10 px-4 bg-blue-500 text-white text-sm font-bold hover:bg-blue-600 transition-colors">Change Password (via Email)</button>
-                            </div>
-                            <div class="flex flex-col sm:flex-row justify-between items-center pt-4 border-t border-gray-200 mt-4 gap-4">
-                                <button id="deleteAccountBtn" class="rounded-xl h-10 px-6 bg-red-600 text-white font-bold hover:bg-red-700 transition-colors w-full sm:w-auto">Delete Account</button>
-                                <button id="logoutBtn" class="rounded-xl h-10 px-6 bg-gray-200 text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto">Logout</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- User Preferences Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>User Preferences</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="userPreferencesContent" class="collapsible-section-content pt-4 space-y-4">
-                            <div class="flex justify-between items-center">
-                                <label for="emailNotifications" class="text-gray-700">Email Notifications (Order Updates)</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="emailNotifications">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <label for="smsNotifications" class="text-gray-700">SMS Notifications (Delivery Alerts)</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="smsNotifications">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <label for="promotionalNotifications" class="text-gray-700">Promotional Emails</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="promotionalNotifications">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <label for="securityAlerts" class="text-gray-700">Account Security Alerts</label>
-                                <label class="switch">
-                                    <input type="checkbox" id="securityAlerts">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="pt-4 border-t border-gray-200 mt-4">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Privacy Settings</h3>
-                                <div class="flex justify-between items-center">
-                                    <label for="publicProfile" class="text-gray-700">Public Profile</label>
-                                    <label class="switch">
-                                        <input type="checkbox" id="publicProfile">
-                                        <span class="slider"></span>
-                                    </label>
-                                </div>
-                                <p class="text-sm text-gray-500 mt-1">Control who can see your public profile information.</p>
-                            </div>
-                            <button id="savePreferencesBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors mt-4">Save Preferences</button>
-                        </div>
-                    </section>
-
-                    <!-- My Addresses Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>My Addresses</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="myAddressesContent" class="collapsible-section-content pt-4 space-y-4">
-                            <div id="addressesList" class="space-y-4">
-                                <p class="text-gray-500 text-center py-4" id="noAddressesMessage">No addresses added yet.</p>
-                            </div>
-                            <button id="addAddressBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors mt-4">Add New Address</button>
-                        </div>
-                    </section>
-                    
-                    <!-- Payment Methods Section (Placeholder) -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>Payment Methods</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="paymentMethodsContent" class="collapsible-section-content pt-4 space-y-4">
-                            <p class="text-gray-500">Manage your payment cards and accounts.</p>
-                            <ul class="list-disc list-inside text-gray-700 space-y-2">
-                                <li>Visa **** 1234 (Expires 12/26) <span class="text-green-600 text-sm">(Default)</span></li>
-                                <li>Mastercard **** 5678 (Expires 08/25)</li>
-                            </ul>
-                            <button id="addPaymentMethodBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Add New Card</button>
-                        </div>
-                    </section>
-
-                    <!-- Referral Program Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>Refer a Friend</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="referralProgramContent" class="collapsible-section-content pt-4 space-y-4">
-                            <p class="text-gray-700 mb-3">Share FreshMart with your friends and earn rewards!</p>
-                            <div class="bg-gray-100 p-4 rounded-lg flex flex-col sm:flex-row items-center gap-4 border border-dashed border-gray-300">
-                                <span id="referralCode" class="text-xl font-bold text-[#38a169] flex-grow text-center sm:text-left">FRESHMART-XYZ789</span>
-                                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                                    <button id="copyReferralCodeBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors flex-shrink-0">Copy Code</button>
-                                    <button id="shareReferralBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors flex-shrink-0">Share</button>
-                                </div>
-                            </div>
-                            <div class="pt-4 border-t border-gray-200 mt-4">
-                                <h3 class="text-lg font-semibold text-gray-800 mb-2">Your Referrals</h3>
-                                <ul id="referralsList" class="list-none space-y-2 text-gray-700">
-                                    <li class="flex items-center gap-2 text-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-green-500">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Priya Sharma (<span class="text-xs text-gray-500">Joined: 2024-05-10</span>)
-                                    </li>
-                                    <li class="flex items-center gap-2 text-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-green-500">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Amit Kumar (<span class="text-xs text-gray-500">Joined: 2024-04-20</span>)
-                                    </li>
-                                    <li class="flex items-center gap-2 text-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-yellow-500">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-                                        </svg>
-                                        Rahul Singh (<span class="text-xs text-gray-500">Invite Sent: 2024-06-01</span>)
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- My Orders Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>My Orders</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="myOrdersMainContent" class="collapsible-section-content pt-4">
-                            <!-- Order Filters and Search -->
-                            <div class="flex flex-col sm:flex-row items-center gap-4 mb-6">
-                                <div class="relative w-full sm:w-1/2">
-                                    <input type="text" id="orderSearchInput" placeholder="Search by Order ID or item..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#38a169]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <div id="orderFilterButtons" class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
-                                    <button class="filter-btn active rounded-full px-4 py-2 text-sm font-medium bg-[#eaf0ec] text-[#111813] hover:bg-gray-300 transition-colors" data-status="All">All</button>
-                                    <button class="filter-btn rounded-full px-4 py-2 text-sm font-medium bg-[#eaf0ec] text-[#111813] hover:bg-gray-300 transition-colors" data-status="Pending">Pending</button>
-                                    <button class="filter-btn rounded-full px-4 py-2 text-sm font-medium bg-[#eaf0ec] text-[#111813] hover:bg-gray-300 transition-colors" data-status="Completed">Completed</button>
-                                    <button class="filter-btn rounded-full px-4 py-2 text-sm font-medium bg-[#eaf0ec] text-[#111813] hover:bg-gray-300 transition-colors" data-status="Cancelled">Cancelled</button>
-                                </div>
-                            </div>
-
-                            <div id="ordersList" class="space-y-4">
-                                <!-- Orders will be dynamically loaded here -->
-                                <p class="text-gray-500 text-center py-4" id="noOrdersMessage">Loading orders...</p>
-                            </div>
-
-                            <div class="mt-6 text-center">
-                                <button id="loadMoreOrdersBtn" class="rounded-xl h-10 px-6 bg-[#eaf0ec] text-[#111813] font-bold hover:bg-gray-300 transition-colors w-full sm:w-auto">Load More Orders</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Activity Log Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>Activity Log</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="activityLogContent" class="collapsible-section-content pt-4 space-y-3">
-                            <p class="text-gray-500 text-center py-4" id="noActivityMessage">No recent activity.</p>
-                            <ul id="activityList" class="list-none space-y-2">
-                                <!-- Activity entries will be dynamically loaded here -->
-                                <li class="flex items-center gap-2 text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#38a169] flex-shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <span class="text-sm">Logged in successfully (<span class="text-gray-500 text-xs">2024-06-24 10:30 AM</span>)</span>
-                                </li>
-                                <li class="flex items-center gap-2 text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-blue-500 flex-shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.185-3.185M12 1.5V12m-4.992-4.992H2.985m11.99 0h-.001ZM12 12h.008v.008H12V12zm-3.75 5.25H12m-5.625 0H5.25c-.621 0-1.125-.504-1.125-1.125v-3.75m-1.5 1.5v-1.5m-1.5 0H3c-.621 0-1.125-.504-1.125-1.125V9.75M4.5 9.75V8.25c0-.621.504-1.125 1.125-1.125h3.75" />
-                                    </svg>
-                                    <span class="text-sm">Display name updated (<span class="text-gray-500 text-xs">2024-06-23 04:15 PM</span>)</span>
-                                </li>
-                                <li class="flex items-center gap-2 text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-orange-500 flex-shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3H6a2.25 2.25 0 012.25 2.25V7.5m-8.25 0h8.25M9.75 9l-1.5 6m-3-6l-1.5 6M17.25 7.5H21a2.25 2.25 0 012.25 2.25v12.75a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 22.5V7.5M15 12.75l-1.5 6m-3-6l-1.5 6m-3-6L7.5 18m10.5-6h.008v.008h-.008v-.008z" />
-                                    </svg>
-                                    <span class="text-sm">Placed a new order (<span class="text-gray-500 text-xs">2024-06-22 09:00 AM</span>)</span>
-                                </li>
-                                <li class="flex items-center gap-2 text-gray-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-purple-500 flex-shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                                    </svg>
-                                    <span class="text-sm">Password reset requested (<span class="text-gray-500 text-xs">2024-06-21 02:00 PM</span>)</span>
-                                </li>
-                            </ul>
-                            <div class="mt-4 text-center">
-                                <button id="viewAllActivityBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">View All Activity</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Help & Support Section -->
-                    <section class="bg-white rounded-lg shadow-md p-6">
-                        <button class="collapsible-section-toggle w-full flex justify-between items-center text-xl font-bold text-gray-800 pb-4 border-b border-gray-200">
-                            <span>Help & Support</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </button>
-                        <div id="helpSupportContent" class="collapsible-section-content pt-4 space-y-4">
-                            <p class="text-gray-700">Need assistance? Find answers to common questions or contact our support team.</p>
-                            <div class="flex flex-col sm:flex-row gap-4">
-                                <button id="faqLinkBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors flex-1">Frequently Asked Questions</button>
-                                <button id="contactSupportBtn" class="rounded-xl h-10 px-4 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors flex-1">Contact Support</button>
-                            </div>
-                        </div>
-                    </section>
+                    <button id="logoutBtn" class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-xl h-10 px-4 bg-red-500 hover:bg-red-600 text-white text-sm font-bold tracking-[0.015em]">
+                        <span>Logout</span>
+                    </button>
                 </div>
-            </main>
-
-            <footer class="flex justify-center">
-                <div class="flex max-w-[960px] flex-1 flex-col">
-                    <footer class="flex flex-col gap-6 px-5 py-10 text-center @container">
-                        <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerContactUs">Contact Us</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerPrivacyPolicy">Privacy Policy</a>
-                            <a class="text-[#5e876d] text-base font-normal leading-normal min-w-40 hover:text-[#38a169]" href="#" id="footerTermsOfService">Terms of Service</a>
-                        </div>
-                        <div class="flex flex-wrap justify-center gap-4">
-                            <a href="https://twitter.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="TwitterLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M247.39,68.94A8,8,0,0,0,240,64H209.57A48.66,48.66,0,0,0,168.1,40a46.91,46.91,0,0,0-33.75,13.7A47.9,47.9,0,0,0,120,88v6.09C79.74,83.47,46.81,50.72,46.46,50.37a8,8,0,0,0-13.65,4.92c-4.31,47.79,9.57,79.77,22,98.18a110.93,110.93,0,0,0,21.88,24.2c-15.23,17.53-39.21,26.74-39.47,26.84a8,8,0,0,0-3.85,11.93c.75,1.12,3.75,5.05,11.08,8.72C53.51,229.7,65.48,232,80,232c70.67,0,129.72-54.42,135.75-124.44l29.91-29.9A8,8,0,0,0,247.39,68.94Zm-45,29.41a8,8,0,0,0-2.32,5.14C196,166.58,143.28,216,80,216c-10.56,0-18-1.4-23.22-3.08,11.51-6.25,27.56-17,37.88-32.48A8,8,0,0,0,92,169.08c-.47-.27-43.91-26.34-44-96,16,13,45.25,33.17,78.67,38.79A8,8,0,0,0,136,104V88a32,32,0,0,1,9.6-22.92A30.94,30.94,0,0,1,167.9,56c12.66.16,24.49,7.88,29.44,19.21A8,8,0,0,0,204.67,80h16Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a href="https://facebook.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="FacebookLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm8,191.63V152h24a8,8,0,0,0,0-16H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,0-16H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0,0,16h24v63.63a88,88,0,1,1,16,0Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
-                            <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener noreferrer">
-                                <div class="text-[#5e876d] hover:text-[#38a169]" data-icon="InstagramLogo" data-size="24px" data-weight="regular">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 256 256">
-                                        <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM176,24H80A56.06,56.06,0,0,0,24,80v96a56.06,56.06,0,0,0,56,56h96a56.06,56.06,0,0,0,56-56V80A56.06,56.06,0,0,0,176,24Zm40,152a40,40,0,0,1-40,40H80a40,40,0,0,1-40-40V80A40,40,0,0,1,80,40h96a40,40,0,0,1,40,40ZM192,76a12,12,0,1,1-12-12A12,12,0,0,1,192,76Z"></path>
-                                    </svg>
-                                </div>
-                            </a>
-                        </div>
-                        <p class="text-[#5e876d] text-base font-normal leading-normal">© 2024 FreshMart. All rights reserved.</p>
-                    </footer>
-                </div>
-            </footer>
-        </div>
-    </div>
-
-    <!-- Generic Modal for alerts and messages -->
-    <div id="generalModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-button" id="generalModalCloseBtn">&times;</span>
-            <p id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
-            <div class="flex justify-center gap-4">
-                <button id="generalModalOkBtn" class="flex-1 rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">OK</button>
             </div>
-        </div>
-    </div>
+        </header>
 
-    <!-- Confirmation Modal (for Delete Account) -->
-    <div id="confirmationModal" class="modal hidden">
-        <div class="modal-content">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Confirm Action</h3>
-            <p id="confirmationMessage" class="text-lg font-medium text-[#111813] mb-4"></p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4 mt-4">
-                <button id="confirmYesBtn" class="flex-1 rounded-xl h-10 px-4 bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors">Yes, proceed</button>
-                <button id="confirmNoBtn" class="flex-1 rounded-xl h-10 px-4 bg-gray-200 text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Cancel</button>
+        <!-- Main Content -->
+        <main id="main-content" class="flex-1 max-w-4xl mx-auto py-10 px-4">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">My Profile</h2>
+            
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="flex justify-center items-center py-10">
+                <div class="loader"></div>
+                <p class="ml-4 text-gray-600">Loading profile...</p>
             </div>
-        </div>
-    </div>
 
-    <!-- Add/Edit Address Modal -->
-    <div id="addressModal" class="modal hidden">
-        <div class="modal-content text-left">
-            <span class="close-button" id="addressModalCloseBtn">&times;</span>
-            <h3 id="addressModalTitle" class="text-xl font-bold text-gray-800 mb-4">Add New Address</h3>
-            <form id="addressForm" class="space-y-4">
-                <div>
-                    <label for="addressName" class="block text-sm font-medium text-gray-700">Address Name (e.g., Home, Office)</label>
-                    <input type="text" id="addressName" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
-                </div>
-                <div>
-                    <label for="streetAddress" class="block text-sm font-medium text-gray-700">Street Address</label>
-                    <input type="text" id="streetAddress" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                        <input type="text" id="city" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
+            <!-- Profile Content -->
+            <div id="profile-content" class="hidden space-y-6">
+                <!-- User Info Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Personal Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+                            <input type="text" id="displayName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6ec88e]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" readonly>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                            <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6ec88e]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                            <input type="text" id="address" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#6ec88e]">
+                        </div>
                     </div>
-                    <div>
-                        <label for="state" class="block text-sm font-medium text-gray-700">State / Province</label>
-                        <input type="text" id="state" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
-                    </div>
+                    <button id="updateProfileBtn" class="mt-4 px-6 py-2 bg-[#6ec88e] text-white rounded-md hover:bg-green-500 transition-colors">
+                        Update Profile
+                    </button>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label for="zipCode" class="block text-sm font-medium text-gray-700">Zip / Postal Code</label>
-                        <input type="text" id="zipCode" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
-                    </div>
-                    <div>
-                        <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                        <input type="text" id="country" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#38a169] focus:ring focus:ring-[#38a169] focus:ring-opacity-50">
-                    </div>
-                </div>
-                <div class="flex items-center mt-2">
-                    <input type="checkbox" id="isDefaultAddress" class="rounded border-gray-300 text-[#38a169] shadow-sm focus:ring-[#38a169]">
-                    <label for="isDefaultAddress" class="ml-2 block text-sm text-gray-900">Set as default address</label>
-                </div>
-                <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" id="addressFormCancelBtn" class="rounded-xl h-10 px-4 bg-gray-200 text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors">Cancel</button>
-                    <button type="submit" id="addressFormSaveBtn" class="rounded-xl h-10 px-4 bg-[#38a169] text-white text-sm font-bold hover:bg-[#2f855a] transition-colors">Save Address</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
+                <!-- Preferences Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Preferences</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Email Notifications</span>
+                            <input type="checkbox" id="emailNotifications" class="toggle-checkbox">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">SMS Notifications</span>
+                            <input type="checkbox" id="smsNotifications" class="toggle-checkbox">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-700">Marketing Emails</span>
+                            <input type="checkbox" id="marketingEmails" class="toggle-checkbox">
+                        </div>
+                    </div>
+                    <button id="updatePreferencesBtn" class="mt-4 px-6 py-2 bg-[#6ec88e] text-white rounded-md hover:bg-green-500 transition-colors">
+                        Save Preferences
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="my_orders.html" class="flex items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                            <div class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-2 text-blue-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                </svg>
+                                <span class="text-sm font-medium text-blue-600">My Orders</span>
+                            </div>
+                        </a>
+                        <a href="cart.html" class="flex items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                            <div class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-2 text-green-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                </svg>
+                                <span class="text-sm font-medium text-green-600">View Cart</span>
+                            </div>
+                        </a>
+                        <a href="contactus.html" class="flex items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                            <div class="text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-2 text-purple-600">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.907l-7.195 3.583c-.07.034-.14.067-.21.1a2.25 2.25 0 01-2.25 0 2.25 2.25 0 01-.21-.1L3.92 8.89A2.25 2.25 0 012.75 6.993V6.75" />
+                                </svg>
+                                <span class="text-sm font-medium text-purple-600">Contact Us</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Not Logged In Message -->
+            <div id="not-logged-in" class="hidden text-center py-20">
+                <h3 class="text-xl font-semibold text-gray-600 mb-4">Please log in to view your profile</h3>
+                <a href="login.html" class="inline-block px-6 py-3 bg-[#6ec88e] text-white rounded-md hover:bg-green-500 transition-colors">
+                    Go to Login
+                </a>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t">
+            <div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-center">
+                <div class="flex justify-center gap-x-6 sm:gap-x-12 mb-6">
+                    <a href="aboutus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">About Us</a>
+                    <a href="contactus.html" class="text-sm text-gray-600 hover:text-[#6ec88e]">Contact</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Privacy Policy</a>
+                    <a href="#" class="text-sm text-gray-600 hover:text-[#6ec88e]">Terms of Service</a>
+                </div>
+                <p class="text-sm text-gray-500">© 2025 FreshMart. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updateProfile, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, startAfter, limit, Timestamp, doc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-        // --- Firebase Configuration ---
-        // This configuration is for demonstration purposes.
-        const firebaseConfig = {
-            apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
-            authDomain: "portfolio-56be7.firebaseapp.com",
-            projectId: "portfolio-56be7",
-            storageBucket: "portfolio-56be7.firebasestorage.app",
-            messagingSenderId: "888511551571",
-            appId: "1:888511551571:web:11e809e995377e9a4ccea6",
-            measurementId: "G-X3CYL9YZR1"
-        };
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD1iij4QWlxQJJPS-yJrhSiCS79kS4dqaM",
+        authDomain: "portfolio-56be7.firebaseapp.com",
+        projectId: "portfolio-56be7",
+        storageBucket: "portfolio-56be7.firebasestorage.app",
+        messagingSenderId: "888511551571",
+        appId: "1:888511551571:web:11e809e995377e9a4ccea6",
+        measurementId: "G-X3CYL9YZR1"
+    };
 
-        // --- Initialize Firebase ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        let currentUser = null; // To store the authenticated user
-        
-        // --- Order & Address Data ---
-        let allOrders = []; // Store all fetched orders
-        let currentFilter = 'All';
-        let currentSearchQuery = '';
-        let userAddresses = []; // Store user's addresses
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
 
-        // --- DOM Elements ---
-        const cartCountEl = document.getElementById("cartCount");
-        const loginLogoutBtn = document.getElementById("loginLogoutBtn");
-        const profileBtn = document.getElementById("profileBtn");
-        const myOrdersBtn = document.getElementById("myOrdersBtn");
-        const userEmailDisplay = document.getElementById("userEmailDisplay");
+    // DOM Elements
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const profileContent = document.getElementById('profile-content');
+    const notLoggedIn = document.getElementById('not-logged-in');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-        const userAvatar = document.getElementById('userAvatar');
-        const changePhotoBtn = document.getElementById('changePhotoBtn');
-        const userEmailInput = document.getElementById('userEmail');
-        const displayNameInput = document.getElementById('displayName');
-        const editNameBtn = document.getElementById('editNameBtn');
-        const saveNameBtn = document.getElementById('saveNameBtn');
-        const cancelNameBtn = document.getElementById('cancelNameBtn');
-        const changePasswordBtn = document.getElementById('changePasswordBtn');
-        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const ordersList = document.getElementById('ordersList');
-        const noOrdersMessage = document.getElementById('noOrdersMessage');
-        const orderSearchInput = document.getElementById('orderSearchInput');
-        const orderFilterButtons = document.getElementById('orderFilterButtons');
-        const loadMoreOrdersBtn = document.getElementById('loadMoreOrdersBtn');
+    // Form Elements
+    const displayNameInput = document.getElementById('displayName');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('address');
+    const updateProfileBtn = document.getElementById('updateProfileBtn');
 
-        const emailNotificationsToggle = document.getElementById('emailNotifications');
-        const smsNotificationsToggle = document.getElementById('smsNotifications');
-        const promotionalNotificationsToggle = document.getElementById('promotionalNotifications'); // New
-        const securityAlertsToggle = document.getElementById('securityAlerts'); // New
-        const publicProfileToggle = document.getElementById('publicProfile');
-        const savePreferencesBtn = document.getElementById('savePreferencesBtn');
+    // Preference Elements
+    const emailNotifications = document.getElementById('emailNotifications');
+    const smsNotifications = document.getElementById('smsNotifications');
+    const marketingEmails = document.getElementById('marketingEmails');
+    const updatePreferencesBtn = document.getElementById('updatePreferencesBtn');
 
-        const addressesList = document.getElementById('addressesList');
-        const noAddressesMessage = document.getElementById('noAddressesMessage');
-        const addAddressBtn = document.getElementById('addAddressBtn');
-        
-        const addPaymentMethodBtn = document.getElementById('addPaymentMethodBtn');
-        const activityList = document.getElementById('activityList');
-        const noActivityMessage = document.getElementById('noActivityMessage');
-        const viewAllActivityBtn = document.getElementById('viewAllActivityBtn');
+    // Toast Notification System
+    const toastContainer = document.getElementById('toast-container');
+    function showToast(message, type = 'info', duration = 4000) {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        toastContainer.appendChild(toast);
 
-        const faqLinkBtn = document.getElementById('faqLinkBtn'); // New
-        const contactSupportBtn = document.getElementById('contactSupportBtn'); // New
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.parentNode?.removeChild(toast), 300);
+        }, duration);
+    }
 
-        const copyReferralCodeBtn = document.getElementById('copyReferralCodeBtn'); // New
-        const shareReferralBtn = document.getElementById('shareReferralBtn'); // New
+    // Load user profile data
+    async function loadUserProfile(user) {
+        try {
+            // Load basic user info
+            displayNameInput.value = user.displayName || '';
+            emailInput.value = user.email || '';
 
+            // Load additional profile data from Firestore
+            const docRef = doc(db, "userProfiles", user.uid);
+            const docSnap = await getDoc(docRef);
 
-        const generalModal = document.getElementById('generalModal');
-        const generalModalMessage = document.getElementById('generalModalMessage');
-        const generalModalOkBtn = document.getElementById('generalModalOkBtn');
-        const generalModalCloseBtn = document.getElementById('generalModalCloseBtn');
-
-        const confirmationModal = document.getElementById('confirmationModal');
-        const confirmationMessage = document.getElementById('confirmationMessage');
-        const confirmYesBtn = document.getElementById('confirmYesBtn');
-        const confirmNoBtn = document.getElementById('confirmNoBtn');
-        let confirmActionCallback = null; // Callback for confirmation modal
-
-        const addressModal = document.getElementById('addressModal');
-        const addressModalTitle = document.getElementById('addressModalTitle');
-        const addressModalCloseBtn = document.getElementById('addressModalCloseBtn');
-        const addressForm = document.getElementById('addressForm');
-        const addressNameInput = document.getElementById('addressName');
-        const streetAddressInput = document.getElementById('streetAddress');
-        const cityInput = document.getElementById('city');
-        const stateInput = document.getElementById('state');
-        const zipCodeInput = document.getElementById('zipCode');
-        const countryInput = document.getElementById('country');
-        const isDefaultAddressCheckbox = document.getElementById('isDefaultAddress');
-        const addressFormCancelBtn = document.getElementById('addressFormCancelBtn');
-        const addressFormSaveBtn = document.getElementById('addressFormSaveBtn');
-        let currentEditingAddressId = null; // To store the ID of the address being edited
-
-        // --- Toast Notification System ---
-        function showToast(message, type = 'info', duration = 4000) {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => toast.classList.add('show'), 10);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.parentNode?.removeChild(toast), 300);
-            }, duration);
-        }
-
-        // --- Generic Modal Functions ---
-        function openGeneralModal(message) {
-            generalModalMessage.textContent = message;
-            generalModal.classList.remove('hidden');
-            setTimeout(() => generalModal.classList.add('show'), 10);
-        }
-
-        function closeGeneralModal() {
-            generalModal.classList.remove('show');
-            setTimeout(() => generalModal.classList.add('hidden'), 300);
-        }
-
-        // --- Confirmation Modal Functions ---
-        function openConfirmationModal(message, callback) {
-            confirmationMessage.textContent = message;
-            confirmActionCallback = callback;
-            confirmationModal.classList.remove('hidden');
-            setTimeout(() => confirmationModal.classList.add('show'), 10);
-        }
-
-        function closeConfirmationModal() {
-            confirmationModal.classList.remove('show');
-            setTimeout(() => confirmationModal.classList.add('hidden'), 300);
-            confirmActionCallback = null;
-        }
-
-        // --- Address Modal Functions ---
-        function openAddressModal(address = null) {
-            addressForm.reset(); // Clear previous form data
-            currentEditingAddressId = null; // Reset editing ID
-
-            addressModalTitle.textContent = "Add New Address";
-            if (address) {
-                addressModalTitle.textContent = "Edit Address";
-                addressNameInput.value = address.name || '';
-                streetAddressInput.value = address.street || '';
-                cityInput.value = address.city || '';
-                stateInput.value = address.state || '';
-                zipCodeInput.value = address.zipCode || '';
-                countryInput.value = address.country || '';
-                isDefaultAddressCheckbox.checked = address.isDefault || false;
-                currentEditingAddressId = address.id;
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                phoneInput.value = data.phone || '';
+                addressInput.value = data.address || '';
             }
-
-            addressModal.classList.remove('hidden');
-            setTimeout(() => addressModal.classList.add('show'), 10);
+        } catch (error) {
+            console.error("Error loading user profile:", error);
+            showToast("Error loading profile data", "error");
         }
+    }
 
-        function closeAddressModal() {
-            addressModal.classList.remove('show');
-            setTimeout(() => addressModal.classList.add('hidden'), 300);
+    // Load user preferences
+    async function loadUserPreferences(user) {
+        try {
+            const docRef = doc(db, "userPreferences", user.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                emailNotifications.checked = data.emailNotifications || false;
+                smsNotifications.checked = data.smsNotifications || false;
+                marketingEmails.checked = data.marketingEmails || false;
+            }
+        } catch (error) {
+            console.error("Error loading user preferences:", error);
+            showToast("Error loading preferences", "error");
         }
+    }
 
-        // --- Cart Count Function (reused from index.html) ---
-        function updateCartCount() {
-            const savedCart = localStorage.getItem('freshmartCart');
-            const cartItems = savedCart ? JSON.parse(savedCart) : [];
-            const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-            cartCountEl.textContent = totalCount;
+    // Update user profile
+    async function updateUserProfile() {
+        if (!currentUser) return;
+
+        try {
+            updateProfileBtn.disabled = true;
+            updateProfileBtn.textContent = 'Updating...';
+
+            // Update Firebase Auth profile
+            await updateProfile(currentUser, {
+                displayName: displayNameInput.value
+            });
+
+            // Update Firestore profile data
+            await setDoc(doc(db, "userProfiles", currentUser.uid), {
+                phone: phoneInput.value,
+                address: addressInput.value,
+                updatedAt: new Date()
+            }, { merge: true });
+
+            showToast("Profile updated successfully!", "success");
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            showToast("Error updating profile", "error");
+        } finally {
+            updateProfileBtn.disabled = false;
+            updateProfileBtn.textContent = 'Update Profile';
         }
+    }
 
-        // --- Profile Management Functions ---
-        function setDisplayNameEditMode(isEditing) {
-            displayNameInput.readOnly = !isEditing;
-            editNameBtn.classList.toggle('hidden', isEditing);
-            saveNameBtn.classList.toggle('hidden', !isEditing);
-            cancelNameBtn.classList.toggle('hidden', !isEditing);
-            if (isEditing) {
-                displayNameInput.focus();
-            }
+    // Update user preferences
+    async function updateUserPreferences() {
+        if (!currentUser) return;
+
+        try {
+            updatePreferencesBtn.disabled = true;
+            updatePreferencesBtn.textContent = 'Saving...';
+
+            await setDoc(doc(db, "userPreferences", currentUser.uid), {
+                emailNotifications: emailNotifications.checked,
+                smsNotifications: smsNotifications.checked,
+                marketingEmails: marketingEmails.checked,
+                updatedAt: new Date()
+            }, { merge: true });
+
+            showToast("Preferences saved successfully!", "success");
+        } catch (error) {
+            console.error("Error updating preferences:", error);
+            showToast("Error saving preferences", "error");
+        } finally {
+            updatePreferencesBtn.disabled = false;
+            updatePreferencesBtn.textContent = 'Save Preferences';
         }
+    }
 
-        async function updateDisplayName() {
-            if (!currentUser) {
-                showToast('You must be logged in to update your profile.', 'error');
-                return;
-            }
-
-            const newDisplayName = displayNameInput.value.trim();
-            if (newDisplayName === '') {
-                showToast('Display name cannot be empty.', 'error');
-                displayNameInput.value = currentUser.displayName || ''; // Revert to current
-                return;
-            }
-            if (newDisplayName === currentUser.displayName) {
-                showToast('No changes detected.', 'info');
-                setDisplayNameEditMode(false);
-                return;
-            }
-
-            try {
-                await updateProfile(currentUser, { displayName: newDisplayName });
-                showToast('Profile updated successfully!', 'success');
-                setDisplayNameEditMode(false);
-                userEmailDisplay.textContent = currentUser.displayName || currentUser.email || 'User'; // Update header display
-            } catch (error) {
-                console.error("Error updating profile:", error);
-                showToast(`Failed to update profile: ${error.message}`, 'error');
-            }
+    // Logout function
+    async function logout() {
+        try {
+            await signOut(auth);
+            showToast("Logged out successfully", "success");
+            window.location.href = 'index.html';
+        } catch (error) {
+            console.error("Error signing out:", error);
+            showToast("Error logging out", "error");
         }
-
-        async function sendPasswordReset() {
-            if (!currentUser || !currentUser.email) {
-                openGeneralModal('You must be logged in with an email account to reset your password. Anonymous users cannot reset passwords.');
-                return;
-            }
-
-            try {
-                await sendPasswordResetEmail(auth, currentUser.email);
-                openGeneralModal(`A password reset link has been sent to ${currentUser.email}. Please check your inbox.`);
-            } catch (error) {
-                console.error("Error sending password reset email:", error);
-                let errorMessage = 'Failed to send password reset email.';
-                if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'No user found with this email.';
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = 'The email address is not valid.';
-                }
-                openGeneralModal(`${errorMessage} Please try again.`);
-            }
-        }
-
-        async function handleDeleteAccount() {
-            if (!currentUser) {
-                showToast('You must be logged in to delete your account.', 'error');
-                return;
-            }
-
-            openConfirmationModal('Are you sure you want to delete your account? This action is irreversible. You might need to re-authenticate if your last sign-in was a while ago.', async () => {
-                try {
-                    await deleteUser(currentUser);
-                    showToast('Account successfully deleted!', 'success');
-                    window.location.href = 'index.html'; // Redirect to homepage after deletion
-                } catch (error) {
-                    console.error("Error deleting account:", error);
-                    let errorMessage = 'Failed to delete account.';
-                    if (error.code === 'auth/requires-recent-login') {
-                        errorMessage = 'Please log in again recently to delete your account. For security, Firebase requires re-authentication before sensitive operations like account deletion.';
-                    } else {
-                        errorMessage = error.message;
-                    }
-                    openGeneralModal(`Error: ${errorMessage}`);
-                } finally {
-                    closeConfirmationModal();
-                }
-            });
-        }
-
-        async function handleLogout() {
-            try {
-                await signOut(auth);
-                showToast('Successfully logged out!', 'success');
-                // Redirect to homepage or login page after logout
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Logout error:', error);
-                showToast(`Logout failed: ${error.message}`, 'error');
-            }
-        }
-
-        // --- User Preferences Functions ---
-        async function loadUserPreferences() {
-            if (!currentUser) return;
-            try {
-                const docRef = doc(db, `users/${currentUser.uid}/preferences/settings`);
-                const docSnap = await getDoc(docRef); 
-                if (docSnap.exists()) { 
-                    const preferences = docSnap.data(); 
-                    emailNotificationsToggle.checked = preferences.emailNotifications || false;
-                    smsNotificationsToggle.checked = preferences.smsNotifications || false;
-                    promotionalNotificationsToggle.checked = preferences.promotionalNotifications || false; // New
-                    securityAlertsToggle.checked = preferences.securityAlerts || false; // New
-                    publicProfileToggle.checked = preferences.publicProfile || false;
-                }
-            } catch (error) {
-                console.error("Error loading user preferences:", error);
-                showToast("Failed to load preferences.", "error");
-            }
-        }
-
-        async function saveUserPreferences() {
-            if (!currentUser) {
-                showToast('You must be logged in to save preferences.', 'error');
-                return;
-            }
-            try {
-                const preferences = {
-                    emailNotifications: emailNotificationsToggle.checked,
-                    smsNotifications: smsNotificationsToggle.checked,
-                    promotionalNotifications: promotionalNotificationsToggle.checked, // New
-                    securityAlerts: securityAlertsToggle.checked, // New
-                    publicProfile: publicProfileToggle.checked
-                };
-                await setDoc(doc(db, `users/${currentUser.uid}/preferences/settings`), preferences, { merge: true });
-                showToast('Preferences saved successfully!', 'success');
-            } catch (error) {
-                console.error("Error saving user preferences:", error);
-                showToast("Failed to save preferences.", "error");
-            }
-        }
-
-        // --- Address Management Functions ---
-        async function fetchAndRenderAddresses() {
-            if (!currentUser) {
-                addressesList.innerHTML = '<p class="text-gray-500 text-center py-4">Please log in to view your addresses.</p>';
-                return;
-            }
-            noAddressesMessage.style.display = 'block'; // Show initially, hide if addresses found
-            addressesList.innerHTML = '';
-            userAddresses = [];
-
-            try {
-                const q = query(collection(db, `users/${currentUser.uid}/addresses`));
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach((docSnap) => {
-                    userAddresses.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
-                if (userAddresses.length === 0) {
-                    addressesList.innerHTML = '<p class="text-gray-500 text-center py-4">No addresses added yet. Click "Add New Address" to get started!</p>';
-                    return;
-                }
-                noAddressesMessage.style.display = 'none'; // Hide if addresses are found
-
-                userAddresses.forEach(address => {
-                    const defaultBadge = address.isDefault ? '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium ml-2">Default</span>' : '';
-                    const addressHtml = `
-                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 class="text-lg font-semibold text-gray-800 flex items-center">${address.name} ${defaultBadge}</h3>
-                            <p class="text-gray-700 text-sm">${address.street}</p>
-                            <p class="text-gray-700 text-sm">${address.city}, ${address.state} ${address.zipCode}</p>
-                            <p class="text-gray-700 text-sm">${address.country}</p>
-                            <div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-gray-200">
-                                <button class="edit-address-btn rounded-xl h-8 px-3 bg-[#eaf0ec] text-[#111813] text-xs font-bold hover:bg-gray-300 transition-colors" data-address-id="${address.id}">Edit</button>
-                                <button class="delete-address-btn rounded-xl h-8 px-3 text-red-700 text-xs font-bold border border-red-300 bg-red-100 hover:bg-red-200 transition-colors" data-address-id="${address.id}">Delete</button>
-                                ${!address.isDefault ? `<button class="set-default-address-btn rounded-xl h-8 px-3 bg-[#eaf0ec] text-[#111813] text-xs font-bold hover:bg-gray-300 transition-colors" data-address-id="${address.id}">Set as Default</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                    addressesList.insertAdjacentHTML('beforeend', addressHtml);
-                });
-                addAddressActionListeners();
-            } catch (error) {
-                console.error("Error fetching addresses:", error);
-                addressesList.innerHTML = `<p class="text-red-500 text-center py-4">Error loading addresses: ${error.message}</p>`;
-            }
-        }
-
-        function addAddressActionListeners() {
-            document.querySelectorAll('.edit-address-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const addressId = e.target.dataset.addressId;
-                    const addressToEdit = userAddresses.find(addr => addr.id === addressId);
-                    if (addressToEdit) {
-                        openAddressModal(addressToEdit);
-                    }
-                });
-            });
-            document.querySelectorAll('.delete-address-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const addressId = e.target.dataset.addressId;
-                    openConfirmationModal('Are you sure you want to delete this address?', async () => {
-                        await deleteAddress(addressId);
-                        closeConfirmationModal();
-                    });
-                });
-            });
-            document.querySelectorAll('.set-default-address-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    const addressId = e.target.dataset.addressId;
-                    await setDefaultAddress(addressId);
-                });
-            });
-        }
-
-        async function saveAddress(event) {
-            event.preventDefault();
-            if (!currentUser) {
-                showToast('You must be logged in to save addresses.', 'error');
-                return;
-            }
-
-            const addressData = {
-                name: addressNameInput.value.trim(),
-                street: streetAddressInput.value.trim(),
-                city: cityInput.value.trim(),
-                state: stateInput.value.trim(),
-                zipCode: zipCodeInput.value.trim(),
-                country: countryInput.value.trim(),
-                isDefault: isDefaultAddressCheckbox.checked
-            };
-
-            // Basic validation
-            for (const key in addressData) {
-                if (typeof addressData[key] === 'string' && addressData[key] === '' && key !== 'isDefault') {
-                    showToast(`Please fill in the ${key.replace(/([A-Z])/g, ' $1').toLowerCase()} field.`, 'error');
-                    return;
-                }
-            }
-
-            try {
-                // If setting as default, first unmark all other addresses as default
-                if (addressData.isDefault) {
-                    const defaultAddressRef = query(collection(db, `users/${currentUser.uid}/addresses`), where('isDefault', '==', true));
-                    const defaultSnapshot = await getDocs(defaultAddressRef);
-                    for (const doc of defaultSnapshot.docs) {
-                        if (doc.id !== currentEditingAddressId) { // Don't unmark if it's the address we're editing
-                            await setDoc(doc.ref, { isDefault: false }, { merge: true });
-                        }
-                    }
-                }
-
-                if (currentEditingAddressId) {
-                    // Update existing address
-                    await setDoc(doc(db, `users/${currentUser.uid}/addresses`, currentEditingAddressId), addressData, { merge: true });
-                    showToast('Address updated successfully!', 'success');
-                } else {
-                    // Add new address
-                    await setDoc(doc(collection(db, `users/${currentUser.uid}/addresses`)), addressData); // Firebase auto-generates ID
-                    showToast('Address added successfully!', 'success');
-                }
-                closeAddressModal();
-                fetchAndRenderAddresses(); // Re-fetch and render to update UI
-            } catch (error) {
-                console.error("Error saving address:", error);
-                showToast(`Failed to save address: ${error.message}`, 'error');
-            }
-        }
-
-        async function deleteAddress(addressId) {
-            if (!currentUser) return;
-            try {
-                await deleteDoc(doc(db, `users/${currentUser.uid}/addresses`, addressId));
-                showToast('Address deleted successfully!', 'success');
-                fetchAndRenderAddresses();
-            }
-            catch (error) {
-                console.error("Error deleting address:", error);
-                showToast(`Failed to delete address: ${error.message}`, 'error');
-            }
-        }
-
-        async function setDefaultAddress(addressId) {
-            if (!currentUser) return;
-            try {
-                // Unmark current default address
-                const currentDefaultQuery = query(collection(db, `users/${currentUser.uid}/addresses`), where('isDefault', '==', true));
-                const currentDefaultSnapshot = await getDocs(currentDefaultQuery);
-                for (const doc of currentDefaultSnapshot.docs) {
-                    await setDoc(doc.ref, { isDefault: false }, { merge: true });
-                }
-
-                // Set new default address
-                await setDoc(doc(db, `users/${currentUser.uid}/addresses`, addressId), { isDefault: true }, { merge: true });
-                showToast('Default address set!', 'success');
-                fetchAndRenderAddresses(); // Re-render to update badges
-            } catch (error) {
-                console.error("Error setting default address:", error);
-                showToast(`Failed to set default address: ${error.message}`, 'error');
-            }
-        }
-
-        // --- Orders Fetching and Rendering ---
-        async function fetchAllOrdersForUser() {
-            if (!currentUser) {
-                ordersList.innerHTML = '<p class="text-gray-500 text-center py-4">Please log in to view your orders.</p>';
-                return;
-            }
-
-            noOrdersMessage.textContent = 'Loading orders...';
-            ordersList.innerHTML = ''; // Clear previous content
-            allOrders = []; // Reset allOrders array
-
-            try {
-                // Fetch all orders for the current user, ordered by date
-                const ordersRef = collection(db, "orders");
-                const q = query(
-                    ordersRef,
-                    where("userId", "==", currentUser.uid),
-                    orderBy("orderDate", "desc")
-                );
-
-                const querySnapshot = await getDocs(q);
-                querySnapshot.forEach((doc) => {
-                    allOrders.push({ id: doc.id, ...doc.data() });
-                });
-
-                if (allOrders.length === 0) {
-                    ordersList.innerHTML = '<p class="text-gray-500 text-center py-4">You have not placed any orders yet. Start shopping now!</p>';
-                    loadMoreOrdersBtn.classList.add('hidden');
-                    return;
-                }
-
-                // Initial render of filtered/searched orders
-                renderFilteredAndSearchedOrders();
-
-            } catch (error) {
-                console.error("Error fetching orders:", error);
-                ordersList.innerHTML = `<p class="text-red-500 text-center py-4">Error loading orders: ${error.message}</p>`;
-                loadMoreOrdersBtn.classList.add('hidden');
-            }
-        }
-
-        function renderFilteredAndSearchedOrders() {
-            let filteredOrders = allOrders;
-
-            // Apply filter
-            if (currentFilter !== 'All') {
-                filteredOrders = filteredOrders.filter(order => order.status === currentFilter);
-            }
-
-            // Apply search
-            if (currentSearchQuery) {
-                const lowerCaseQuery = currentSearchQuery.toLowerCase();
-                filteredOrders = filteredOrders.filter(order => {
-                    const orderIdMatch = order.id.toLowerCase().includes(lowerCaseQuery);
-                    const itemMatch = order.items.some(item => 
-                        item.name.toLowerCase().includes(lowerCaseQuery)
-                    );
-                    return orderIdMatch || itemMatch;
-                });
-            }
-
-            ordersList.innerHTML = ''; // Clear current display
-            if (filteredOrders.length === 0) {
-                ordersList.innerHTML = `<p class="text-gray-500 text-center py-4">No orders found matching your criteria.</p>`;
-                loadMoreOrdersBtn.classList.add('hidden');
-                return;
-            }
-            noOrdersMessage.style.display = 'none'; // Hide "Loading/No orders" message
-
-            const ordersToRender = filteredOrders; 
-
-            ordersToRender.forEach((order, index) => {
-                const orderDate = order.orderDate.toDate ? order.orderDate.toDate().toLocaleString() : new Date(order.orderDate.seconds * 1000).toLocaleString(); // Handle Timestamp
-                
-                // Determine status badge color
-                let statusColor = 'bg-gray-200 text-gray-700';
-                if (order.status === 'Completed') {
-                    statusColor = 'bg-green-100 text-green-700';
-                } else if (order.status === 'Pending') {
-                    statusColor = 'bg-yellow-100 text-yellow-700';
-                } else if (order.status === 'Cancelled') {
-                    statusColor = 'bg-red-100 text-red-700';
-                }
-
-                const itemsHtml = order.items.map(item => `
-                    <li class="flex items-center gap-3 py-1">
-                        <img src="${item.image || 'https://placehold.co/40x40/cccccc/000000?text=NA'}" alt="${item.name}" class="w-10 h-10 rounded-md object-cover flex-shrink-0">
-                        <div>
-                            <p class="font-medium text-gray-800">${item.name}</p>
-                            <p class="text-xs text-gray-500">Qty: ${item.quantity} | ₹${item.price.toFixed(2)} each</p>
-                        </div>
-                    </li>
-                `).join('');
-
-                const orderCardHtml = `
-                    <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm flex flex-col">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3">
-                            <div class="flex items-center gap-2 mb-2 sm:mb-0">
-                                <h3 class="text-lg font-semibold text-gray-800">Order ID: <span class="font-normal text-gray-600 break-all">${order.id}</span></h3>
-                                <button class="copy-order-id-btn p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors" data-order-id="${order.id}" title="Copy Order ID">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v2.25A2.25 2.25 0 0113.5 22h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25m1.5-1.5h.008v.008h-.008v-.008zm2.5 0h.008v.008h-.008v-.008zm2.5 0h.008v.008h-.008v-.008zM12 6a3 3 0 11-6 0 3 3 0 016 0zm-3.75 7.5h10.5a2.25 2.25 0 002.25-2.25v-1.5a2.25 2.25 0 00-2.25-2.25H8.25A2.25 2.25 0 006 7.5v1.5a2.25 2.25 0 002.25 2.25z" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <span class="text-sm text-gray-500">${orderDate}</span>
-                        </div>
-                        
-                        <div class="flex justify-between items-center mb-3">
-                            <p class="text-xl font-bold text-gray-800">Total: ₹${order.totalAmount.toFixed(2)}</p>
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">${order.status}</span>
-                        </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-2 mt-auto pt-3 border-t border-gray-200">
-                            <button class="toggle-details-btn flex-1 rounded-xl h-9 px-3 bg-[#eaf0ec] text-[#111813] text-sm font-bold hover:bg-gray-300 transition-colors" data-target="order-details-${order.id}">
-                                <span>View Details</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 ml-1">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <button class="track-order-btn flex-1 rounded-xl h-9 px-3 bg-blue-100 text-blue-700 text-sm font-bold hover:bg-blue-200 transition-colors" data-order-id="${order.id}">Track Order</button>
-                            <button class="request-support-btn flex-1 rounded-xl h-9 px-3 bg-yellow-100 text-yellow-700 text-sm font-bold hover:bg-yellow-200 transition-colors" data-order-id="${order.id}">Request Support</button>
-                        </div>
-                        <div id="order-details-${order.id}" class="order-details-collapsible border-t border-gray-200 mt-3 pt-3">
-                            <p class="text-sm font-medium text-gray-700 mb-2">Items in this order:</p>
-                            <ul class="list-none space-y-2">
-                                ${itemsHtml}
-                            </ul>
-                        </div>
-                    </div>
-                `;
-                ordersList.insertAdjacentHTML('beforeend', orderCardHtml);
-            });
-            addOrderDetailsToggleListeners();
-            addCopyOrderIdListeners();
-            addOrderActionButtonsListeners(); // New listener
-            loadMoreOrdersBtn.classList.toggle('hidden', filteredOrders.length === 0); // Always show if there are orders
-        }
-
-        function addOrderDetailsToggleListeners() {
-            document.querySelectorAll('.toggle-details-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const targetId = this.dataset.target;
-                    const targetElement = document.getElementById(targetId);
-                    if (targetElement) {
-                        targetElement.classList.toggle('expanded');
-                        this.classList.toggle('expanded'); // For rotating icon
-                        const span = this.querySelector('span');
-                        if (span) {
-                            span.textContent = targetElement.classList.contains('expanded') ? 'Hide Details' : 'View Details';
-                        }
-                    }
-                });
-            });
-        }
-
-        function addCopyOrderIdListeners() {
-            document.querySelectorAll('.copy-order-id-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.orderId;
-                    if (orderId) {
-                        navigator.clipboard.writeText(orderId).then(() => {
-                            showToast('Order ID copied!', 'success');
-                        }).catch(err => {
-                            console.error('Failed to copy order ID:', err);
-                            showToast('Failed to copy Order ID.', 'error');
-                        });
-                    }
-                });
-            });
-        }
-
-        function addOrderActionButtonsListeners() {
-            document.querySelectorAll('.track-order-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.orderId;
-                    openGeneralModal(`Tracking order ${orderId}. This would typically open a tracking page or display live status updates.`);
-                });
-            });
-            document.querySelectorAll('.request-support-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const orderId = this.dataset.orderId;
-                    openGeneralModal(`Requesting support for order ${orderId}. This would typically open a support ticket form or connect you with customer service.`);
-                });
-            });
-        }
-
-
-        // --- Activity Log Functions (Mock Data for now) ---
-        function renderActivityLog() {
-            // This would ideally fetch from a Firestore collection 'user_activity'
-            // For now, using mock data
-            const mockActivities = [
-                { type: 'login', description: 'Logged in successfully', date: new Date(Date.now() - 3600000) }, // 1 hour ago
-                { type: 'profile_update', description: 'Display name updated', date: new Date(Date.now() - 86400000) }, // 1 day ago
-                { type: 'order_placed', description: 'Placed a new order', date: new Date(Date.now() - 172800000) }, // 2 days ago
-                { type: 'password_reset', description: 'Requested password reset', date: new Date(Date.now() - 259200000) }, // 3 days ago
-                { type: 'address_added', description: 'New address added', date: new Date(Date.now() - 345600000) }, // 4 days ago
-                { type: 'preferences_updated', description: 'Notification preferences updated', date: new Date(Date.now() - 432000000) }, // 5 days ago
-            ];
-
-            activityList.innerHTML = ''; // Clear existing
-            if (mockActivities.length === 0) {
-                noActivityMessage.style.display = 'block';
-                return;
-            }
-            noActivityMessage.style.display = 'none';
-
-            mockActivities.sort((a, b) => b.date - a.date); // Sort by most recent first
-
-            mockActivities.forEach(activity => {
-                let iconSvg = '';
-                let iconColor = 'text-gray-500';
-                // Define icons based on activity type
-                if (activity.type === 'login') {
-                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
-                    iconColor = 'text-[#38a169]';
-                } else if (activity.type === 'profile_update') {
-                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.185-3.185M12 1.5V12m-4.992-4.992H2.985m11.99 0h-.001ZM12 12h.008v.008H12V12zm-3.75 5.25H12m-5.625 0H5.25c-.621 0-1.125-.504-1.125-1.125v-3.75m-1.5 1.5v-1.5m-1.5 0H3c-.621 0-1.125-.504-1.125-1.125V9.75M4.5 9.75V8.25c0-.621.504-1.125 1.125-1.125h3.75" /></svg>`;
-                    iconColor = 'text-blue-500';
-                } else if (activity.type === 'order_placed') {
-                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3H6a2.25 2.25 0 012.25 2.25V7.5m-8.25 0h8.25M9.75 9l-1.5 6m-3-6l-1.5 6M17.25 7.5H21a2.25 2.25 0 012.25 2.25v12.75a2.25 2.25 0 01-2.25 2.25H4.5A2.25 2.25 0 012.25 22.5V7.5M15 12.75l-1.5 6m-3-6l-1.5 6m-3-6L7.5 18m10.5-6h.008v.008h-.008v-.008z" /></svg>`;
-                    iconColor = 'text-orange-500';
-                } else if (activity.type === 'password_reset') {
-                     iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>`;
-                     iconColor = 'text-purple-500';
-                } else if (activity.type === 'address_added') {
-                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>`;
-                    iconColor = 'text-sky-500';
-                } else if (activity.type === 'preferences_updated') {
-                    iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.17.954c.045.25.187.48.374.659l.813.627c.427.33.553.953.244 1.442l-.636 1.01c-.17.272-.414.515-.694.693l-.627.813c-.18.187-.409.329-.659.374l-.954.17c-.542.09-.94.56-.94 1.11v1.093c0 .55.398 1.02.94 1.11l.954.17c.25.045.48.187.659.374l.627.813c.33.427.953.553 1.442.244l1.01-.636c.272-.17.515-.414.693-.694l.813-.627c.187-.18.329-.409.374-.659l.17-.954c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.17.954c.045.25.187.48.374.659l.813.627c.427.33.553.953.244 1.442l-.636 1.01c-.17.272-.414.515-.694.693l-.627.813c-.18.187-.409.329-.659.374l-.954.17c-.542.09-.94.56-.94 1.11v1.093c0 .55.398 1.02.94 1.11l.954.17c.25.045.48.187.659.374l.627.813c.33.427.953.553.244 1.442l-.636 1.01c-.17.272-.414.515-.694.693l-.627.813c-.18.187-.409.329-.659.374l-.954.17c-.542.09-.94.56-.94 1.11h-1.093c-.55 0-1.02-.398-1.11-.94l-.17-.954a.75.75 0 00-.374-.659l-.813-.627a1.5 1.5 0 00-1.442-.244l-1.01.636a.75.75 0 00-.693.694l-.627.813a1.5 1.5 0 00-.374.659l-.17.954c-.09.542-.56.94-1.11.94H9.75c-.55 0-1.02-.398-1.11-.94l-.17-.954a.75.75 0 00-.374-.659l-.813-.627a1.5 1.5 0 00-1.442-.244l-1.01.636a.75.75 0 00-.693.694l-.627.813a1.5 1.5 0 00-.374.659l-.17.954c-.09.542-.56.94-1.11.94H3.75c-.55 0-1.02-.398-1.11-.94l-.17-.954a.75.75 0 00-.374-.659l-.813-.627a1.5 1.5 0 00-1.442-.244l-1.01.636a.75.75 0 00-.693.694l-.627.813a1.5 1.5 0 00-.374.659l-.17.954c-.09.542-.56.94-1.11.94H1.5c-.55 0-1.02-.398-1.11-.94l-.17-.954a.75.75 0 00-.374-.659l-.813-.627a1.5 1.5 0 00-1.442-.244l-1.01.636a.75.75 0 00-.693.694l-.627.813a1.5 1.5 0 00-.374.659l-.17.954z" /></svg>`;
-                    iconColor = 'text-green-500';
-                }
-
-                const activityHtml = `
-                    <li class="flex items-center gap-2 text-gray-700">
-                        <div class="${iconColor}">${iconSvg}</div>
-                        <span class="text-sm">${activity.description} (<span class="text-gray-500 text-xs">${activity.date.toLocaleString()}</span>)</span>
-                    </li>
-                `;
-                activityList.insertAdjacentHTML('beforeend', activityHtml);
-            });
-        }
-
-
-        // --- Collapsible Section Toggle ---
-        function addCollapsibleListeners() {
-            document.querySelectorAll('.collapsible-section-toggle').forEach(button => {
-                button.addEventListener('click', function() {
-                    const contentElement = this.nextElementSibling; // Get the very next sibling element
-                    if (contentElement && contentElement.classList.contains('collapsible-section-content')) {
-                        contentElement.classList.toggle('expanded');
-                        this.classList.toggle('expanded'); // For rotating icon
-                    }
-                });
-            });
-        }
-
-        // --- Event Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount(); // Update cart count on page load
-
-            onAuthStateChanged(auth, (user) => {
-                currentUser = user;
-                if (user) {
-                    // User is logged in
-                    userEmailInput.value = user.email || 'N/A';
-                    displayNameInput.value = user.displayName || '';
-                    setDisplayNameEditMode(false); // Initially read-only
-                    userAvatar.src = user.photoURL || 'https://placehold.co/100x100/b7cdbe/5e876d?text=User';
-
-
-                    // Update header UI
-                    loginLogoutBtn.textContent = 'Logout';
-                    loginLogoutBtn.classList.remove('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
-                    loginLogoutBtn.classList.add('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
-                    
-                    // Note: Profile button is currently green/primary, will keep that for current page indication
-                    profileBtn.classList.remove('hidden', 'bg-[#eaf0ec]', 'text-[#111813]', 'hover:bg-gray-300');
-                    profileBtn.classList.add('bg-[#6ec88e]', 'text-[#111813]', 'hover:bg-green-600');
-                    
-                    myOrdersBtn.classList.remove('hidden'); 
-
-                    userEmailDisplay.textContent = user.displayName || user.email || 'User';
-                    userEmailDisplay.classList.remove('hidden');
-
-                    fetchAllOrdersForUser(); // Fetch all orders for the logged-in user
-                    loadUserPreferences(); // Load user preferences
-                    fetchAndRenderAddresses(); // Load user addresses
-                    renderActivityLog(); // Render mock activity log
-
-                } else {
-                    // User is logged out
-                    userEmailInput.value = '';
-                    displayNameInput.value = '';
-                    setDisplayNameEditMode(false); // Ensure fields are read-only
-                    userAvatar.src = 'https://placehold.co/100x100/b7cdbe/5e876d?text=User'; // Reset avatar
-
-                    loginLogoutBtn.textContent = 'Login';
-                    loginLogoutBtn.classList.remove('bg-gray-200', 'text-[#111813]', 'hover:bg-gray-300');
-                    loginLogoutBtn.classList.add('bg-[#38a169]', 'text-white', 'hover:bg-[#2f855a]');
-                    
-                    // Reset profile/orders button state if not logged in
-                    profileBtn.classList.add('hidden'); 
-                    myOrdersBtn.classList.add('hidden'); 
-
-                    userEmailDisplay.textContent = '';
-                    userEmailDisplay.classList.add('hidden');
-
-                    // If not logged in, display message in sections
-                    ordersList.innerHTML = '<p class="text-gray-500 text-center py-4">Please log in to view your profile and orders.</p>';
-                    loadMoreOrdersBtn.classList.add('hidden');
-                    addressesList.innerHTML = '<p class="text-gray-500 text-center py-4">Please log in to view your addresses.</p>';
-                    activityList.innerHTML = '<p class="text-gray-500 text-center py-4">Please log in to view your activity.</p>';
-                }
-            });
-
-            // Profile Section Buttons
-            changePhotoBtn.addEventListener('click', () => {
-                openGeneralModal("Image upload functionality not implemented in this demo. In a full application, this would allow you to upload a new profile picture to Firebase Storage and update your profile.");
-            });
-            editNameBtn.addEventListener('click', () => setDisplayNameEditMode(true));
-            saveNameBtn.addEventListener('click', updateDisplayName);
-            cancelNameBtn.addEventListener('click', () => {
-                displayNameInput.value = currentUser ? (currentUser.displayName || '') : '';
-                setDisplayNameEditMode(false);
-            });
-            changePasswordBtn.addEventListener('click', sendPasswordReset);
-            deleteAccountBtn.addEventListener('click', handleDeleteAccount);
-            logoutBtn.addEventListener('click', handleLogout);
-
-            // User Preferences Buttons
-            savePreferencesBtn.addEventListener('click', saveUserPreferences);
-
-            // Address Management Buttons
-            addAddressBtn.addEventListener('click', () => openAddressModal());
-            addressForm.addEventListener('submit', saveAddress);
-            addressFormCancelBtn.addEventListener('click', closeAddressModal);
-            addressModalCloseBtn.addEventListener('click', closeAddressModal);
-
-            // Payment Methods Button
-            addPaymentMethodBtn.addEventListener('click', () => {
-                openGeneralModal("Payment method integration is complex and not part of this demo. In a real app, this would lead to a secure payment gateway integration.");
-            });
-
-            // Referral Program Buttons
-            copyReferralCodeBtn.addEventListener('click', () => {
-                const referralCode = document.getElementById('referralCode').textContent;
-                navigator.clipboard.writeText(referralCode).then(() => {
-                    showToast('Referral code copied!', 'success');
-                }).catch(err => {
-                    console.error('Failed to copy referral code:', err);
-                    showToast('Failed to copy referral code.', 'error');
-                });
-            });
-
-            shareReferralBtn.addEventListener('click', () => {
-                const referralCode = document.getElementById('referralCode').textContent;
-                if (navigator.share) {
-                    navigator.share({
-                        title: 'FreshMart Referral',
-                        text: `Get fresh groceries with a discount using my FreshMart referral code: ${referralCode}! Shop now: [Your App Link Here]`,
-                        url: '[Your App Link Here]' // Replace with your actual app link
-                    }).then(() => {
-                        showToast('Referral shared successfully!', 'success');
-                    }).catch((error) => {
-                        console.error('Error sharing:', error);
-                        showToast('Failed to share referral.', 'error');
-                    });
-                } else {
-                    openGeneralModal("Your browser does not support the Web Share API. Please copy the code manually and share.");
-                }
-            });
-
-
-            // Activity Log Button
-            viewAllActivityBtn.addEventListener('click', () => {
-                openGeneralModal("Viewing all activity would typically lead to a dedicated page or a more extensive activity log interface. This is a placeholder.");
-            });
-
-            // Help & Support Buttons
-            faqLinkBtn.addEventListener('click', () => {
-                openGeneralModal("This would link to your Frequently Asked Questions (FAQ) page.");
-            });
-            contactSupportBtn.addEventListener('click', () => {
-                openGeneralModal("This would open a contact form or direct you to customer support options.");
-            });
-
-
-            // Header Navigation & Actions
-            loginLogoutBtn.addEventListener('click', async () => {
-                if (currentUser) {
-                    handleLogout();
-                } else {
-                    window.location.href = 'login.html';
-                }
-            });
-
-            profileBtn.addEventListener('click', () => {
-                // Already on profile page, refresh data
-                fetchAllOrdersForUser();
-                loadUserPreferences();
-                fetchAndRenderAddresses();
-                renderActivityLog();
-                showToast('Profile data refreshed!', 'info');
-            });
-
-            myOrdersBtn.addEventListener('click', () => {
-                window.location.href = 'my_orders.html'; // Dedicated orders page (if created)
-            });
-
-            document.getElementById("cartBtn").addEventListener("click", function() {
-                window.location.href = "cart.html";
-            });
-
-            document.getElementById("navShop").addEventListener("click", function(event) {
-                event.preventDefault();
-                window.location.href = "shop.html";
-            });
-            document.getElementById("navDeals").addEventListener("click", function(event) {
-                event.preventDefault();
-                window.location.href = "deals.html";
-            });
-            document.getElementById("navRecipes").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Recipes page (placeholder)!");
-            });
-            document.getElementById("navAboutUs").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to About Us page (placeholder)!");
-            });
-
-            // Footer Links
-            document.getElementById("footerContactUs").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Contact Us page!");
-            });
-
-            document.getElementById("footerPrivacyPolicy").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Privacy Policy page!");
-            });
-
-            document.getElementById("footerTermsOfService").addEventListener("click", function(event) {
-                event.preventDefault();
-                openGeneralModal("Navigating to Terms of Service page!");
-            });
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        // Auth state listener
+        onAuthStateChanged(auth, async (user) => {
+            loadingIndicator.classList.add('hidden');
             
-            // Global Modal Close Buttons
-            generalModalOkBtn.addEventListener('click', closeGeneralModal);
-            generalModalCloseBtn.addEventListener('click', closeGeneralModal);
-
-            // Confirmation Modal Buttons
-            confirmYesBtn.addEventListener('click', () => {
-                if (confirmActionCallback) {
-                    confirmActionCallback();
-                }
-            });
-            confirmNoBtn.addEventListener('click', closeConfirmationModal);
-
-            // Order Search and Filter Event Listeners
-            orderSearchInput.addEventListener('input', (event) => {
-                currentSearchQuery = event.target.value.trim();
-                renderFilteredAndSearchedOrders();
-            });
-
-            orderFilterButtons.querySelectorAll('.filter-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    orderFilterButtons.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active', 'bg-[#38a169]', 'text-white'));
-                    this.classList.add('active', 'bg-[#38a169]', 'text-white');
-                    currentFilter = this.dataset.status;
-                    renderFilteredAndSearchedOrders();
-                });
-            });
-
-            loadMoreOrdersBtn.addEventListener('click', () => {
-                openGeneralModal("In a real application, clicking 'Load More' would fetch additional orders from the database. This demo loads all existing orders at once for simplicity.");
-            });
-
-            addCollapsibleListeners(); // Initialize collapsible sections
+            if (user) {
+                currentUser = user;
+                profileContent.classList.remove('hidden');
+                notLoggedIn.classList.add('hidden');
+                
+                await loadUserProfile(user);
+                await loadUserPreferences(user);
+            } else {
+                profileContent.classList.add('hidden');
+                notLoggedIn.classList.remove('hidden');
+            }
         });
-    </script>
+
+        // Button event listeners
+        updateProfileBtn.addEventListener('click', updateUserProfile);
+        updatePreferencesBtn.addEventListener('click', updateUserPreferences);
+        logoutBtn.addEventListener('click', logout);
+    });
+</script>
 </body>
 </html>
