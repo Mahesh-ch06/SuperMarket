@@ -118,56 +118,46 @@
                         </div>
                     </section>
 
-                    <!-- Enhanced Contact Form Section -->
+                    <!-- Simplified Contact Form Section - Following Web3Forms Format -->
                     <section id="contact-form" class="contact-form-section rounded-2xl shadow-xl p-6 sm:p-8 lg:p-12">
                         <div class="text-center mb-8 sm:mb-12">
                             <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-4">Send Us a Message</h2>
                             <p class="text-lg text-gray-600 max-w-2xl mx-auto">Have a question or need assistance? Fill out the form below and we'll get back to you as soon as possible.</p>
                         </div>
                         
-                        <form id="contactForm"
-                            action="https://api.web3forms.com/submit"
-                            method="POST"
-                            class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
+                        <!-- Simplified Web3Forms Contact Form -->
+                        <form action="https://api.web3forms.com/submit" method="POST" class="space-y-6 sm:space-y-8 max-w-3xl mx-auto">
 
-                            <!-- Web3Forms Configuration with Your Access Key -->
-                            <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8" />
-                            <input type="hidden" name="subject" value="New Contact Message from FreshMart Website" />
-                            <input type="hidden" name="from_name" value="FreshMart Contact Form" />
-                            
-                            <!-- Spam Protection -->
-                            <input type="checkbox" name="botcheck" class="hidden" style="display:none;" />
+                            <!-- Replace with your Access Key -->
+                            <input type="hidden" name="access_key" value="330e0585-6990-4a15-b2f0-f20df66dc3e8">
 
-                            <!-- Enhanced Form Fields with Correct Names -->
+                            <!-- Form Inputs. Each input must have a name="" attribute -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="form-group">
-                                    <label for="name" class="form-label">Full Name *</label>
-                                    <input type="text" id="name" name="name" required
-                                            class="form-input-field w-full" 
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                                    <input type="text" name="name" id="name" required
+                                            class="form-input-field w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#38a169] focus:border-transparent transition-all" 
                                             placeholder="Enter your full name" />
-                                    <div id="nameError" class="error-message"></div>
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="email" class="form-label">Email Address *</label>
-                                    <input type="email" id="email" name="email" required
-                                            class="form-input-field w-full" 
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                    <input type="email" name="email" id="email" required
+                                            class="form-input-field w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#38a169] focus:border-transparent transition-all" 
                                             placeholder="Enter your email address" />
-                                    <div id="emailError" class="error-message"></div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="phone" class="form-label">Phone Number *</label>
-                                <input type="tel" id="phone" name="phone" required
-                                        class="form-input-field w-full" 
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                <input type="tel" name="phone" id="phone"
+                                        class="form-input-field w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#38a169] focus:border-transparent transition-all" 
                                         placeholder="Enter your phone number" />
-                                <div id="phoneError" class="error-message"></div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="subject_category" class="form-label">Subject</label>
-                                <select id="subject_category" name="subject_category" class="form-input-field w-full">
+                            <div>
+                                <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                                <select name="subject" id="subject" class="form-input-field w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#38a169] focus:border-transparent transition-all">
                                     <option value="">Select a subject</option>
                                     <option value="General Inquiry">General Inquiry</option>
                                     <option value="Order Support">Order Support</option>
@@ -180,18 +170,23 @@
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="message" class="form-label">Your Message *</label>
-                                <textarea id="message" name="message" rows="6" required
-                                            class="form-input-field w-full resize-none" 
+                            <div>
+                                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Your Message *</label>
+                                <textarea name="message" id="message" rows="6" required
+                                            class="form-input-field w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#38a169] focus:border-transparent transition-all resize-none" 
                                             placeholder="Tell us how we can help you..."></textarea>
-                                <div id="messageError" class="error-message"></div>
                             </div>
 
-                            <!-- Enhanced Submit Button -->
+                            <!-- Honeypot Spam Protection -->
+                            <input type="checkbox" name="botcheck" class="hidden" style="display: none;">
+
+                            <!-- Custom Confirmation / Success Page -->
+                            <!-- <input type="hidden" name="redirect" value="https://mywebsite.com/thanks.html"> -->
+
+                            <!-- Submit Button -->
                             <div class="text-center">
-                                <button type="submit" class="submit-btn">
-                                    <span>Send Message</span>
+                                <button type="submit" class="bg-[#38a169] text-white font-bold py-4 px-8 rounded-xl hover:bg-[#2f855a] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                    Send Message
                                 </button>
                                 <p class="text-sm text-gray-500 mt-4">We typically respond within 2 hours during business hours</p>
                             </div>
@@ -412,76 +407,18 @@
         <div class="modal-content">
             <span class="close-button" id="generalModalCloseBtn">&times;</span>
             <div id="generalModalMessage" class="text-lg font-medium text-[#111813] mb-6"></div>
-            <button id="generalModalOkBtn" class="submit-btn">OK</button>
+            <button id="generalModalOkBtn" class="bg-[#38a169] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#2f855a] transition-colors">OK</button>
         </div>
     </div>
 
     <!-- Toast Container -->
     <div id="toast-container"></div>
 
-    <!-- Success Message -->
-    <div id="successMessage" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white rounded-2xl p-8 max-w-md mx-4 text-center">
-            <div class="text-6xl mb-4">✅</div>
-            <h3 class="text-2xl font-bold text-green-600 mb-4">Message Sent Successfully!</h3>
-            <p class="text-gray-600 mb-6">Thank you for contacting FreshMart. We'll get back to you within 24 hours.</p>
-            <button onclick="closeSuccessMessage()" class="submit-btn">Close</button>
-        </div>
-    </div>
-
     <script src="js/common.js"></script>
     <script src="js/contact.js"></script>
     <script>
-        // Success message handler
-        function showSuccessMessage() {
-            document.getElementById('successMessage').classList.remove('hidden');
-        }
-        
-        function closeSuccessMessage() {
-            document.getElementById('successMessage').classList.add('hidden');
-        }
-
-        // Enhanced form submission handler
         document.addEventListener('DOMContentLoaded', () => {
             window.FreshMartContact.initializeContactPage();
-            
-            const form = document.getElementById('contactForm');
-            if (form) {
-                form.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    
-                    const submitBtn = form.querySelector('button[type="submit"]');
-                    const originalText = submitBtn.innerHTML;
-                    
-                    // Show loading state
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span>Sending...</span>';
-                    
-                    try {
-                        const formData = new FormData(form);
-                        const response = await fetch(form.action, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        if (response.ok) {
-                            // Show success message
-                            showSuccessMessage();
-                            form.reset();
-                            window.FreshMartCommon.showToast('Message sent successfully! 🎉', 'success', 4000);
-                        } else {
-                            throw new Error('Failed to send message');
-                        }
-                    } catch (error) {
-                        console.error('Form submission error:', error);
-                        window.FreshMartCommon.showToast('Failed to send message. Please try again.', 'error', 5000);
-                    } finally {
-                        // Reset button
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalText;
-                    }
-                });
-            }
         });
     </script>
 </body>
