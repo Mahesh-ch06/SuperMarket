@@ -779,6 +779,14 @@
             showToast(`${product.name} added to cart!`, 'success');
         }
 
+        // Add to cart by ID function (safer for HTML attributes)
+        function addToCartById(productId) {
+            const product = dealsData.find(deal => deal.id === productId);
+            if (product) {
+                addToCart(product);
+            }
+        }
+
         // Render deals
         function renderDeals(deals) {
             dealsGrid.innerHTML = deals.map(deal => `
@@ -803,7 +811,7 @@
                                 <span class="text-xs text-gray-500">Stock: ${deal.stock}</span>
                             </div>
                         </div>
-                        <button onclick="addToCart(${JSON.stringify(deal).replace(/"/g, '"')})" 
+                        <button onclick="addToCartById(${deal.id})" 
                                 class="w-full bg-[#6ec88e] hover:bg-green-500 text-white font-bold py-3 px-4 rounded-xl transition-colors touch-button">
                             Add to Cart
                         </button>
@@ -853,8 +861,9 @@
             }, 1000);
         }
 
-        // Make addToCart globally available
+        // Make functions globally available
         window.addToCart = addToCart;
+        window.addToCartById = addToCartById;
 
         // Event Listeners
         document.addEventListener('DOMContentLoaded', async () => {
